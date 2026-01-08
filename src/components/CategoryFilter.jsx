@@ -6,6 +6,7 @@ const CATEGORIES = [
   { id: 'pizza', label: 'Pizza', emoji: '🍕' },
   { id: 'pasta', label: 'Pasta', emoji: '🍝' },
   { id: 'sushi', label: 'Sushi', emoji: '🍣' },
+  { id: 'pokebowl', label: 'Poke Bowls', emoji: '🥙' },
   { id: 'taco', label: 'Tacos', emoji: '🌮' },
   { id: 'wings', label: 'Wings', emoji: '🍗' },
   { id: 'tendys', label: 'Tendys', emoji: '🐔' },
