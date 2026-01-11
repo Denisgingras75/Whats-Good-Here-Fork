@@ -30,8 +30,19 @@ export const DEFAULT_DISH_IMAGE = 'https://images.unsplash.com/photo-15046749002
 
 // Get image URL for a category
 export function getCategoryImage(category) {
-  const lowerCategory = category?.toLowerCase()
-  const imageUrl = CATEGORY_IMAGES[lowerCategory] || DEFAULT_DISH_IMAGE
-  console.log(`getCategoryImage: category="${category}", lower="${lowerCategory}", url="${imageUrl}"`)
+  if (!category) {
+    console.warn('getCategoryImage: category is null/undefined, using default')
+    return DEFAULT_DISH_IMAGE
+  }
+
+  const lowerCategory = category.toLowerCase().trim()
+  const imageUrl = CATEGORY_IMAGES[lowerCategory]
+
+  if (!imageUrl) {
+    console.warn(`getCategoryImage: No image found for category="${category}", using default`)
+    return DEFAULT_DISH_IMAGE
+  }
+
+  console.log(`getCategoryImage: category="${category}" -> ${imageUrl}`)
   return imageUrl
 }
