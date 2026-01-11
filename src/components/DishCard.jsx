@@ -1,11 +1,13 @@
 import { VoteButtons } from './VoteButtons'
 import { getConfidenceIndicator } from '../utils/ranking'
+import { getCategoryImage } from '../constants/categoryImages'
 
 export function DishCard({ dish, onVote, onLoginRequired }) {
   const {
     dish_id,
     dish_name,
     restaurant_name,
+    category,
     price,
     photo_url,
     total_votes,
@@ -20,7 +22,7 @@ export function DishCard({ dish, onVote, onLoginRequired }) {
       {/* Dish Photo - Hero Element */}
       <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-stone-100 to-stone-200 overflow-hidden group">
         <img
-          src={photo_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800'}
+          src={photo_url || getCategoryImage(category)}
           alt={dish_name}
           className="w-full h-full object-cover image-zoom"
           loading="lazy"

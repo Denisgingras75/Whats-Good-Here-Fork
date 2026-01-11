@@ -1,0 +1,248 @@
+restaurant_name,dish_name,category,price
+Coop de Ville,New England Clam Chowder Cup,chowder,8.00
+Coop de Ville,New England Clam Chowder Bowl,chowder,10.00
+Coop de Ville,Stuffed Quahogs,apps,14.00
+Coop de Ville,Peel n Eat Shrimp Half Pound,apps,16.00
+Coop de Ville,Peel n Eat Shrimp One Pound,apps,30.00
+Coop de Ville,LJ's Famous Fried Pickles,apps,12.00
+Coop de Ville,Popcorn Chicken,apps,14.00
+Coop de Ville,Popcorn Shrimp,apps,14.00
+Coop de Ville,Local Hand-dug Steamers,apps,32.00
+Coop de Ville,Coconut Shrimp,apps,15.00
+Coop de Ville,Maryland Style Crab Cakes,apps,20.00
+Coop de Ville,Clam Strip Basket,fish,19.00
+Coop de Ville,Beer Battered Shrimp Basket,fish,18.00
+Coop de Ville,Whole Belly Clam Basket,fish,29.00
+Coop de Ville,Fresh Sea Scallop Basket,fish,26.00
+Coop de Ville,Popcorn Chicken Basket,fried_chicken,17.00
+Coop de Ville,Popcorn Shrimp Basket,fish,17.00
+Coop de Ville,Blackened Mahi Mahi,fish,30.00
+Coop de Ville,BBQ Ribs Half Rack,entree,23.00
+Coop de Ville,BBQ Ribs Full Rack,entree,44.00
+Coop de Ville,Marinated Steak Tip,entree,33.00
+Coop de Ville,Pulled Pork BBQ Sandwich,sandwich,15.00
+Coop de Ville,Cod Fish Sandwich,sandwich,18.00
+Coop de Ville,Coop Cheese Burger,burger,16.00
+Coop de Ville,Beyond Burger,burger,16.00
+Coop de Ville,Grilled Marinated Chicken Sandwich,sandwich,15.00
+Coop de Ville,Lobster Salad Roll,lobster_roll,35.00
+Coop de Ville,Fried Whole Belly Clam Roll,sandwich,29.00
+Coop de Ville,Fried Scallop Roll,sandwich,24.00
+Coop de Ville,Pearl Beef Dog,sandwich,13.00
+Coop de Ville,Grilled Steak Tip Sub,sandwich,19.00
+Coop de Ville,Blackened Mahi Mahi Sandwich,sandwich,20.00
+Coop de Ville,Tuna Melt,sandwich,15.00
+Coop de Ville,Wings Half Order,wings,14.00
+Coop de Ville,Wings Single Order,wings,19.00
+Coop de Ville,Wings Double Order,wings,36.00
+Mo's Lunch,Roast Pork Sandwich,sandwich,16.00
+Mo's Lunch,Italian Sandwich,sandwich,16.00
+Mo's Lunch,Cauliflower Melt,sandwich,15.00
+Mo's Lunch,Chickpea Salad Sandwich,sandwich,14.00
+Mo's Lunch,Turkey Sandwich,sandwich,16.00
+Mo's Lunch,Beef Sandwich,sandwich,16.00
+Mo's Lunch,Cold Tuna Sub,sandwich,14.00
+Mo's Lunch,Tuna Melt,sandwich,14.00
+Mo's Lunch,Banh Mi,sandwich,16.00
+Mo's Lunch,Leo Burger,burger,11.00
+Mo's Lunch,Filet o' Fish,sandwich,12.00
+Mo's Lunch,Chopped Salad,salad,15.00
+Mo's Lunch,Kale Caesar Salad,salad,15.00
+Mo's Lunch,Nicoise Salad,salad,18.00
+Mo's Lunch,Country Pate,apps,20.00
+Mo's Lunch,Tinned Fish,apps,18.00
+Mo's Lunch,Today's Cheese,apps,18.00
+Mo's Lunch,Smoked Bluefish Pate,apps,21.00
+Mo's Lunch,Mortadella,apps,18.00
+Mo's Lunch,Meat + Cheese,apps,22.00
+Mo's Lunch,Broccoli Rabe,apps,9.00
+Mo's Lunch,Polenta Frys,apps,9.00
+Mo's Lunch,Onion Rings,apps,9.00
+Mo's Lunch,Pickles,apps,7.00
+Mo's Lunch,Side Salad,salad,8.00
+Waterside Market,Breakfast Sandwich,breakfast,8.00
+Waterside Market,Breakfast Burrito,breakfast,13.00
+Waterside Market,Skinny Wrap,breakfast,13.00
+Waterside Market,Traditional Breakfast,breakfast,14.00
+Waterside Market,Flapjacks,breakfast,14.00
+Waterside Market,Tex-Mex,breakfast,20.00
+Waterside Market,Eggs Benedict,breakfast,19.00
+Waterside Market,Lobster Benedict,breakfast,36.00
+Waterside Market,Cinnamon French Toast,breakfast,14.00
+Waterside Market,Avocado Toast,breakfast,16.00
+Waterside Market,Smoked Salmon & Tomato Caper Salsa,breakfast,20.00
+Waterside Market,Farmhouse Sandwich,sandwich,17.00
+Waterside Market,John Alden Sandwich,sandwich,17.00
+Waterside Market,Red White & Green Sandwich,sandwich,15.00
+Waterside Market,C.A.B. Sandwich,sandwich,17.00
+Waterside Market,Italian Sandwich,sandwich,17.00
+Waterside Market,French Quarter Sandwich,sandwich,18.00
+Waterside Market,B.L.T.,sandwich,16.00
+Waterside Market,Lucy Vincent Sandwich,sandwich,16.00
+Waterside Market,Lobster Roll,lobster_roll,36.00
+Waterside Market,Hand-Cut French Fries,apps,9.00
+Waterside Market,Cobb Salad,salad,18.00
+Waterside Market,Kale Chicken Caesar,salad,16.00
+Waterside Market,Strawberry Quinoa Salad,salad,20.00
+Waterside Market,Greek Salad,salad,18.00
+The Covington,Our Bread Service,apps,2.00
+The Covington,House Giardiniera,apps,12.00
+The Covington,Sweet & Spicy Cucumbers,apps,15.00
+The Covington,Smoked Eggplant Dip,apps,16.00
+The Covington,Baked Cheese,apps,20.00
+The Covington,Toast,apps,22.00
+The Covington,Caesar Salad,salad,20.00
+The Covington,Farmstand Salad,salad,20.00
+The Covington,Smoked Beets,salad,22.00
+The Covington,Three Sisters,apps,26.00
+The Covington,Clams & Sausage,apps,30.00
+The Covington,Sweet Potato Gnocchi,pasta,40.00
+The Covington,Mushroom Ragu,pasta,40.00
+The Covington,Bolognese,pasta,42.00
+The Covington,Shrimp Piperade,entree,42.00
+The Covington,Nova Scotia Halibut,fish,52.00
+The Covington,Pork Chop,entree,60.00
+The Covington,NY Striploin,entree,76.00
+The Covington,Honey Pie,apps,16.00
+The Covington,Strawberry-Basil Sorbet,apps,12.00
+The Covington,Chocolate Cake,apps,16.00
+Martha's Vineyard Chowder Company,Clam Chowder Cup,chowder,11.00
+Martha's Vineyard Chowder Company,Clam Chowder Bowl,chowder,15.00
+Martha's Vineyard Chowder Company,Clam Chowder Quart,chowder,29.00
+Martha's Vineyard Chowder Company,Lobster Bisque Cup,chowder,12.00
+Martha's Vineyard Chowder Company,Lobster Bisque Bowl,chowder,18.00
+Martha's Vineyard Chowder Company,Local Oysters,apps,21.00
+Martha's Vineyard Chowder Company,Local Littleneck Clams,apps,10.50
+Martha's Vineyard Chowder Company,Classic Caesar Salad,salad,12.00
+Martha's Vineyard Chowder Company,Little Leaf Green Salad,salad,13.00
+Martha's Vineyard Chowder Company,Imported Burrata,apps,16.00
+The Attic,Attic Wings Half Dozen,wings,12.00
+The Attic,Attic Wings Dozen,wings,24.00
+The Attic,Waterside's House Potato Chips,apps,14.00
+The Attic,Beer Battered Onion Rings,apps,17.00
+The Attic,Portuguese Mussels,apps,25.00
+The Attic,House-made Crab Cakes,apps,22.00
+The Attic,Attic Salad,salad,20.00
+The Attic,Butternut Squash & Spinach Salad,salad,22.00
+The Attic,Caesar Salad,salad,18.00
+The Attic,French Onion Soup,chowder,15.00
+The Attic,Attic Smash Burger,burger,24.00
+The Attic,Veggie Burger,burger,23.00
+The Attic,Turkey Burger,burger,24.00
+The Attic,Mr. Bowen Burger,burger,27.00
+The Attic,Black & Bleu Burger,burger,27.00
+Biscuits,Chicken & Biscuits,fried_chicken,16.00
+Biscuits,Shrimp & Grits,fish,18.00
+Biscuits,Fried Chicken & Waffle,fried_chicken,17.00
+Biscuits,Biscuits Benedict,breakfast,15.00
+Biscuits,Buttermilk Pancakes,breakfast,12.00
+Back Door Donuts,Apple Cider Donut,breakfast,4.00
+Back Door Donuts,Apple Fritter,breakfast,9.00
+Back Door Donuts,Boston Cream Donut,breakfast,3.50
+Back Door Donuts,Maple Bacon Donut,breakfast,4.00
+Back Door Donuts,Cinnamon Roll,breakfast,6.50
+TigerHawk Sandwich Company,Peruvian Chicken Sandwich,sandwich,14.00
+TigerHawk Sandwich Company,Steak & Cheese,sandwich,15.00
+TigerHawk Sandwich Company,Tuna Melt,sandwich,13.00
+TigerHawk Sandwich Company,Turkey Club,sandwich,14.00
+TigerHawk Sandwich Company,Veggie Bowl,salad,12.00
+The Sweet Life Café,Pan Roasted Halibut,fish,42.00
+The Sweet Life Café,Duck Confit,entree,38.00
+The Sweet Life Café,Beef Tenderloin,entree,48.00
+The Sweet Life Café,Lobster Risotto,entree,44.00
+The Sweet Life Café,Roasted Chicken,fried_chicken,32.00
+MV Salads,Greek Salad,salad,12.00
+MV Salads,Caesar Salad,salad,11.00
+MV Salads,Cobb Salad,salad,14.00
+MV Salads,Asian Sesame Salad,salad,13.00
+MV Salads,Southwest Salad,salad,13.00
+ArtCliff Diner,Clam Chowder,chowder,9.00
+ArtCliff Diner,Blueberry Pancakes,breakfast,12.00
+ArtCliff Diner,Classic Burger,burger,14.00
+ArtCliff Diner,Fish & Chips,fish,18.00
+ArtCliff Diner,Lobster Benedict,breakfast,24.00
+Garde East,New England Clam Chowder,chowder,14.00
+Garde East,Garde Burger,burger,18.00
+Garde East,Pan Roasted Cod,fish,28.00
+Garde East,Crispy Calamari,apps,16.00
+Garde East,Lobster Roll,lobster_roll,36.00
+Garde East,Citrus Salad,salad,22.00
+Garde East,Striped Bass,fish,60.00
+Garde East,Lobster Cavatelli,pasta,42.00
+Porto Pizza,Margherita Pizza,pizza,16.00
+Porto Pizza,Pepperoni Pizza,pizza,18.00
+Porto Pizza,Buffalo Chicken Pizza,pizza,20.00
+Porto Pizza,Greek Salad,salad,10.00
+Porto Pizza,Garlic Knots,apps,8.00
+Alchemy Bistro & Bar,Duck Confit,entree,32.00
+Alchemy Bistro & Bar,Truffle Fries,apps,14.00
+Alchemy Bistro & Bar,Lobster Tacos,taco,28.00
+Alchemy Bistro & Bar,Pan Seared Scallops,fish,38.00
+Alchemy Bistro & Bar,Steak Frites,entree,42.00
+Alchemy Bistro & Bar,Roasted Boneless Half-Chicken,fried_chicken,48.00
+Alchemy Bistro & Bar,Blackened Lobster Tail,entree,74.00
+Bettini Restaurant,Clam Chowder,chowder,14.00
+Bettini Restaurant,Grilled Swordfish,fish,44.00
+Bettini Restaurant,Pan Roasted Chicken,fried_chicken,32.00
+Bettini Restaurant,Lobster Ravioli,pasta,38.00
+Bettini Restaurant,Caesar Salad,salad,12.00
+Bettini Restaurant,New England Crab Cake,apps,29.00
+Atria,Seared Tuna,fish,38.00
+Atria,Wagyu Burger,burger,28.00
+Atria,Lobster Risotto,entree,42.00
+Atria,Beet Salad,salad,16.00
+Atria,Pan-Seared Scallops,fish,44.00
+L'etoile Restaurant,Seared Scallops,fish,42.00
+L'etoile Restaurant,Beef Bourguignon,entree,48.00
+L'etoile Restaurant,Lobster Bisque,chowder,16.00
+L'etoile Restaurant,Duck Breast,entree,44.00
+L'etoile Restaurant,Foie Gras,apps,28.00
+State Road,Clam Chowder,chowder,15.00
+State Road,State Road Burger,burger,24.00
+State Road,Pan Roasted Halibut,fish,42.00
+State Road,Fried Chicken,fried_chicken,32.00
+State Road,Brussels Sprouts,apps,14.00
+Black Dog,Native Steamed Lobster,entree,38.00
+Black Dog,Lobster Roll,lobster_roll,34.00
+Black Dog,Sesame Crusted Salmon,fish,32.00
+Black Dog,Grilled Swordfish,fish,36.00
+Black Dog,George's Bank Codfish,fish,28.00
+Black Dog,Half Rack of Ribs,entree,26.00
+Black Dog,Beef Tenderloin,entree,42.00
+Black Dog,Black Dog Burger,burger,18.00
+Lookout Tavern,Lobster Roll,lobster_roll,38.00
+Lookout Tavern,Tuesday Burger Special,burger,10.00
+Lookout Tavern,Fish Tacos,taco,16.00
+Lookout Tavern,Fried Calamari,apps,14.00
+Lookout Tavern,Clam Chowder,chowder,12.00
+Nancy's,Lobster Roll,lobster_roll,36.00
+Nancy's,Fish Tacos,taco,18.00
+Nancy's,Grilled Swordfish,fish,34.00
+Nancy's,Fried Clam Plate,fish,28.00
+Nancy's,Sushi Roll,sushi,14.00
+Offshore Ale,Fish and Chips,fish,22.00
+Offshore Ale,Steamed Mussels,apps,16.00
+Offshore Ale,Margherita Pizza,pizza,18.00
+Offshore Ale,Portuguese Fisherman's Stew,fish,28.00
+Offshore Ale,Ale Burger,burger,16.00
+Red Cat Kitchen,Faroe Island Salmon Tartare,apps,22.00
+Red Cat Kitchen,Caesar Salad,salad,16.00
+Red Cat Kitchen,Brussels Sprouts,apps,14.00
+Red Cat Kitchen,Codfish Cake,apps,18.00
+Red Cat Kitchen,Braised Short Rib,entree,36.00
+Red Cat Kitchen,Miso Glazed Pork Loin,entree,32.00
+Red Cat Kitchen,Faroe Island Salmon,fish,34.00
+Red Cat Kitchen,Linguini and Clams,pasta,28.00
+Red Cat Kitchen,Buttermilk Fried Chicken,fried_chicken,28.00
+Red Cat Kitchen,Blackened Swordfish,fish,36.00
+Red Cat Kitchen,Broiled Chatham Codfish,fish,32.00
+9 Craft Kitchen and Bar,Lobster Tostadas,apps,24.00
+9 Craft Kitchen and Bar,Miso Cod,fish,38.00
+9 Craft Kitchen and Bar,Swordfish Club,sandwich,22.00
+9 Craft Kitchen and Bar,Lamb Ragout Rigatoni,pasta,32.00
+9 Craft Kitchen and Bar,Steak,entree,48.00
+Beach Road,Buttermilk Fried Chicken,fried_chicken,28.00
+Beach Road,Steak Frites,entree,36.00
+Beach Road,Bibimbap,entree,24.00
+Beach Road,Oysters,apps,3.00
+Beach Road,Cornbread,apps,8.00

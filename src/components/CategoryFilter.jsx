@@ -1,25 +1,27 @@
+import { getCategoryImage, DEFAULT_DISH_IMAGE } from '../constants/categoryImages'
+
 const CATEGORIES = [
-  { id: null, label: 'All Dishes', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=100&h=100&fit=crop&q=80' },
-  { id: 'burger', label: 'Burgers', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100&h=100&fit=crop&q=80' },
-  { id: 'sandwich', label: 'Sandwiches', image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=100&h=100&fit=crop&q=80' },
-  { id: 'breakfast sandwich', label: 'Breakfast Sandwiches', image: 'https://images.unsplash.com/photo-1619096252214-ef06c45683e3?w=100&h=100&fit=crop&q=80' },
-  { id: 'pizza', label: 'Pizza', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=100&h=100&fit=crop&q=80' },
-  { id: 'pasta', label: 'Pasta', image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=100&h=100&fit=crop&q=80' },
-  { id: 'sushi', label: 'Sushi', image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=100&h=100&fit=crop&q=80' },
-  { id: 'pokebowl', label: 'Poke Bowls', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&h=100&fit=crop&q=80' },
-  { id: 'taco', label: 'Tacos', image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=100&h=100&fit=crop&q=80' },
-  { id: 'wings', label: 'Wings', image: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=100&h=100&fit=crop&q=80' },
-  { id: 'tendys', label: 'Tendys', image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=100&h=100&fit=crop&q=80' },
-  { id: 'lobster roll', label: 'Lobster Rolls', image: 'https://images.unsplash.com/photo-1625595117865-037d82c7cac3?w=100&h=100&fit=crop&q=80' },
-  { id: 'lobster', label: 'Lobster', image: 'https://images.unsplash.com/photo-1559737558-2f5a767d75e2?w=100&h=100&fit=crop&q=80' },
-  { id: 'fish', label: 'Fish', image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=100&h=100&fit=crop&q=80' },
-  { id: 'chowder', label: 'Chowder', image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=100&h=100&fit=crop&q=80' },
-  { id: 'breakfast', label: 'Breakfast', image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=100&h=100&fit=crop&q=80' },
-  { id: 'salad', label: 'Salads', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=100&h=100&fit=crop&q=80' },
-  { id: 'fries', label: 'Fries', image: 'https://images.unsplash.com/photo-1630431341973-02e1d0c417ee?w=100&h=100&fit=crop&q=80' },
-  { id: 'apps', label: 'Apps', image: 'https://images.unsplash.com/photo-1541529086526-db283c563270?w=100&h=100&fit=crop&q=80' },
-  { id: 'fried chicken', label: 'Fried Chicken', image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=100&h=100&fit=crop&q=80' },
-  { id: 'entree', label: 'Entrees', image: 'https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=100&h=100&fit=crop&q=80' },
+  { id: null, label: 'All Dishes' },
+  { id: 'burger', label: 'Burgers' },
+  { id: 'sandwich', label: 'Sandwiches' },
+  { id: 'breakfast sandwich', label: 'Breakfast Sandwiches' },
+  { id: 'pizza', label: 'Pizza' },
+  { id: 'pasta', label: 'Pasta' },
+  { id: 'sushi', label: 'Sushi' },
+  { id: 'pokebowl', label: 'Poke Bowls' },
+  { id: 'taco', label: 'Tacos' },
+  { id: 'wings', label: 'Wings' },
+  { id: 'tendys', label: 'Tendys' },
+  { id: 'lobster roll', label: 'Lobster Rolls' },
+  { id: 'lobster', label: 'Lobster' },
+  { id: 'fish', label: 'Fish' },
+  { id: 'chowder', label: 'Chowder' },
+  { id: 'breakfast', label: 'Breakfast' },
+  { id: 'salad', label: 'Salads' },
+  { id: 'fries', label: 'Fries' },
+  { id: 'apps', label: 'Apps' },
+  { id: 'fried chicken', label: 'Fried Chicken' },
+  { id: 'entree', label: 'Entrees' },
 ]
 
 export function CategoryFilter({ selectedCategory, onSelectCategory }) {
@@ -54,7 +56,7 @@ export function CategoryFilter({ selectedCategory, onSelectCategory }) {
                 }}
               >
                 <img
-                  src={category.image}
+                  src={category.id ? getCategoryImage(category.id, 'thumbnail') : DEFAULT_DISH_IMAGE.replace('w=800&h=600', 'w=100&h=100')}
                   alt={category.label}
                   className="w-6 h-6 rounded-full object-cover"
                   loading="lazy"
