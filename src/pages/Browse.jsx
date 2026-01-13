@@ -69,7 +69,9 @@ export function Browse() {
     <div className="min-h-screen bg-stone-50">
       {/* Header */}
       <header className="bg-white border-b border-neutral-200 px-4 py-4">
-        <h1 className="text-2xl font-bold text-neutral-900 font-serif mb-4">Browse</h1>
+        <div className="flex flex-col items-center mb-4">
+          <img src="/logo.png" alt="What's Good Here" className="h-12 w-auto" />
+        </div>
 
         {/* Search bar */}
         <div className="relative">
