@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from '../hooks/useLocation'
 import { useDishes } from '../hooks/useDishes'
+import { LocationPicker } from '../components/LocationPicker'
 import { DishFeed } from '../components/DishFeed'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { getCategoryImage } from '../constants/categoryImages'
@@ -19,7 +20,7 @@ export function Home() {
   const navigate = useNavigate()
   const [loginModalOpen, setLoginModalOpen] = useState(false)
 
-  const { location, radius } = useLocation()
+  const { location, radius, setRadius, error: locationError } = useLocation()
   const { dishes, loading, error, refetch } = useDishes(
     location,
     radius,
@@ -79,6 +80,14 @@ export function Home() {
           See all categories →
         </button>
       </div>
+
+      {/* Location Picker */}
+      <LocationPicker
+        radius={radius}
+        onRadiusChange={setRadius}
+        location={location}
+        error={locationError}
+      />
 
       {/* Top Picks Section */}
       <div className="px-4 py-6">
