@@ -95,14 +95,10 @@ export function Home() {
               Find food near me
             </button>
             <button
-              onClick={() => {
-                const firstDish = topDishes[0]
-                if (firstDish) setSelectedDish(firstDish)
-                else navigate('/browse')
-              }}
+              onClick={() => navigate('/browse')}
               className="flex-1 px-6 py-3 bg-white border-2 border-neutral-200 text-neutral-700 font-semibold rounded-xl hover:border-orange-300 hover:bg-orange-50 transition-all"
             >
-              Rate a dish
+              Browse top dishes
             </button>
           </div>
         </div>
