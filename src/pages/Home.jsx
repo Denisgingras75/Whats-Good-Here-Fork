@@ -253,12 +253,16 @@ function DishCard({ dish, onClick }) {
         />
 
         {/* Rating Badge */}
-        {total_votes > 0 && (
+        {total_votes > 0 ? (
           <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
             <span className="text-emerald-500 text-xs">👍</span>
             <span className="text-xs font-bold text-neutral-900">
               {Math.round(percent_worth_it)}%
             </span>
+          </div>
+        ) : (
+          <div className="absolute top-2 right-2 bg-orange-500 px-2 py-1 rounded-full shadow-sm">
+            <span className="text-xs font-medium text-white">Be first to rate!</span>
           </div>
         )}
       </div>
