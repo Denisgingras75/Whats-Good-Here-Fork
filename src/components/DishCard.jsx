@@ -123,9 +123,9 @@ export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFa
           </div>
         ) : (
           /* 10+ votes - Show full stats */
-          <div className="mb-4 p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-100 space-y-3">
+          <div className="mb-4 p-4 rounded-xl space-y-3" style={{ background: 'color-mix(in srgb, var(--color-rating) 15%, white)', border: '1px solid color-mix(in srgb, var(--color-rating) 30%, transparent)' }}>
             {/* Worth-It Badge with Emoji */}
-            <div className="flex items-center justify-center gap-2 pb-2 border-b border-orange-200/50">
+            <div className="flex items-center justify-center gap-2 pb-2" style={{ borderBottom: '1px solid color-mix(in srgb, var(--color-rating) 25%, transparent)' }}>
               <span className="text-2xl">{badge.emoji}</span>
               <span className="text-lg font-bold text-neutral-800">{badge.label}</span>
             </div>
@@ -151,8 +151,8 @@ export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFa
             </div>
 
             {/* Vote count */}
-            <div className="text-center pt-2 border-t border-orange-200/50">
-              <span className="text-xs text-neutral-500 font-medium">
+            <div className="text-center pt-2" style={{ borderTop: '1px solid color-mix(in srgb, var(--color-rating) 25%, transparent)' }}>
+              <span className="text-xs font-medium" style={{ color: 'var(--color-text-tertiary)' }}>
                 {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
               </span>
             </div>

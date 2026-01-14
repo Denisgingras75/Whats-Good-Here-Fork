@@ -64,10 +64,11 @@ export function CategoryFilter({ selectedCategory, onSelectCategory }) {
                   focus-ring
                   ${
                     selectedCategory === category.id
-                      ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30 scale-105'
-                      : 'bg-white text-neutral-700 border border-neutral-200 hover:border-orange-300 hover:bg-orange-50 shadow-sm'
+                      ? 'text-white shadow-lg scale-105'
+                      : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 shadow-sm'
                   }
                 `}
+                style={selectedCategory === category.id ? { background: 'var(--color-primary)' } : {}}
               >
                 <img
                   src={category.id ? getCategoryImage(category.id) : DEFAULT_DISH_IMAGE}

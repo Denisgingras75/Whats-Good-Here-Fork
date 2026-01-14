@@ -143,14 +143,14 @@ export function FoodRatingSlider({ value, onChange, min = 0, max = 10, step = 0.
           step={step}
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value))}
-          className="w-full h-3 bg-gradient-to-r from-red-300 via-yellow-300 to-emerald-400 rounded-full appearance-none cursor-pointer
+          className="rating-slider w-full h-3 bg-gradient-to-r from-red-300 via-yellow-300 to-emerald-400 rounded-full appearance-none cursor-pointer
             [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-9 [&::-webkit-slider-thumb]:h-9
-            [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-orange-500 [&::-webkit-slider-thumb]:shadow-xl
+            [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-xl
             [&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:cursor-pointer
-            [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:hover:bg-orange-600
+            [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:hover:scale-110
             [&::-webkit-slider-thumb]:active:scale-95
             [&::-moz-range-thumb]:w-9 [&::-moz-range-thumb]:h-9 [&::-moz-range-thumb]:rounded-full
-            [&::-moz-range-thumb]:bg-orange-500 [&::-moz-range-thumb]:shadow-xl [&::-moz-range-thumb]:border-4
+            [&::-moz-range-thumb]:shadow-xl [&::-moz-range-thumb]:border-4
             [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-pointer"
         />
         <div className="flex justify-between text-xs text-neutral-400 mt-2 px-1">

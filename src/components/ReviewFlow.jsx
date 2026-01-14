@@ -225,7 +225,8 @@ export function ReviewFlow({ dishId, dishName, category, totalVotes = 0, yesVote
 
         <button
           onClick={handleRatingNext}
-          className="w-full py-4 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-orange-500 to-amber-500 shadow-lg shadow-orange-500/30 transition-all duration-200 ease-out focus-ring active:scale-98 hover:shadow-xl"
+          className="w-full py-4 px-6 rounded-xl font-semibold text-white shadow-lg transition-all duration-200 ease-out focus-ring active:scale-98 hover:shadow-xl hover:opacity-90"
+          style={{ background: 'var(--color-primary)' }}
         >
           Next
         </button>

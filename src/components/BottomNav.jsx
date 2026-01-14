@@ -51,10 +51,13 @@ export function BottomNav() {
             className={({ isActive }) =>
               `flex flex-col items-center justify-center flex-1 h-full transition-colors ${
                 isActive
-                  ? 'text-orange-500'
-                  : 'text-neutral-400 hover:text-neutral-600'
+                  ? ''
+                  : 'hover:opacity-80'
               }`
             }
+            style={({ isActive }) => ({
+              color: isActive ? 'var(--color-primary)' : 'var(--color-text-tertiary)'
+            })}
           >
             {tab.icon}
             <span className="text-xs font-medium mt-1">{tab.label}</span>

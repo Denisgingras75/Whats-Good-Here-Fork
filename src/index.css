@@ -1,5 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@700&display=swap');
 
+/* ===========================
+   What's Good Here — Color Tokens
+   =========================== */
+:root {
+  /* Brand / action */
+  --color-primary: #F47A1F;
+
+  /* Ratings / success (info, not action) */
+  --color-rating: #E6B84C;
+
+  /* Text hierarchy */
+  --color-text-primary: #1F1F1F;
+  --color-text-secondary: #6B6B6B;
+  --color-text-tertiary: #9A9A9A;
+
+  /* Surfaces */
+  --color-bg: #FFFFFF;
+  --color-surface: #FAFAFA;
+  --color-divider: #EDEDED;
+
+  /* Destructive */
+  --color-danger: #D64545;
+
+  /* Focus ring helper */
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,7 +44,9 @@
   }
 
   body {
-    @apply m-0 min-h-screen bg-stone-50 text-neutral-900;
+    @apply m-0 min-h-screen;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     overscroll-behavior-y: none;
   }
@@ -102,7 +131,20 @@
   }
 
   .focus-ring {
-    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+    --tw-ring-color: var(--color-primary);
+  }
+
+  /* Rating slider thumb uses primary color */
+  .rating-slider::-webkit-slider-thumb {
+    background: var(--color-primary) !important;
+  }
+  .rating-slider::-webkit-slider-thumb:hover {
+    background: var(--color-primary) !important;
+    filter: brightness(0.9);
+  }
+  .rating-slider::-moz-range-thumb {
+    background: var(--color-primary) !important;
   }
 }
 

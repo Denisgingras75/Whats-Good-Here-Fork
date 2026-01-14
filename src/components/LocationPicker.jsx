@@ -13,7 +13,7 @@ export function LocationPicker({ radius, onRadiusChange, location, error }) {
             </div>
           ) : location ? (
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-sm">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-sm" style={{ background: 'var(--color-primary)' }}>
                 <span className="text-white text-sm">📍</span>
               </div>
               <p className="text-sm font-semibold text-neutral-900">Near you</p>
@@ -46,7 +46,7 @@ export function LocationPicker({ radius, onRadiusChange, location, error }) {
                 rounded-lg
                 text-sm font-semibold
                 focus-ring
-                hover:border-orange-300
+                hover:border-neutral-300
                 transition-colors
                 cursor-pointer
               "

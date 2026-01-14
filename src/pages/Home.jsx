@@ -89,7 +89,8 @@ export function Home() {
           {/* CTA Button */}
           <button
             onClick={() => navigate('/browse')}
-            className="w-full max-w-xs px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-amber-600 transition-all shadow-lg shadow-orange-500/30"
+            className="w-full max-w-xs px-6 py-3 text-white font-semibold rounded-xl hover:opacity-90 transition-all shadow-lg"
+            style={{ background: 'var(--color-primary)' }}
           >
             Find food near me
           </button>
@@ -146,7 +147,7 @@ export function Home() {
                 </h2>
                 <button
                   onClick={() => handleCategoryClick(category.id)}
-                  className="text-orange-500 text-sm font-semibold"
+                  className="text-sm font-semibold" style={{ color: 'var(--color-text-secondary)' }}
                 >
                   See all →
                 </button>
@@ -190,7 +191,7 @@ export function Home() {
             </h2>
             <button
               onClick={() => navigate('/browse')}
-              className="text-orange-500 text-sm font-semibold"
+              className="text-sm font-semibold" style={{ color: 'var(--color-text-secondary)' }}
             >
               See all →
             </button>
@@ -290,14 +291,14 @@ function DishCard({ dish, onClick }) {
 
         {/* Rating Badge */}
         {total_votes > 0 ? (
-          <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
-            <span className="text-emerald-500 text-xs">👍</span>
-            <span className="text-xs font-bold text-neutral-900">
+          <div className="absolute top-2 right-2 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm" style={{ background: 'color-mix(in srgb, var(--color-rating) 18%, white)', border: '1px solid color-mix(in srgb, var(--color-rating) 35%, transparent)' }}>
+            <span className="text-xs">👍</span>
+            <span className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>
               {Math.round(percent_worth_it)}%
             </span>
           </div>
         ) : (
-          <div className="absolute top-2 right-2 bg-orange-500 px-2 py-1 rounded-full shadow-sm">
+          <div className="absolute top-2 right-2 px-2 py-1 rounded-full shadow-sm" style={{ background: 'var(--color-primary)' }}>
             <span className="text-xs font-medium text-white">Be first to rate!</span>
           </div>
         )}

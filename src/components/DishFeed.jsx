@@ -6,7 +6,7 @@ export function DishFeed({ dishes, loading, error, onVote, onLoginRequired, sele
       <div className="flex flex-col items-center justify-center py-20 px-4">
         <div className="relative w-20 h-20 mb-6">
           {/* Animated food icon */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 animate-pulse" />
+          <div className="absolute inset-0 rounded-full animate-pulse" style={{ background: 'var(--color-primary)' }} />
           <div className="absolute inset-2 rounded-full bg-white flex items-center justify-center">
             <span className="text-3xl">🍽️</span>
           </div>
@@ -55,7 +55,8 @@ export function DishFeed({ dishes, loading, error, onVote, onLoginRequired, sele
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-amber-600 transition-all shadow-lg shadow-orange-500/30 focus-ring"
+              className="px-6 py-3 text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg focus-ring"
+              style={{ background: 'var(--color-primary)' }}
             >
               Refresh
             </button>

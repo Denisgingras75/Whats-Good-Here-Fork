@@ -132,7 +132,8 @@ export function Browse() {
               placeholder="Search dishes or restaurants..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-10 py-3 bg-neutral-100 rounded-xl border-0 focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all"
+              className="w-full pl-10 pr-10 py-3 bg-neutral-100 rounded-xl border-0 focus:ring-2 focus:bg-white transition-all"
+              style={{ '--tw-ring-color': 'var(--color-primary)' }}
             />
             {searchQuery && (
               <button
@@ -158,9 +159,10 @@ export function Browse() {
               onClick={() => handleCategoryChange(category.id)}
               className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 selectedCategory === category.id
-                  ? 'bg-orange-500 text-white shadow-md'
+                  ? 'text-white shadow-md'
                   : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
               }`}
+              style={selectedCategory === category.id ? { background: 'var(--color-primary)' } : {}}
             >
               <span>{category.emoji}</span>
               <span>{category.label}</span>

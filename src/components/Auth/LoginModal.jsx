@@ -64,7 +64,7 @@ export function LoginModal({ isOpen, onClose }) {
         style={{ animationDelay: '0.1s' }}
       >
         {/* Decorative gradient header */}
-        <div className="h-2 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500" />
+        <div className="h-2" style={{ background: 'var(--color-primary)' }} />
 
         <div className="p-8">
           {/* Close button */}
@@ -87,7 +87,7 @@ export function LoginModal({ isOpen, onClose }) {
           </button>
 
           {/* Icon */}
-          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/30">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: 'var(--color-primary)' }}>
             <span className="text-3xl">🍽️</span>
           </div>
 
@@ -194,15 +194,15 @@ export function LoginModal({ isOpen, onClose }) {
               disabled={loading}
               className="
                 w-full px-6 py-4
-                bg-gradient-to-r from-orange-500 to-amber-500
                 text-white font-semibold rounded-xl
-                hover:from-orange-600 hover:to-amber-600
+                hover:opacity-90
                 active:scale-98
                 transition-all duration-200
                 focus-ring
                 disabled:opacity-50 disabled:cursor-not-allowed
-                shadow-lg shadow-orange-500/30
+                shadow-lg
               "
+              style={{ background: 'var(--color-primary)' }}
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">

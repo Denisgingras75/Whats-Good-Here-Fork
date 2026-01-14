@@ -121,7 +121,7 @@ export function Profile() {
   if (loading) {
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
       </div>
     )
   }
@@ -141,7 +141,7 @@ export function Profile() {
           <div className="bg-white border-b border-neutral-200 px-4 py-6">
             <div className="flex items-center gap-4">
               {/* Avatar */}
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg" style={{ background: 'var(--color-primary)' }}>
                 {profile?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
               </div>
 
@@ -158,7 +158,8 @@ export function Profile() {
                     />
                     <button
                       onClick={handleSaveName}
-                      className="px-3 py-1.5 bg-orange-500 text-white rounded-lg text-sm font-medium"
+                      className="px-3 py-1.5 text-white rounded-lg text-sm font-medium"
+                      style={{ background: 'var(--color-primary)' }}
                     >
                       Save
                     </button>
@@ -166,7 +167,8 @@ export function Profile() {
                 ) : (
                   <button
                     onClick={() => setEditingName(true)}
-                    className="text-xl font-bold text-neutral-900 hover:text-orange-600 transition-colors flex items-center gap-2"
+                    className="text-xl font-bold transition-colors flex items-center gap-2"
+                    style={{ color: 'var(--color-text-primary)' }}
                   >
                     {profile?.display_name || 'Set your name'}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-neutral-400">
@@ -183,7 +185,7 @@ export function Profile() {
 
                 {/* Local Badge */}
                 {stats.totalVotes >= 10 && (
-                  <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 rounded-full text-xs font-semibold">
+                  <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-xs font-semibold" style={{ background: 'color-mix(in srgb, var(--color-rating) 20%, white)', color: 'var(--color-text-primary)' }}>
                     <span>🏝️</span>
                     <span>Martha's Vineyard Local</span>
                   </div>
@@ -203,7 +205,7 @@ export function Profile() {
                   <div className="text-xs text-neutral-500">Avoid</div>
                 </div>
                 <div className="bg-neutral-50 rounded-xl p-3 text-center">
-                  <div className="text-2xl font-bold text-orange-500">
+                  <div className="text-2xl font-bold" style={{ color: 'var(--color-rating)' }}>
                     {stats.avgRating ? stats.avgRating.toFixed(1) : '—'}
                   </div>
                   <div className="text-xs text-neutral-500">Avg Rating</div>
@@ -237,9 +239,10 @@ export function Profile() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                     activeTab === tab.id
-                      ? 'bg-orange-500 text-white shadow-md'
+                      ? 'text-white shadow-md'
                       : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
                   }`}
+                  style={activeTab === tab.id ? { background: 'var(--color-primary)' } : {}}
                 >
                   <span>{tab.emoji}</span>
                   <span>{tab.label}</span>
@@ -297,7 +300,7 @@ export function Profile() {
                   </div>
                   <span className="font-medium text-neutral-900">Bite Sounds</span>
                 </div>
-                <div className={`w-12 h-7 rounded-full transition-colors ${soundMuted ? 'bg-neutral-200' : 'bg-orange-500'}`}>
+                <div className={`w-12 h-7 rounded-full transition-colors ${soundMuted ? 'bg-neutral-200' : ''}`} style={!soundMuted ? { background: 'var(--color-primary)' } : {}}>
                   <div className={`w-5 h-5 rounded-full bg-white shadow-sm transform transition-transform mt-1 ${soundMuted ? 'ml-1' : 'ml-6'}`} />
                 </div>
               </button>
@@ -320,7 +323,7 @@ export function Profile() {
         <div className="p-4">
           <div className="bg-white rounded-2xl border border-neutral-200 p-6">
             <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--color-primary)' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-white">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
@@ -378,7 +381,8 @@ export function Profile() {
               <button
                 type="submit"
                 disabled={authLoading}
-                className="w-full px-4 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-amber-600 transition-all disabled:opacity-50"
+                className="w-full px-4 py-3 text-white font-semibold rounded-xl hover:opacity-90 transition-all disabled:opacity-50"
+                style={{ background: 'var(--color-primary)' }}
               >
                 {authLoading ? 'Sending...' : 'Send Magic Link'}
               </button>
@@ -415,7 +419,7 @@ function ProfileDishCard({ dish, tab, onUnsave }) {
         <div className="flex items-center justify-between">
           {/* Rating if available */}
           {dish.rating_10 && (
-            <span className="text-sm font-semibold text-orange-500">{dish.rating_10}/10</span>
+            <span className="text-sm font-semibold" style={{ color: 'var(--color-rating)' }}>{dish.rating_10}/10</span>
           )}
 
           {/* Tab-specific indicator */}
