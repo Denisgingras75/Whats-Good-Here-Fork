@@ -71,15 +71,40 @@ export function Home() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Header */}
-      <header className="bg-white border-b border-neutral-200 px-4 py-4">
-        <div className="flex flex-col items-center">
+      {/* Hero Section */}
+      <header className="bg-white border-b border-neutral-200 px-4 py-6">
+        <div className="flex flex-col items-center text-center">
           <img
             src="/logo.png"
             alt="What's Good Here"
-            className="h-32 w-auto"
+            className="h-16 w-auto mb-4"
           />
-          <p className="text-xs text-neutral-500 mt-1">Martha's Vineyard</p>
+          <h1 className="text-2xl font-bold text-neutral-900 font-serif mb-2">
+            Find the best dishes near you.
+          </h1>
+          <p className="text-neutral-600 mb-6 max-w-xs">
+            Real ratings by people on Martha's Vineyard.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+            <button
+              onClick={() => navigate('/browse')}
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-amber-600 transition-all shadow-lg shadow-orange-500/30"
+            >
+              Find food near me
+            </button>
+            <button
+              onClick={() => {
+                const firstDish = topDishes[0]
+                if (firstDish) setSelectedDish(firstDish)
+                else navigate('/browse')
+              }}
+              className="flex-1 px-6 py-3 bg-white border-2 border-neutral-200 text-neutral-700 font-semibold rounded-xl hover:border-orange-300 hover:bg-orange-50 transition-all"
+            >
+              Rate a dish
+            </button>
+          </div>
         </div>
       </header>
 
