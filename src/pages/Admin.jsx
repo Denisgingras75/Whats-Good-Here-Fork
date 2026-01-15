@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { restaurantsApi, adminApi } from '../api'
 import { CATEGORY_IMAGES } from '../constants/categoryImages'
 
 const CATEGORIES = Object.keys(CATEGORY_IMAGES)
@@ -25,37 +25,23 @@ export function Admin() {
   }, [])
 
   async function fetchRestaurants() {
-    const { data, error } = await supabase
-      .from('restaurants')
-      .select('id, name, address')
-      .eq('is_open', true)
-      .order('name')
-
-    if (error) {
+    try {
+      const data = await restaurantsApi.getOpen()
+      setRestaurants(data)
+    } catch (error) {
       console.error('Error fetching restaurants:', error)
       setMessage({ type: 'error', text: 'Failed to load restaurants' })
-    } else {
-      setRestaurants(data || [])
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   async function fetchRecentDishes() {
-    const { data, error } = await supabase
-      .from('dishes')
-      .select(`
-        id,
-        name,
-        category,
-        price,
-        created_at,
-        restaurants (name)
-      `)
-      .order('created_at', { ascending: false })
-      .limit(10)
-
-    if (!error && data) {
+    try {
+      const data = await adminApi.getRecentDishes(10)
       setRecentDishes(data)
+    } catch (error) {
+      console.error('Error fetching recent dishes:', error)
     }
   }
 
@@ -70,21 +56,14 @@ export function Admin() {
     setSubmitting(true)
     setMessage(null)
 
-    const { data, error } = await supabase
-      .from('dishes')
-      .insert({
-        restaurant_id: restaurantId,
-        name: dishName.trim(),
-        category: category.toLowerCase(),
+    try {
+      await adminApi.addDish({
+        restaurantId,
+        name: dishName,
+        category,
         price: price ? parseFloat(price) : null,
-        photo_url: photoUrl.trim() || null,
+        photoUrl,
       })
-      .select()
-
-    if (error) {
-      console.error('Error adding dish:', error)
-      setMessage({ type: 'error', text: `Failed to add dish: ${error.message}` })
-    } else {
       setMessage({ type: 'success', text: `Added "${dishName}" successfully!` })
       // Reset form
       setDishName('')
@@ -92,24 +71,24 @@ export function Admin() {
       setPhotoUrl('')
       // Refresh recent dishes
       fetchRecentDishes()
+    } catch (error) {
+      console.error('Error adding dish:', error)
+      setMessage({ type: 'error', text: `Failed to add dish: ${error.message}` })
+    } finally {
+      setSubmitting(false)
     }
-
-    setSubmitting(false)
   }
 
   async function handleDelete(dishId, dishName) {
     if (!confirm(`Delete "${dishName}"? This cannot be undone.`)) return
 
-    const { error } = await supabase
-      .from('dishes')
-      .delete()
-      .eq('id', dishId)
-
-    if (error) {
-      setMessage({ type: 'error', text: `Failed to delete: ${error.message}` })
-    } else {
+    try {
+      await adminApi.deleteDish(dishId)
       setMessage({ type: 'success', text: `Deleted "${dishName}"` })
       fetchRecentDishes()
+    } catch (error) {
+      console.error('Error deleting dish:', error)
+      setMessage({ type: 'error', text: `Failed to delete: ${error.message}` })
     }
   }
 

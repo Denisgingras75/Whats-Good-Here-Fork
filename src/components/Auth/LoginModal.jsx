@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { supabase } from '../../lib/supabase'
+import { authApi } from '../../api'
 import { getPendingVoteFromStorage } from '../ReviewFlow'
 
 export function LoginModal({ isOpen, onClose }) {
@@ -21,13 +21,7 @@ export function LoginModal({ isOpen, onClose }) {
         redirectUrl.searchParams.set('votingDish', pending.dishId)
       }
 
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectUrl.toString(),
-        },
-      })
-      if (error) throw error
+      await authApi.signInWithGoogle(redirectUrl.toString())
     } catch (error) {
       setMessage({ type: 'error', text: error.message })
       setLoading(false)
@@ -46,14 +40,7 @@ export function LoginModal({ isOpen, onClose }) {
         redirectUrl.searchParams.set('votingDish', pending.dishId)
       }
 
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: redirectUrl.toString(),
-        },
-      })
-
-      if (error) throw error
+      await authApi.signInWithMagicLink(email, redirectUrl.toString())
 
       setMessage({
         type: 'success',

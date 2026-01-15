@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { supabase } from '../lib/supabase'
+import { restaurantsApi } from '../api'
 import { useLocationContext } from '../context/LocationContext'
 import { useDishes } from '../hooks/useDishes'
 import { useSavedDishes } from '../hooks/useSavedDishes'
@@ -28,27 +28,14 @@ export function Restaurants() {
   useEffect(() => {
     async function fetchRestaurants() {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('restaurants')
-        .select(`
-          id,
-          name,
-          address,
-          lat,
-          lng,
-          dishes (id)
-        `)
-        .order('name')
-
-      if (!error && data) {
-        // Transform to include dish count
-        const restaurantsWithCounts = data.map(r => ({
-          ...r,
-          dishCount: r.dishes?.length || 0
-        }))
-        setRestaurants(restaurantsWithCounts)
+      try {
+        const data = await restaurantsApi.getAll()
+        setRestaurants(data)
+      } catch (error) {
+        console.error('Error fetching restaurants:', error)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     fetchRestaurants()
   }, [])

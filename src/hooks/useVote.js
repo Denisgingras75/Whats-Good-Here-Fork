@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { votesApi } from '../api'
 
 export function useVote() {
   const [submitting, setSubmitting] = useState(false)
@@ -11,31 +11,11 @@ export function useVote() {
       setSubmitting(true)
       setError(null)
 
-      // Check if user is authenticated
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (!user) {
-        throw new Error('You must be logged in to vote')
-      }
-
-      // Upsert vote with both fields
-      const { error: voteError } = await supabase
-        .from('votes')
-        .upsert(
-          {
-            dish_id: dishId,
-            user_id: user.id,
-            would_order_again: wouldOrderAgain,
-            rating_10: rating10,
-          },
-          {
-            onConflict: 'dish_id,user_id',
-          }
-        )
-
-      if (voteError) {
-        throw voteError
-      }
+      await votesApi.submitVote({
+        dishId,
+        wouldOrderAgain,
+        rating10,
+      })
 
       return { success: true }
     } catch (err) {
@@ -49,24 +29,7 @@ export function useVote() {
 
   const getUserVotes = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return {}
-
-      const { data, error } = await supabase
-        .from('votes')
-        .select('dish_id, would_order_again, rating_10')
-        .eq('user_id', user.id)
-
-      if (error) throw error
-
-      // Return as a map for easy lookup
-      return data.reduce((acc, vote) => {
-        acc[vote.dish_id] = {
-          wouldOrderAgain: vote.would_order_again,
-          rating10: vote.rating_10,
-        }
-        return acc
-      }, {})
+      return await votesApi.getUserVotes()
     } catch (err) {
       console.error('Error fetching user votes:', err)
       return {}

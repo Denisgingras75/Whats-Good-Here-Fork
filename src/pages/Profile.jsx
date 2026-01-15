@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { supabase } from '../lib/supabase'
+import { authApi } from '../api'
 import { useProfile } from '../hooks/useProfile'
 import { useUserVotes } from '../hooks/useUserVotes'
 import { useSavedDishes } from '../hooks/useSavedDishes'
@@ -48,13 +48,9 @@ export function Profile() {
 
   const handleGoogleSignIn = async () => {
     setAuthLoading(true)
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.href
-      }
-    })
-    if (error) {
+    try {
+      await authApi.signInWithGoogle(window.location.href)
+    } catch (error) {
       setMessage({ type: 'error', text: error.message })
       setAuthLoading(false)
     }
@@ -63,20 +59,16 @@ export function Profile() {
   const handleEmailSignIn = async (e) => {
     e.preventDefault()
     setAuthLoading(true)
-    // Use current page URL so user returns to the same place after login
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: window.location.href
-      }
-    })
-    if (error) {
-      setMessage({ type: 'error', text: error.message })
-    } else {
+    try {
+      // Use current page URL so user returns to the same place after login
+      await authApi.signInWithMagicLink(email, window.location.href)
       setMessage({ type: 'success', text: 'Check your email for a magic link!' })
       setEmail('')
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message })
+    } finally {
+      setAuthLoading(false)
     }
-    setAuthLoading(false)
   }
 
   const handleSaveName = async () => {

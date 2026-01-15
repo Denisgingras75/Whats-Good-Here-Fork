@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { authApi } from '../api'
 import { useAuth } from '../context/AuthContext'
 
 export function Login() {
@@ -21,13 +21,7 @@ export function Login() {
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin,
-        },
-      })
-      if (error) throw error
+      await authApi.signInWithGoogle()
     } catch (error) {
       setMessage({ type: 'error', text: error.message })
       setLoading(false)
@@ -38,13 +32,7 @@ export function Login() {
     e.preventDefault()
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: window.location.origin,
-        },
-      })
-      if (error) throw error
+      await authApi.signInWithMagicLink(email)
       setMessage({
         type: 'success',
         text: 'Check your email for the login link!',

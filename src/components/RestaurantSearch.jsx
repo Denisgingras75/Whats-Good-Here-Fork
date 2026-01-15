@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { supabase } from '../lib/supabase'
+import { restaurantsApi } from '../api'
 
 export function RestaurantSearch({ selectedRestaurant, onSelectRestaurant, onClearRestaurant }) {
   const [searchQuery, setSearchQuery] = useState('')
@@ -10,12 +10,13 @@ export function RestaurantSearch({ selectedRestaurant, onSelectRestaurant, onCle
   // Fetch all restaurants on mount
   useEffect(() => {
     async function fetchRestaurants() {
-      const { data } = await supabase
-        .from('restaurants')
-        .select('id, name')
-        .order('name')
-
-      setRestaurants(data || [])
+      try {
+        const data = await restaurantsApi.getAll()
+        // Extract just id and name for search
+        setRestaurants(data.map(r => ({ id: r.id, name: r.name })))
+      } catch (error) {
+        console.error('Error fetching restaurants:', error)
+      }
     }
     fetchRestaurants()
   }, [])

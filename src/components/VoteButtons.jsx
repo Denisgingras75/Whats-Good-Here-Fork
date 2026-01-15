@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useVote } from '../hooks/useVote'
-import { supabase } from '../lib/supabase'
+import { authApi } from '../api'
 
 export function VoteButtons({ dishId, onVote, onLoginRequired }) {
   const { user } = useAuth()
@@ -17,15 +17,13 @@ export function VoteButtons({ dishId, onVote, onLoginRequired }) {
         return
       }
 
-      const { data } = await supabase
-        .from('votes')
-        .select('would_order_again')
-        .eq('dish_id', dishId)
-        .eq('user_id', user.id)
-        .single()
-
-      if (data) {
-        setUserVote(data.would_order_again)
+      try {
+        const vote = await authApi.getUserVoteForDish(dishId, user.id)
+        if (vote) {
+          setUserVote(vote.would_order_again)
+        }
+      } catch (error) {
+        console.error('Error fetching user vote:', error)
       }
     }
 

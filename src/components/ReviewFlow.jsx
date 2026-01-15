@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useVote } from '../hooks/useVote'
-import { supabase } from '../lib/supabase'
+import { authApi } from '../api'
 import { FoodRatingSlider } from './FoodRatingSlider'
 
 // Helper to get/set pending vote from localStorage (survives OAuth redirect)
@@ -79,16 +79,15 @@ export function ReviewFlow({ dishId, dishName, category, totalVotes = 0, yesVote
         setUserRating(null)
         return
       }
-      const { data } = await supabase
-        .from('votes')
-        .select('would_order_again, rating_10')
-        .eq('dish_id', dishId)
-        .eq('user_id', user.id)
-        .single()
-      if (data) {
-        setUserVote(data.would_order_again)
-        setUserRating(data.rating_10)
-        if (data.rating_10) setSliderValue(data.rating_10)
+      try {
+        const vote = await authApi.getUserVoteForDish(dishId, user.id)
+        if (vote) {
+          setUserVote(vote.would_order_again)
+          setUserRating(vote.rating_10)
+          if (vote.rating_10) setSliderValue(vote.rating_10)
+        }
+      } catch (error) {
+        console.error('Error fetching user vote:', error)
       }
     }
     fetchUserVote()

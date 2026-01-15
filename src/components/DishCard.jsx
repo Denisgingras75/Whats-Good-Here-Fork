@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { ReviewFlow } from './ReviewFlow'
 import { getWorthItBadge, formatScore10, calculateWorthItScore10 } from '../utils/ranking'
 import { getCategoryImage } from '../constants/categoryImages'
-import { supabase } from '../lib/supabase'
 
 export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFavorite }) {
   const {

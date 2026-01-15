@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { dishesApi } from '../api'
+import { withRetry, getUserMessage } from '../utils/errorHandler'
 
 export function useDishes(location, radius, category = null, restaurantId = null) {
   const [dishes, setDishes] = useState([])
@@ -14,71 +15,34 @@ export function useDishes(location, radius, category = null, restaurantId = null
         setLoading(true)
         setError(null)
 
-        // If restaurant is selected, fetch dishes directly from the dishes table
-        if (restaurantId) {
-          let query = supabase
-            .from('dishes')
-            .select(`
-              id,
-              name,
-              category,
-              price,
-              photo_url,
-              restaurant_id,
-              restaurants!inner (
-                id,
-                name,
-                address,
-                lat,
-                lng,
-                is_open
-              )
-            `)
-            .eq('restaurant_id', restaurantId)
-            .eq('restaurants.is_open', true)
-
-          // Apply category filter if selected
-          if (category) {
-            query = query.eq('category', category)
+        let data
+        try {
+          if (restaurantId) {
+            // Fetch dishes for a specific restaurant
+            data = await withRetry(() =>
+              dishesApi.getDishesForRestaurant({ restaurantId, category })
+            )
+          } else {
+            // Fetch ranked dishes by location
+            data = await withRetry(() =>
+              dishesApi.getRankedDishes({
+                lat: location.lat,
+                lng: location.lng,
+                radiusMiles: radius,
+                category,
+              })
+            )
           }
-
-          const { data: dishesData, error: dishesError } = await query
-
-          if (dishesError) throw dishesError
-
-          // Transform data to match the format from get_ranked_dishes
-          const transformedData = dishesData.map(dish => ({
-            dish_id: dish.id,
-            dish_name: dish.name,
-            restaurant_name: dish.restaurants.name,
-            category: dish.category,
-            price: dish.price,
-            photo_url: dish.photo_url,
-            total_votes: 0,
-            yes_votes: 0,
-            percent_worth_it: 0,
-            distance_miles: 0,
-          }))
-
-          setDishes(transformedData)
-        } else {
-          // Use the RPC function for location-based search
-          const { data, error: rpcError } = await supabase.rpc('get_ranked_dishes', {
-            user_lat: location.lat,
-            user_lng: location.lng,
-            radius_miles: radius,
-            filter_category: category,
-          })
-
-          if (rpcError) {
-            throw rpcError
-          }
-
           setDishes(data || [])
+        } catch (apiError) {
+          const errorMessage = getUserMessage(apiError, 'loading dishes')
+          setError({
+            message: errorMessage,
+            originalError: apiError,
+            type: apiError.type,
+          })
+          console.error('Error fetching dishes:', apiError)
         }
-      } catch (err) {
-        console.error('Error fetching dishes:', err)
-        setError(err.message)
       } finally {
         setLoading(false)
       }
@@ -93,64 +57,32 @@ export function useDishes(location, radius, category = null, restaurantId = null
     try {
       setLoading(true)
 
+      let data
       if (restaurantId) {
-        let query = supabase
-          .from('dishes')
-          .select(`
-            id,
-            name,
-            category,
-            price,
-            photo_url,
-            restaurant_id,
-            restaurants!inner (
-              id,
-              name,
-              address,
-              lat,
-              lng,
-              is_open
-            )
-          `)
-          .eq('restaurant_id', restaurantId)
-          .eq('restaurants.is_open', true)
-
-        if (category) {
-          query = query.eq('category', category)
-        }
-
-        const { data: dishesData, error: dishesError } = await query
-
-        if (dishesError) throw dishesError
-
-        const transformedData = dishesData.map(dish => ({
-          dish_id: dish.id,
-          dish_name: dish.name,
-          restaurant_name: dish.restaurants.name,
-          category: dish.category,
-          price: dish.price,
-          photo_url: dish.photo_url,
-          total_votes: 0,
-          yes_votes: 0,
-          percent_worth_it: 0,
-          distance_miles: 0,
-        }))
-
-        setDishes(transformedData)
+        data = await withRetry(() =>
+          dishesApi.getDishesForRestaurant({ restaurantId, category })
+        )
       } else {
-        const { data, error: rpcError } = await supabase.rpc('get_ranked_dishes', {
-          user_lat: location.lat,
-          user_lng: location.lng,
-          radius_miles: radius,
-          filter_category: category,
-        })
-
-        if (rpcError) throw rpcError
-        setDishes(data || [])
+        data = await withRetry(() =>
+          dishesApi.getRankedDishes({
+            lat: location.lat,
+            lng: location.lng,
+            radiusMiles: radius,
+            category,
+          })
+        )
       }
+
+      setDishes(data || [])
+      setError(null)
     } catch (err) {
+      const errorMessage = getUserMessage(err, 'refreshing dishes')
+      setError({
+        message: errorMessage,
+        originalError: err,
+        type: err.type,
+      })
       console.error('Error refetching dishes:', err)
-      setError(err.message)
     } finally {
       setLoading(false)
     }
