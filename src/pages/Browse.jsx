@@ -9,6 +9,9 @@ import { DishModal } from '../components/DishModal'
 import { getPendingVoteFromStorage } from '../components/ReviewFlow'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { DishCardSkeleton } from '../components/Skeleton'
+import { ImpactFeedback, getImpactMessage } from '../components/ImpactFeedback'
+
+const MIN_VOTES_FOR_RANKING = 5
 
 const CATEGORIES = [
   { id: null, label: 'All', emoji: '🍽️' },
@@ -42,7 +45,10 @@ export function Browse() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
   const [loginModalOpen, setLoginModalOpen] = useState(false)
   const [selectedDish, setSelectedDish] = useState(null)
+  const [impactFeedback, setImpactFeedback] = useState(null)
+  const [pendingVoteData, setPendingVoteData] = useState(null)
   const categoryScrollRef = useRef(null)
+  const beforeVoteRef = useRef(null)
 
   // Handle category from URL params (when coming from home page)
   useEffect(() => {
@@ -68,6 +74,24 @@ export function Browse() {
     null
   )
   const { isSaved, toggleSave } = useSavedDishes(user?.id)
+
+  // Helper to find dish rank in current list
+  const getDishRank = (dishId, dishList) => {
+    const ranked = dishList?.filter(d => (d.total_votes || 0) >= MIN_VOTES_FOR_RANKING) || []
+    const index = ranked.findIndex(d => d.dish_id === dishId)
+    return index === -1 ? 999 : index + 1
+  }
+
+  // Open dish modal and capture before state for impact calculation
+  const openDishModal = (dish) => {
+    beforeVoteRef.current = {
+      dish_id: dish.dish_id,
+      total_votes: dish.total_votes || 0,
+      percent_worth_it: dish.percent_worth_it || 0,
+      rank: getDishRank(dish.dish_id, dishes)
+    }
+    setSelectedDish(dish)
+  }
 
   // Auto-reopen modal after OAuth/magic link login if there's a pending vote
   useEffect(() => {
@@ -95,10 +119,31 @@ export function Browse() {
     }
 
     // Open modal immediately - dishes are guaranteed ready now
-    setSelectedDish(dish)
+    openDishModal(dish)
   }, [user, dishes])
 
+  // Calculate impact when dishes update after voting
+  useEffect(() => {
+    if (!pendingVoteData || !dishes?.length) return
+
+    const after = dishes.find(d => d.dish_id === pendingVoteData.dish_id)
+    if (!after) return
+
+    // Check if votes actually increased (data refreshed)
+    if (after.total_votes > pendingVoteData.total_votes) {
+      const afterRank = getDishRank(pendingVoteData.dish_id, dishes)
+      const impact = getImpactMessage(pendingVoteData, after, pendingVoteData.rank, afterRank)
+      setImpactFeedback(impact)
+      setPendingVoteData(null)
+    }
+  }, [dishes, pendingVoteData])
+
   const handleVote = () => {
+    // Store before data and mark as pending
+    if (beforeVoteRef.current) {
+      setPendingVoteData(beforeVoteRef.current)
+      beforeVoteRef.current = null
+    }
     refetch()
   }
 
@@ -263,7 +308,7 @@ export function Browse() {
               <BrowseCard
                 key={dish.dish_id}
                 dish={dish}
-                onClick={() => setSelectedDish(dish)}
+                onClick={() => openDishModal(dish)}
                 isFavorite={isSaved ? isSaved(dish.dish_id) : false}
                 onToggleFavorite={handleToggleSave}
               />
@@ -292,6 +337,12 @@ export function Browse() {
       <LoginModal
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
+      />
+
+      {/* Impact feedback toast */}
+      <ImpactFeedback
+        impact={impactFeedback}
+        onClose={() => setImpactFeedback(null)}
       />
     </div>
   )

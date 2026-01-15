@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useLocationContext } from '../context/LocationContext'
@@ -10,6 +10,7 @@ import { getPendingVoteFromStorage } from '../components/ReviewFlow'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { getCategoryImage } from '../constants/categoryImages'
 import { DishRowSkeleton } from '../components/Skeleton'
+import { ImpactFeedback, getImpactMessage } from '../components/ImpactFeedback'
 
 const TOP_COUNT = 10
 const MIN_VOTES_FOR_RANKING = 5
@@ -19,6 +20,8 @@ export function Home() {
   const { user } = useAuth()
   const [loginModalOpen, setLoginModalOpen] = useState(false)
   const [selectedDish, setSelectedDish] = useState(null)
+  const [impactFeedback, setImpactFeedback] = useState(null)
+  const beforeVoteRef = useRef(null)
 
   const {
     location,
@@ -51,6 +54,27 @@ export function Home() {
   const spotsRemaining = TOP_COUNT - topRanked.length
   const fillerDishes = unratedDishes.slice(0, spotsRemaining)
 
+  // Track when we're waiting for vote results
+  const [pendingVoteData, setPendingVoteData] = useState(null)
+
+  // Helper to find dish rank in current list
+  const getDishRank = (dishId, dishList) => {
+    const ranked = dishList?.filter(d => (d.total_votes || 0) >= MIN_VOTES_FOR_RANKING) || []
+    const index = ranked.findIndex(d => d.dish_id === dishId)
+    return index === -1 ? 999 : index + 1
+  }
+
+  // Open dish modal and capture before state for impact calculation
+  const openDishModal = (dish) => {
+    beforeVoteRef.current = {
+      dish_id: dish.dish_id,
+      total_votes: dish.total_votes || 0,
+      percent_worth_it: dish.percent_worth_it || 0,
+      rank: getDishRank(dish.dish_id, dishes)
+    }
+    setSelectedDish(dish)
+  }
+
   // Auto-reopen modal after OAuth/magic link login if there's a pending vote
   useEffect(() => {
     if (!user || !dishes?.length || selectedDish) return
@@ -77,10 +101,31 @@ export function Home() {
     }
 
     // Open modal immediately - dishes are guaranteed ready now
-    setSelectedDish(dish)
+    openDishModal(dish)
   }, [user, dishes])
 
+  // Calculate impact when dishes update after voting
+  useEffect(() => {
+    if (!pendingVoteData || !dishes?.length) return
+
+    const after = dishes.find(d => d.dish_id === pendingVoteData.dish_id)
+    if (!after) return
+
+    // Check if votes actually increased (data refreshed)
+    if (after.total_votes > pendingVoteData.total_votes) {
+      const afterRank = getDishRank(pendingVoteData.dish_id, dishes)
+      const impact = getImpactMessage(pendingVoteData, after, pendingVoteData.rank, afterRank)
+      setImpactFeedback(impact)
+      setPendingVoteData(null)
+    }
+  }, [dishes, pendingVoteData])
+
   const handleVote = () => {
+    // Store before data and mark as pending
+    if (beforeVoteRef.current) {
+      setPendingVoteData(beforeVoteRef.current)
+      beforeVoteRef.current = null
+    }
     refetch()
   }
 
@@ -176,7 +221,7 @@ export function Home() {
                 key={dish.dish_id}
                 dish={dish}
                 rank={index + 1}
-                onClick={() => setSelectedDish(dish)}
+                onClick={() => openDishModal(dish)}
                 isRanked={true}
               />
             ))}
@@ -198,7 +243,7 @@ export function Home() {
                 key={dish.dish_id}
                 dish={dish}
                 rank={topRanked.length + index + 1}
-                onClick={() => setSelectedDish(dish)}
+                onClick={() => openDishModal(dish)}
                 isRanked={false}
               />
             ))}
@@ -248,6 +293,12 @@ export function Home() {
       <LoginModal
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
+      />
+
+      {/* Impact feedback toast */}
+      <ImpactFeedback
+        impact={impactFeedback}
+        onClose={() => setImpactFeedback(null)}
       />
     </div>
   )

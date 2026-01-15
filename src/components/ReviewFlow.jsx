@@ -256,7 +256,7 @@ export function ReviewFlow({ dishId, dishName, category, totalVotes = 0, yesVote
             </span>
           </div>
         ) : !awaitingLogin ? (
-          <p className="text-xs text-neutral-400 text-center">No votes yet — be the first!</p>
+          <p className="text-xs text-neutral-400 text-center">Help rank this dish — be first to vote!</p>
         ) : null}
 
         <div className="grid grid-cols-2 gap-3">
@@ -305,7 +305,7 @@ export function ReviewFlow({ dishId, dishName, category, totalVotes = 0, yesVote
           <button onClick={() => setStep(1)} className="text-sm text-neutral-500 hover:text-neutral-700 transition-colors flex items-center gap-1">
             <span>←</span> Back
           </button>
-          <p className="text-sm font-medium text-neutral-600">Rate this dish</p>
+          <p className="text-sm font-medium text-neutral-600">How good was it?</p>
           <div className="w-12" />
         </div>
 
@@ -370,7 +370,7 @@ export function ReviewFlow({ dishId, dishName, category, totalVotes = 0, yesVote
         className={`w-full py-4 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30 transition-all duration-200 ease-out focus-ring
           ${submitting ? 'opacity-50 cursor-not-allowed' : 'active:scale-98 hover:shadow-xl'}`}
       >
-        {submitting ? 'Submitting...' : 'Submit Review'}
+        {submitting ? 'Adding vote...' : 'Add Your Vote'}
       </button>
 
       {/* Back button */}

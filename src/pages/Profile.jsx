@@ -159,17 +159,21 @@ export function Profile() {
                   </button>
                 )}
 
-                {/* Stats Row */}
+                {/* Contribution Stats */}
                 <p className="text-sm text-neutral-500 mt-1">
-                  {stats.totalVotes} votes · {savedDishes.length} saved
+                  {stats.totalVotes > 0
+                    ? `You've rated ${stats.totalVotes} ${stats.totalVotes === 1 ? 'dish' : 'dishes'}`
+                    : 'Start rating to help others'
+                  }
+                  {savedDishes.length > 0 && ` · ${savedDishes.length} saved`}
                   {memberSince && ` · Since ${memberSince}`}
                 </p>
 
-                {/* Local Badge */}
+                {/* Contributor Badge */}
                 {stats.totalVotes >= 10 && (
                   <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-xs font-semibold" style={{ background: 'color-mix(in srgb, var(--color-rating) 20%, white)', color: 'var(--color-text-primary)' }}>
                     <span>🏝️</span>
-                    <span>Martha's Vineyard Local</span>
+                    <span>MV Contributor</span>
                   </div>
                 )}
               </div>

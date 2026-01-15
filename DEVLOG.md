@@ -4,6 +4,21 @@ A shared log of what each contributor worked on. Add your entries at the top.
 
 ---
 
+## 2025-01-15 - Daniel (Session 2)
+
+### Gamification Phase 1 - Impact Visibility
+- Created `ImpactFeedback.jsx` component (toast notification after voting)
+- Added impact calculation to Home.jsx and Browse.jsx:
+  - Tracks dish state before/after vote
+  - Shows messages like "This dish is now ranked!", "Moved up 3 spots!", "2 more votes to qualify"
+- Updated `BrowseCard.jsx` with "X votes to rank" progress indicators
+- Updated `Profile.jsx` with contribution language ("You've rated X dishes", "MV Contributor" badge)
+- Updated `ReviewFlow.jsx` copy to contribution language:
+  - "Help rank this dish — be first to vote!"
+  - "Add Your Vote" instead of "Submit Review"
+
+---
+
 ## 2025-01-15 - Daniel
 
 ### API Layer Abstraction

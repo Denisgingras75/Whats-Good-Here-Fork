@@ -58,14 +58,17 @@ Ideas and features for future versions. Not prioritized yet.
 
 ## Gamification Framework
 
+**Bottom line:** Phase 1 gamification = visibility of impact + identity as a contributor.
+
 **Golden Rule:** If a mechanic risks inflating scores, biasing ratings, or low-effort behavior — it does not ship.
 
 **NOT building:** Streaks, leaderboards, XP/points, Yelp Elite nonsense
 
-**Phase 1 (Now):**
+**Phase 1 (Implemented):**
 - Impact feedback after rating ("This dish entered Top 10", "You moved this up 2 spots")
-- Contribution count on profile
-- "You helped shape this" messaging
+- Contribution count on profile ("You've rated X dishes")
+- "Needs X votes to rank" progress indicators
+- Contribution language throughout ("Add Your Vote", "Help rank this dish")
 
 **Phase 2 (After traction):**
 - Contribution levels: Explorer → Contributor → Tastemaker → Local Legend

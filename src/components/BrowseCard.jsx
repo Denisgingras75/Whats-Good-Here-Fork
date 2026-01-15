@@ -1,5 +1,7 @@
 import { getCategoryImage } from '../constants/categoryImages'
 
+const MIN_VOTES_FOR_RANKING = 5
+
 export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
   const {
     dish_id,
@@ -14,7 +16,8 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
   } = dish
 
   const imgSrc = photo_url || getCategoryImage(category)
-  const hasRating = total_votes >= 10
+  const isRanked = total_votes >= MIN_VOTES_FOR_RANKING
+  const votesNeeded = MIN_VOTES_FOR_RANKING - (total_votes || 0)
 
   return (
     <button
@@ -34,10 +37,16 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
         {/* Rating badge - bottom left */}
-        {hasRating && (
+        {isRanked ? (
           <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-sm">
             <span className="text-sm font-semibold text-white">
               👍 {Math.round(percent_worth_it)}%
+            </span>
+          </div>
+        ) : (
+          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-white/90 backdrop-blur-sm">
+            <span className="text-xs font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+              {votesNeeded > 0 ? `${votesNeeded} vote${votesNeeded > 1 ? 's' : ''} to rank` : 'Needs votes'}
             </span>
           </div>
         )}
@@ -112,9 +121,9 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
             {/* Rating info line */}
             <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
               {total_votes === 0
-                ? 'Be first to rate'
-                : total_votes < 10
-                  ? `${total_votes} ${total_votes === 1 ? 'vote' : 'votes'} so far`
+                ? 'Help rank this dish'
+                : !isRanked
+                  ? `${total_votes} of ${MIN_VOTES_FOR_RANKING} votes to rank`
                   : `${total_votes} votes`
               }
             </p>
