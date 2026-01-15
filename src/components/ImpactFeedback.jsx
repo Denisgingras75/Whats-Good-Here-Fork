@@ -61,6 +61,7 @@ export function getImpactMessage(before, after, beforeRank, afterRank) {
 
 /**
  * Impact feedback toast shown after voting
+ * Made prominent so users FEEL their impact
  */
 export function ImpactFeedback({ impact, onClose }) {
   const [visible, setVisible] = useState(false)
@@ -70,11 +71,11 @@ export function ImpactFeedback({ impact, onClose }) {
       // Animate in
       requestAnimationFrame(() => setVisible(true))
 
-      // Auto-close after 3 seconds
+      // Auto-close after 4 seconds (longer so user can read it)
       const timer = setTimeout(() => {
         setVisible(false)
-        setTimeout(onClose, 300) // Wait for fade out
-      }, 3000)
+        setTimeout(onClose, 400) // Wait for fade out
+      }, 4000)
 
       return () => clearTimeout(timer)
     }
@@ -83,23 +84,26 @@ export function ImpactFeedback({ impact, onClose }) {
   if (!impact) return null
 
   const bgColor = impact.type === 'milestone'
-    ? 'from-emerald-500 to-teal-500'
+    ? 'from-emerald-500 to-teal-600'
     : impact.type === 'movement'
-    ? 'from-blue-500 to-indigo-500'
-    : 'from-amber-500 to-orange-500'
+    ? 'from-blue-500 to-indigo-600'
+    : 'from-amber-500 to-orange-600'
 
   return (
     <div
-      className={`fixed inset-x-4 top-20 z-50 transition-all duration-300 ease-out ${
-        visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+      className={`fixed inset-x-0 top-0 z-[9999] flex items-start justify-center pt-6 px-4 transition-all duration-400 ease-out ${
+        visible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-8 scale-95'
       }`}
     >
-      <div className={`bg-gradient-to-r ${bgColor} rounded-2xl shadow-xl p-4 mx-auto max-w-sm`}>
-        <div className="flex items-center gap-3 text-white">
-          <span className="text-2xl">{impact.emoji}</span>
-          <div>
-            <p className="font-semibold">{impact.message}</p>
-            <p className="text-sm text-white/80">Your vote made a difference</p>
+      <div
+        className={`bg-gradient-to-r ${bgColor} rounded-2xl shadow-2xl p-5 w-full max-w-md border-2 border-white/20`}
+        style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.3)' }}
+      >
+        <div className="flex items-center gap-4 text-white">
+          <div className="text-5xl animate-bounce">{impact.emoji}</div>
+          <div className="flex-1">
+            <p className="font-bold text-xl">{impact.message}</p>
+            <p className="text-base text-white/90 mt-1">Your vote made a difference!</p>
           </div>
         </div>
       </div>
