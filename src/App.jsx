@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { LocationProvider } from './context/LocationContext'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { Layout } from './components/Layout'
 import { Home } from './pages/Home'
 import { Browse } from './pages/Browse'
@@ -18,7 +19,8 @@ function App() {
   }, [])
 
   return (
-    <AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
       <LocationProvider>
         <BrowserRouter>
           <Routes>
@@ -31,7 +33,8 @@ function App() {
           </Routes>
         </BrowserRouter>
       </LocationProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }
 
