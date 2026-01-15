@@ -4,6 +4,28 @@ A shared log of what each contributor worked on. Add your entries at the top.
 
 ---
 
+## 2025-01-15 - Daniel
+
+### API Layer Abstraction
+- Created `src/api/` folder with modular services
+- Added `dishesApi`, `restaurantsApi`, `votesApi`, `favoritesApi`, `adminApi`, `authApi`, `profileApi`
+- Central `index.js` exporter for clean imports
+
+### Error Handling
+- Added `src/utils/errorHandler.js` with error classification
+- User-friendly error messages for network, auth, timeout errors
+- Exponential backoff retry logic with `withRetry()`
+
+### Hook Migration
+- Migrated `useProfile`, `useUserVotes`, `useFavorites` to use API layer
+- No more direct Supabase calls outside of `src/api/` and `AuthContext`
+
+### Testing
+- Added `authApi.test.js` for auth API coverage
+- Upgraded `@testing-library/react` to v16 for React 19 support
+
+---
+
 ## 2025-01-14 - Daniel (Session 2)
 
 ### UX Improvements
