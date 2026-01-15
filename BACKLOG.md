@@ -33,6 +33,29 @@ Ideas and features for future versions. Not prioritized yet.
 
 ---
 
+## Pre-Launch Data Seeding
+
+**Goal:** Have enough real data that new users see value immediately.
+
+**Approach:** Founders rate 50+ dishes before public launch. These are real ratings, not fake seeds.
+
+**Why this works:**
+- 100% authentic data
+- No "disappearing ratings" confusion
+- Founders ARE users — this is dogfooding
+- No trust erosion later
+
+**Targets before launch:**
+- 50+ dish ratings across 10+ restaurants
+- Cover major categories (pizza, seafood, breakfast, etc.)
+- Hit the popular spots tourists will search for
+
+**Soft launch option:**
+- Invite 20 friends for 2 weeks before public launch
+- Get to 100+ ratings before marketing push
+
+---
+
 ## Gamification Framework
 
 **Golden Rule:** If a mechanic risks inflating scores, biasing ratings, or low-effort behavior — it does not ship.
