@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
 import { useUserVotes } from '../hooks/useUserVotes'
@@ -13,8 +14,7 @@ const TABS = [
 ]
 
 export function Profile() {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { user, loading, signOut } = useAuth()
   const [activeTab, setActiveTab] = useState('worth-it')
   const [soundMuted, setSoundMuted] = useState(isSoundMuted())
   const [authLoading, setAuthLoading] = useState(false)
@@ -26,20 +26,6 @@ export function Profile() {
   const { profile, updateProfile } = useProfile(user?.id)
   const { worthItDishes, avoidDishes, stats, loading: votesLoading } = useUserVotes(user?.id)
   const { savedDishes, loading: savedLoading, unsaveDish } = useSavedDishes(user?.id)
-
-  // Check auth state
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
-      setLoading(false)
-    })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
 
   // Set initial name for editing
   useEffect(() => {
@@ -54,7 +40,7 @@ export function Profile() {
   }
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
+    await signOut()
   }
 
   const handleEmailSignIn = async (e) => {

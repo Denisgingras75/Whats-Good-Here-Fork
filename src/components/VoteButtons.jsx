@@ -1,26 +1,13 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
 import { useVote } from '../hooks/useVote'
 import { supabase } from '../lib/supabase'
 
 export function VoteButtons({ dishId, onVote, onLoginRequired }) {
+  const { user } = useAuth()
   const { submitVote, submitting } = useVote()
-  const [user, setUser] = useState(null)
   const [userVote, setUserVote] = useState(null)
   const [optimisticVote, setOptimisticVote] = useState(null)
-
-  useEffect(() => {
-    // Check auth state
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
-    })
-
-    // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
 
   useEffect(() => {
     // Fetch user's existing vote for this dish

@@ -1,32 +1,23 @@
 import { useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { useLocation } from '../hooks/useLocation'
 import { useDishes } from '../hooks/useDishes'
 import { useSavedDishes } from '../hooks/useSavedDishes'
 import { LocationPicker } from '../components/LocationPicker'
-import { ReviewFlow, getPendingVoteFromStorage, clearPendingVoteStorage } from '../components/ReviewFlow'
+import { DishModal } from '../components/DishModal'
+import { getPendingVoteFromStorage } from '../components/ReviewFlow'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { getCategoryImage } from '../constants/categoryImages'
-import { supabase } from '../lib/supabase'
 
 const TOP_COUNT = 10
 const MIN_VOTES_FOR_RANKING = 5
 
 export function Home() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [loginModalOpen, setLoginModalOpen] = useState(false)
   const [selectedDish, setSelectedDish] = useState(null)
-  const [user, setUser] = useState(null)
-
-  // Get current user
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-    return () => subscription.unsubscribe()
-  }, [])
 
   const {
     location,
@@ -249,86 +240,13 @@ export function Home() {
         )}
       </main>
 
-      {/* Dish Detail Modal - Using portal to escape any CSS inheritance */}
-      {selectedDish && createPortal(
-        <div
-          key={`modal-${selectedDish.dish_id}`}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            padding: '16px',
-          }}
-          onClick={() => setSelectedDish(null)}
-        >
-          {/* Modal card */}
-          <div
-            ref={(el) => { if (el) el.scrollTop = 0 }}
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              position: 'relative',
-              width: '100%',
-              maxWidth: '360px',
-              maxHeight: '85vh',
-              overflowY: 'auto',
-              backgroundColor: '#fff',
-              borderRadius: '16px',
-              padding: '20px',
-              boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-            }}
-          >
-            {/* Close button */}
-            <button
-              onClick={() => setSelectedDish(null)}
-              style={{
-                position: 'absolute',
-                top: '12px',
-                right: '12px',
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                backgroundColor: '#e5e5e5',
-                border: 'none',
-                fontSize: '18px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              ×
-            </button>
-
-            {/* Dish name + restaurant */}
-            <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px', paddingRight: '30px' }}>
-              {selectedDish.dish_name}
-            </h2>
-            <p style={{ fontSize: '14px', color: '#666', marginBottom: '16px' }}>
-              {selectedDish.restaurant_name}
-              {selectedDish.price && ` · $${Number(selectedDish.price).toFixed(0)}`}
-            </p>
-
-            {/* Review Flow - this is where thumbs up/down appears */}
-            <ReviewFlow
-              dishId={selectedDish.dish_id}
-              dishName={selectedDish.dish_name}
-              category={selectedDish.category}
-              totalVotes={selectedDish.total_votes || 0}
-              yesVotes={selectedDish.yes_votes || 0}
-              onVote={handleVote}
-              onLoginRequired={handleLoginRequired}
-            />
-          </div>
-        </div>,
-        document.body
-      )}
+      {/* Dish Detail Modal */}
+      <DishModal
+        dish={selectedDish}
+        onClose={() => setSelectedDish(null)}
+        onVote={handleVote}
+        onLoginRequired={handleLoginRequired}
+      />
 
       <LoginModal
         isOpen={loginModalOpen}

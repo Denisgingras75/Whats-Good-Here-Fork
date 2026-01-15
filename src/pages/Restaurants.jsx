@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { useLocation } from '../hooks/useLocation'
 import { useDishes } from '../hooks/useDishes'
@@ -7,21 +8,12 @@ import { DishFeed } from '../components/DishFeed'
 import { LoginModal } from '../components/Auth/LoginModal'
 
 export function Restaurants() {
+  const { user } = useAuth()
   const [restaurants, setRestaurants] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedRestaurant, setSelectedRestaurant] = useState(null)
   const [loginModalOpen, setLoginModalOpen] = useState(false)
-  const [user, setUser] = useState(null)
-
-  // Get current user
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-    return () => subscription.unsubscribe()
-  }, [])
 
   const { location, radius } = useLocation()
   const { dishes, loading: dishesLoading, error: dishesError, refetch } = useDishes(
