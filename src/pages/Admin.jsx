@@ -1,0 +1,292 @@
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+import { CATEGORY_IMAGES } from '../constants/categoryImages'
+
+const CATEGORIES = Object.keys(CATEGORY_IMAGES)
+
+export function Admin() {
+  const [restaurants, setRestaurants] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [message, setMessage] = useState(null)
+  const [recentDishes, setRecentDishes] = useState([])
+
+  // Form state
+  const [restaurantId, setRestaurantId] = useState('')
+  const [dishName, setDishName] = useState('')
+  const [category, setCategory] = useState('')
+  const [price, setPrice] = useState('')
+  const [photoUrl, setPhotoUrl] = useState('')
+
+  // Fetch restaurants on mount
+  useEffect(() => {
+    fetchRestaurants()
+    fetchRecentDishes()
+  }, [])
+
+  async function fetchRestaurants() {
+    const { data, error } = await supabase
+      .from('restaurants')
+      .select('id, name, address')
+      .eq('is_open', true)
+      .order('name')
+
+    if (error) {
+      console.error('Error fetching restaurants:', error)
+      setMessage({ type: 'error', text: 'Failed to load restaurants' })
+    } else {
+      setRestaurants(data || [])
+    }
+    setLoading(false)
+  }
+
+  async function fetchRecentDishes() {
+    const { data, error } = await supabase
+      .from('dishes')
+      .select(`
+        id,
+        name,
+        category,
+        price,
+        created_at,
+        restaurants (name)
+      `)
+      .order('created_at', { ascending: false })
+      .limit(10)
+
+    if (!error && data) {
+      setRecentDishes(data)
+    }
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+
+    if (!restaurantId || !dishName || !category) {
+      setMessage({ type: 'error', text: 'Please fill in restaurant, dish name, and category' })
+      return
+    }
+
+    setSubmitting(true)
+    setMessage(null)
+
+    const { data, error } = await supabase
+      .from('dishes')
+      .insert({
+        restaurant_id: restaurantId,
+        name: dishName.trim(),
+        category: category.toLowerCase(),
+        price: price ? parseFloat(price) : null,
+        photo_url: photoUrl.trim() || null,
+      })
+      .select()
+
+    if (error) {
+      console.error('Error adding dish:', error)
+      setMessage({ type: 'error', text: `Failed to add dish: ${error.message}` })
+    } else {
+      setMessage({ type: 'success', text: `Added "${dishName}" successfully!` })
+      // Reset form
+      setDishName('')
+      setPrice('')
+      setPhotoUrl('')
+      // Refresh recent dishes
+      fetchRecentDishes()
+    }
+
+    setSubmitting(false)
+  }
+
+  async function handleDelete(dishId, dishName) {
+    if (!confirm(`Delete "${dishName}"? This cannot be undone.`)) return
+
+    const { error } = await supabase
+      .from('dishes')
+      .delete()
+      .eq('id', dishId)
+
+    if (error) {
+      setMessage({ type: 'error', text: `Failed to delete: ${error.message}` })
+    } else {
+      setMessage({ type: 'success', text: `Deleted "${dishName}"` })
+      fetchRecentDishes()
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-surface)' }}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-2 text-sm text-gray-500">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen pb-24" style={{ background: 'var(--color-surface)' }}>
+      {/* Header */}
+      <header className="px-4 py-4 border-b" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-divider)' }}>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+          Admin - Add Dishes
+        </h1>
+      </header>
+
+      <div className="max-w-lg mx-auto px-4 py-6">
+        {/* Message */}
+        {message && (
+          <div
+            className={`mb-4 p-3 rounded-lg text-sm font-medium ${
+              message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
+
+        {/* Add Dish Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Restaurant */}
+          <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
+              Restaurant *
+            </label>
+            <select
+              value={restaurantId}
+              onChange={(e) => setRestaurantId(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+              style={{ borderColor: 'var(--color-divider)', background: 'var(--color-bg)' }}
+              required
+            >
+              <option value="">Select a restaurant...</option>
+              {restaurants.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name} - {r.address}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Dish Name */}
+          <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
+              Dish Name *
+            </label>
+            <input
+              type="text"
+              value={dishName}
+              onChange={(e) => setDishName(e.target.value)}
+              placeholder="e.g., Chicken Tendys"
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+              style={{ borderColor: 'var(--color-divider)', background: 'var(--color-bg)' }}
+              required
+            />
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
+              Category *
+            </label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+              style={{ borderColor: 'var(--color-divider)', background: 'var(--color-bg)' }}
+              required
+            >
+              <option value="">Select a category...</option>
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Price */}
+          <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
+              Price ($)
+            </label>
+            <input
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="e.g., 12.99"
+              step="0.01"
+              min="0"
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+              style={{ borderColor: 'var(--color-divider)', background: 'var(--color-bg)' }}
+            />
+          </div>
+
+          {/* Photo URL */}
+          <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
+              Photo URL (optional)
+            </label>
+            <input
+              type="url"
+              value={photoUrl}
+              onChange={(e) => setPhotoUrl(e.target.value)}
+              placeholder="https://..."
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+              style={{ borderColor: 'var(--color-divider)', background: 'var(--color-bg)' }}
+            />
+            <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
+              Leave blank to use category default image
+            </p>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full py-3 rounded-lg font-semibold text-white transition-all disabled:opacity-50"
+            style={{ background: 'var(--color-primary)' }}
+          >
+            {submitting ? 'Adding...' : 'Add Dish'}
+          </button>
+        </form>
+
+        {/* Recent Dishes */}
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>
+            Recent Dishes
+          </h2>
+          <div className="space-y-2">
+            {recentDishes.map((dish) => (
+              <div
+                key={dish.id}
+                className="flex items-center justify-between p-3 rounded-lg border"
+                style={{ background: 'var(--color-bg)', borderColor: 'var(--color-divider)' }}
+              >
+                <div>
+                  <p className="font-medium text-sm" style={{ color: 'var(--color-text-primary)' }}>
+                    {dish.name}
+                  </p>
+                  <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                    {dish.restaurants?.name} · {dish.category} {dish.price ? `· $${dish.price}` : ''}
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleDelete(dish.id, dish.name)}
+                  className="text-red-500 hover:text-red-700 text-sm font-medium"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+            {recentDishes.length === 0 && (
+              <p className="text-sm text-center py-4" style={{ color: 'var(--color-text-tertiary)' }}>
+                No dishes yet
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
