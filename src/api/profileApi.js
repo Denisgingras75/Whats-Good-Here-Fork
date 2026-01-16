@@ -36,16 +36,17 @@ export const profileApi = {
   /**
    * Create a new profile for a user
    * @param {string} userId - User ID
-   * @param {string} displayName - Display name
+   * @param {string} displayName - Display name (optional)
    * @returns {Promise<Object>} Created profile object
    */
-  async createProfile(userId, displayName) {
+  async createProfile(userId, displayName = null) {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .insert({
           id: userId,
           display_name: displayName,
+          has_onboarded: false,
         })
         .select()
         .single()
@@ -108,12 +109,8 @@ export const profileApi = {
         return existing
       }
 
-      // Create new profile with email-based display name
-      const { data: userData } = await supabase.auth.getUser()
-      const email = userData?.user?.email || ''
-      const displayName = email.split('@')[0]
-
-      return await this.createProfile(userId, displayName)
+      // Create new profile without display name - they'll set it in onboarding
+      return await this.createProfile(userId)
     } catch (error) {
       console.error('Error getting or creating profile:', error)
       throw error

@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext'
 import { LocationProvider } from './context/LocationContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { Layout } from './components/Layout'
+import { WelcomeModal } from './components/Auth/WelcomeModal'
 import { Home } from './pages/Home'
 import { Browse } from './pages/Browse'
 import { Restaurants } from './pages/Restaurants'
@@ -39,6 +40,7 @@ function App() {
       <AuthProvider>
       <LocationProvider>
         <BrowserRouter>
+          <WelcomeModal />
           <Routes>
             <Route path="/" element={<Layout><Home /></Layout>} />
             <Route path="/browse" element={<Layout><Browse /></Layout>} />
