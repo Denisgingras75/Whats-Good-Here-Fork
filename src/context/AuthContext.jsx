@@ -14,9 +14,8 @@ export function AuthProvider({ children }) {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user)
       if (user) {
-        // Identify user in PostHog
+        // Identify user in PostHog (no PII - just auth provider for segmentation)
         posthog.identify(user.id, {
-          email: user.email,
           auth_provider: user.app_metadata?.provider || 'unknown',
         })
       }
@@ -32,7 +31,6 @@ export function AuthProvider({ children }) {
       // Track login success when user signs in
       if (newUser && !prevUserRef.current) {
         posthog.identify(newUser.id, {
-          email: newUser.email,
           auth_provider: newUser.app_metadata?.provider || 'unknown',
         })
         posthog.capture('login_completed', {

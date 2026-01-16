@@ -13,7 +13,23 @@ if (import.meta.env.VITE_PUBLIC_POSTHOG_KEY && import.meta.env.PROD) {
     capture_pageleave: true,       // Track when users leave
     autocapture: true,             // Auto-track clicks, form submissions
     session_recording: {
-      maskAllInputs: false,        // Don't mask inputs (no sensitive data)
+      maskAllInputs: true,         // Mask all form inputs for privacy
+      maskTextSelector: '[data-mask]', // Mask elements with data-mask attribute
+    },
+    // Don't send user IP address
+    ip: false,
+    // Mask email in properties
+    sanitize_properties: (properties) => {
+      // Mask email addresses in all properties
+      const masked = { ...properties }
+      if (masked.email) {
+        masked.email = masked.email.replace(/(.{2}).*(@.*)/, '$1***$2')
+      }
+      if (masked.$current_url) {
+        // Remove any email params from URLs
+        masked.$current_url = masked.$current_url.replace(/email=[^&]+/, 'email=***')
+      }
+      return masked
     },
   })
 }
