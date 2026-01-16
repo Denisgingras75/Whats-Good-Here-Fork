@@ -4,6 +4,39 @@ A shared log of what each contributor worked on. Add your entries at the top.
 
 ---
 
+## 2025-01-16 - Daniel
+
+### Header & Brand Polish
+- Added `TopBar` component with subtle brand-tinted background (5% primary color)
+- Centered fork-checkmark logo mark in safe-area region
+- Centered logo on Home page (was left-aligned with "Browse All" button)
+- Removed redundant "Browse All" button (bottom nav has Browse)
+
+### Visual Hierarchy Tightening
+- Reduced TopBar height (28px → 20px) and icon size (20px → 18px)
+- Standardized logo height to h-12 across all pages
+- Reduced header padding to py-2 for tighter vertical rhythm
+- Removed border between header and LocationPicker filters
+- Header and filters now read as one contextual block
+
+### Responsive Logo Scaling
+- Mobile (<768px): h-12 (48px) - unchanged
+- Tablet (≥768px): h-14 (56px) - +17%
+- Desktop (≥1024px): h-16 (64px) - +33%
+
+### Copy Fix
+- Changed "Ranked by % who would order again" → "Ranked by average score"
+- Now matches what users see in the UI (1-10 score display)
+
+### Auth & Photo Fixes (from earlier session)
+- Improved auth session persistence using `getSession()` instead of `getUser()`
+- Added explicit auth event handling (SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED)
+- Fixed duplicate PostHog analytics event in photo upload
+- Fixed delete photo using wrong file extension
+- Consolidated photo tier config into single source of truth
+
+---
+
 ## 2025-01-15 - Daniel (Session 2)
 
 ### Gamification Phase 1 - Impact Visibility
