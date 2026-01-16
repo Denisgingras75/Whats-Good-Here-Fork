@@ -329,14 +329,51 @@ export function Browse() {
                 </button>
               </div>
             ) : filteredDishes.length === 0 ? (
-              <div className="py-16 text-center">
+              <div className="py-12 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'var(--color-surface)' }}>
                   <span className="text-2xl">🔍</span>
                 </div>
-                <p className="font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>No dishes found</p>
-                <p className="text-sm" style={{ color: 'var(--color-text-tertiary)' }}>
-                  {debouncedSearchQuery ? 'Try a different search term' : 'No dishes in this category yet'}
+                <p className="font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
+                  {debouncedSearchQuery
+                    ? `No dishes found for "${debouncedSearchQuery}"`
+                    : 'No dishes in this category yet'
+                  }
                 </p>
+                <p className="text-sm mb-6" style={{ color: 'var(--color-text-tertiary)' }}>
+                  {debouncedSearchQuery
+                    ? 'Try a different search or browse by category'
+                    : 'Be the first to add one!'
+                  }
+                </p>
+
+                {/* Suggested categories */}
+                <div className="mb-6">
+                  <p className="text-xs font-medium mb-3" style={{ color: 'var(--color-text-tertiary)' }}>
+                    Popular categories
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {CATEGORIES.slice(0, 6).map((category) => (
+                      <button
+                        key={category.id}
+                        onClick={() => handleCategoryChange(category.id)}
+                        className="px-3 py-2 bg-white rounded-full border border-neutral-200 text-sm font-medium hover:border-neutral-300 hover:shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
+                        style={{ color: 'var(--color-text-secondary)' }}
+                      >
+                        <span>{category.emoji}</span>
+                        <span>{category.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Browse all categories button */}
+                <button
+                  onClick={handleBackToCategories}
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 active:scale-[0.98] transition-all"
+                  style={{ background: 'var(--color-primary)' }}
+                >
+                  Browse All Categories
+                </button>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
