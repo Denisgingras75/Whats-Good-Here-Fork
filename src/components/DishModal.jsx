@@ -1,8 +1,28 @@
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ReviewFlow } from './ReviewFlow'
+import { PhotoUploadButton } from './PhotoUploadButton'
+import { PhotoUploadConfirmation } from './PhotoUploadConfirmation'
 
 export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
+  const [photoUploaded, setPhotoUploaded] = useState(null)
+  const [showReviewAfterPhoto, setShowReviewAfterPhoto] = useState(false)
+
   if (!dish) return null
+
+  const handlePhotoUploaded = (photo) => {
+    setPhotoUploaded(photo)
+  }
+
+  const handleRateNow = () => {
+    setPhotoUploaded(null)
+    setShowReviewAfterPhoto(true)
+  }
+
+  const handleLater = () => {
+    setPhotoUploaded(null)
+    onClose()
+  }
 
   return createPortal(
     <div
@@ -60,25 +80,44 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
           ×
         </button>
 
-        {/* Dish name + restaurant */}
-        <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px', paddingRight: '30px' }}>
-          {dish.dish_name}
-        </h2>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '16px' }}>
-          {dish.restaurant_name}
-          {dish.price && ` · $${Number(dish.price).toFixed(0)}`}
-        </p>
+        {/* Show photo confirmation if just uploaded */}
+        {photoUploaded ? (
+          <PhotoUploadConfirmation
+            dishName={dish.dish_name}
+            photoUrl={photoUploaded.photo_url}
+            onRateNow={handleRateNow}
+            onLater={handleLater}
+          />
+        ) : (
+          <>
+            {/* Dish name + restaurant */}
+            <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px', paddingRight: '30px' }}>
+              {dish.dish_name}
+            </h2>
+            <p style={{ fontSize: '14px', color: '#666', marginBottom: '16px' }}>
+              {dish.restaurant_name}
+              {dish.price && ` · $${Number(dish.price).toFixed(0)}`}
+            </p>
 
-        {/* Review Flow - this is where thumbs up/down appears */}
-        <ReviewFlow
-          dishId={dish.dish_id}
-          dishName={dish.dish_name}
-          category={dish.category}
-          totalVotes={dish.total_votes || 0}
-          yesVotes={dish.yes_votes || 0}
-          onVote={onVote}
-          onLoginRequired={onLoginRequired}
-        />
+            {/* Review Flow - this is where thumbs up/down appears */}
+            <ReviewFlow
+              dishId={dish.dish_id}
+              dishName={dish.dish_name}
+              category={dish.category}
+              totalVotes={dish.total_votes || 0}
+              yesVotes={dish.yes_votes || 0}
+              onVote={onVote}
+              onLoginRequired={onLoginRequired}
+            />
+
+            {/* Photo upload button */}
+            <PhotoUploadButton
+              dishId={dish.dish_id}
+              onPhotoUploaded={handlePhotoUploaded}
+              onLoginRequired={onLoginRequired}
+            />
+          </>
+        )}
       </div>
     </div>,
     document.body

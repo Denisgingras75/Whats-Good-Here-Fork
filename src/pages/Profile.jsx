@@ -5,10 +5,14 @@ import { authApi } from '../api'
 import { useProfile } from '../hooks/useProfile'
 import { useUserVotes } from '../hooks/useUserVotes'
 import { useSavedDishes } from '../hooks/useSavedDishes'
+import { useUnratedDishes } from '../hooks/useUnratedDishes'
 import { isSoundMuted, toggleSoundMute } from '../lib/sounds'
 import { getCategoryImage } from '../constants/categoryImages'
+import { DishModal } from '../components/DishModal'
+import { LoginModal } from '../components/Auth/LoginModal'
 
 const TABS = [
+  { id: 'unrated', label: 'Unrated', emoji: '📷' },
   { id: 'worth-it', label: 'Worth It', emoji: '👍' },
   { id: 'avoid', label: 'Avoid', emoji: '👎' },
   { id: 'saved', label: 'Saved', emoji: '❤️' },
@@ -28,8 +32,11 @@ export function Profile() {
   const [newName, setNewName] = useState('')
 
   const { profile, updateProfile } = useProfile(user?.id)
-  const { worthItDishes, avoidDishes, stats, loading: votesLoading } = useUserVotes(user?.id)
+  const { worthItDishes, avoidDishes, stats, loading: votesLoading, refetch: refetchVotes } = useUserVotes(user?.id)
   const { savedDishes, loading: savedLoading, unsaveDish } = useSavedDishes(user?.id)
+  const { dishes: unratedDishes, count: unratedCount, loading: unratedLoading, refetch: refetchUnrated } = useUnratedDishes(user?.id)
+  const [selectedDish, setSelectedDish] = useState(null)
+  const [showLoginModal, setShowLoginModal] = useState(false)
 
   // Load remembered email on mount (for logged-out state)
   useEffect(() => {
@@ -103,6 +110,8 @@ export function Profile() {
   // Get dishes for current tab
   const getTabDishes = () => {
     switch (activeTab) {
+      case 'unrated':
+        return unratedDishes
       case 'worth-it':
         return worthItDishes
       case 'avoid':
@@ -115,7 +124,30 @@ export function Profile() {
   }
 
   const tabDishes = getTabDishes()
-  const isLoading = activeTab === 'saved' ? savedLoading : votesLoading
+  const isLoading = activeTab === 'saved' ? savedLoading :
+                    activeTab === 'unrated' ? unratedLoading : votesLoading
+
+  // Handle vote from unrated dish
+  const handleVote = async () => {
+    setSelectedDish(null)
+    await Promise.all([refetchUnrated(), refetchVotes()])
+  }
+
+  // Handle clicking an unrated dish to rate it
+  const handleUnratedDishClick = (dish) => {
+    // Transform to the format expected by DishModal
+    setSelectedDish({
+      dish_id: dish.dish_id,
+      dish_name: dish.dish_name,
+      restaurant_name: dish.restaurant_name,
+      restaurant_id: dish.restaurant_id,
+      category: dish.category,
+      price: dish.price,
+      photo_url: dish.photo_url,
+      total_votes: 0,
+      yes_votes: 0,
+    })
+  }
 
   // Format member since date
   const memberSince = user?.created_at
@@ -334,7 +366,8 @@ export function Profile() {
                   <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs ${
                     activeTab === tab.id ? 'bg-white/20' : 'bg-neutral-200'
                   }`}>
-                    {tab.id === 'worth-it' ? worthItDishes.length :
+                    {tab.id === 'unrated' ? unratedCount :
+                     tab.id === 'worth-it' ? worthItDishes.length :
                      tab.id === 'avoid' ? avoidDishes.length :
                      savedDishes.length}
                   </span>
@@ -353,19 +386,46 @@ export function Profile() {
               </div>
             ) : tabDishes.length > 0 ? (
               <div className="space-y-3">
-                {tabDishes.map((dish) => (
-                  <ProfileDishCard
-                    key={dish.dish_id}
-                    dish={dish}
-                    tab={activeTab}
-                    onUnsave={activeTab === 'saved' ? () => unsaveDish(dish.dish_id) : null}
-                  />
-                ))}
+                {activeTab === 'unrated' ? (
+                  // Unrated dishes - clickable to rate
+                  tabDishes.map((dish) => (
+                    <UnratedDishCard
+                      key={dish.dish_id}
+                      dish={dish}
+                      onClick={() => handleUnratedDishClick(dish)}
+                    />
+                  ))
+                ) : (
+                  // Other tabs
+                  tabDishes.map((dish) => (
+                    <ProfileDishCard
+                      key={dish.dish_id}
+                      dish={dish}
+                      tab={activeTab}
+                      onUnsave={activeTab === 'saved' ? () => unsaveDish(dish.dish_id) : null}
+                    />
+                  ))
+                )}
               </div>
             ) : (
               <EmptyState tab={activeTab} />
             )}
           </div>
+
+          {/* Dish Modal for rating unrated dishes */}
+          {selectedDish && (
+            <DishModal
+              dish={selectedDish}
+              onClose={() => setSelectedDish(null)}
+              onVote={handleVote}
+              onLoginRequired={() => setShowLoginModal(true)}
+            />
+          )}
+
+          {/* Login Modal */}
+          {showLoginModal && (
+            <LoginModal onClose={() => setShowLoginModal(false)} />
+          )}
 
           {/* Settings */}
           <div className="p-4 pt-0">
@@ -567,6 +627,11 @@ function ProfileDishCard({ dish, tab, onUnsave }) {
 // Empty state for tabs
 function EmptyState({ tab }) {
   const content = {
+    'unrated': {
+      emoji: '📷',
+      title: 'No photos yet',
+      description: 'Add photos of dishes you try - rate them now or later!',
+    },
     'worth-it': {
       emoji: '👍',
       title: 'No favorites yet',
@@ -592,6 +657,55 @@ function EmptyState({ tab }) {
       <h3 className="font-semibold text-neutral-900">{title}</h3>
       <p className="text-sm text-neutral-500 mt-1">{description}</p>
     </div>
+  )
+}
+
+// Card for unrated dishes (dishes with photos but no vote)
+function UnratedDishCard({ dish, onClick }) {
+  const imageUrl = dish.user_photo_url || dish.photo_url || getCategoryImage(dish.category)
+
+  // Format time since photo was taken
+  const timeSince = dish.photo_created_at
+    ? new Date(dish.photo_created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    : null
+
+  return (
+    <button
+      onClick={onClick}
+      className="w-full bg-white rounded-xl border border-neutral-200 overflow-hidden flex text-left hover:shadow-md transition-shadow"
+    >
+      {/* Image with photo indicator */}
+      <div className="w-24 h-24 flex-shrink-0 bg-neutral-100 relative">
+        <img
+          src={imageUrl}
+          alt={dish.dish_name}
+          className="w-full h-full object-cover"
+        />
+        {dish.user_photo_url && (
+          <div className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded flex items-center gap-1">
+            <span>📷</span>
+            <span>Your photo</span>
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
+        <div>
+          <h3 className="font-semibold text-neutral-900 truncate">{dish.dish_name}</h3>
+          <p className="text-sm text-neutral-500 truncate">{dish.restaurant_name}</p>
+        </div>
+
+        <div className="flex items-center justify-between">
+          {timeSince && (
+            <span className="text-xs text-neutral-400">Added {timeSince}</span>
+          )}
+          <span className="text-sm font-medium" style={{ color: 'var(--color-primary)' }}>
+            Rate now →
+          </span>
+        </div>
+      </div>
+    </button>
   )
 }
 
