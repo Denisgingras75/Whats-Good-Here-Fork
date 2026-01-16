@@ -12,6 +12,7 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
   const [communityPhotos, setCommunityPhotos] = useState([])
   const [allPhotos, setAllPhotos] = useState([])
   const [showAllPhotos, setShowAllPhotos] = useState(false)
+  const [lightboxPhoto, setLightboxPhoto] = useState(null)
 
   // Fetch photos when modal opens
   useEffect(() => {
@@ -137,7 +138,10 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
 
             {/* Featured photo (hero) */}
             {featuredPhoto && (
-              <div className="dish-hero-photo">
+              <div
+                className="dish-hero-photo"
+                onClick={() => setLightboxPhoto(featuredPhoto.photo_url)}
+              >
                 <img src={featuredPhoto.photo_url} alt={dish.dish_name} />
                 {featuredPhoto.source_type === 'restaurant' && (
                   <span className="photo-badge restaurant">Official</span>
@@ -153,7 +157,11 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
                 </h4>
                 <div className="photo-grid">
                   {displayPhotos.map((photo) => (
-                    <div key={photo.id} className="photo-grid-item">
+                    <div
+                      key={photo.id}
+                      className="photo-grid-item"
+                      onClick={() => setLightboxPhoto(photo.photo_url)}
+                    >
                       <img src={photo.photo_url} alt={dish.dish_name} />
                     </div>
                   ))}
@@ -189,6 +197,17 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
           </>
         )}
       </div>
+
+      {/* Photo lightbox */}
+      {lightboxPhoto && (
+        <div
+          className="photo-lightbox"
+          onClick={() => setLightboxPhoto(null)}
+        >
+          <button className="lightbox-close">×</button>
+          <img src={lightboxPhoto} alt={dish.dish_name} />
+        </div>
+      )}
     </div>,
     document.body
   )

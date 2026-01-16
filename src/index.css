@@ -460,6 +460,7 @@
   border-radius: 8px;
   overflow: hidden;
   background: var(--color-surface);
+  cursor: pointer;
 }
 
 .photo-grid-item img {
@@ -471,6 +472,10 @@
 
 .photo-grid-item:hover img {
   transform: scale(1.05);
+}
+
+.dish-hero-photo {
+  cursor: pointer;
 }
 
 .see-all-photos-btn {
@@ -491,4 +496,49 @@
 .see-all-photos-btn:hover {
   background: var(--color-surface);
   color: var(--color-text-primary);
+}
+
+/* Photo Lightbox */
+.photo-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.photo-lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
