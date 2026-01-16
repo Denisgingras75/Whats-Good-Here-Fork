@@ -1,5 +1,4 @@
 import { supabase } from '../lib/supabase'
-import posthog from 'posthog-js'
 
 /**
  * Dish Photos API - Centralized data fetching and mutation for dish photos
@@ -74,12 +73,6 @@ export const dishPhotosApi = {
       if (error) {
         throw error
       }
-
-      posthog.capture('photo_uploaded', {
-        dish_id: dishId,
-        quality_score: analysisResults?.qualityScore,
-        status: analysisResults?.status,
-      })
 
       return data
     } catch (error) {
@@ -242,11 +235,13 @@ export const dishPhotosApi = {
         throw new Error('Photo not found or access denied')
       }
 
-      // Delete from storage
-      const fileName = `${user.id}/${photo.dish_id}`
+      // Delete from storage - extract actual filename from URL
+      const urlParts = photo.photo_url.split('/')
+      const actualFileName = urlParts[urlParts.length - 1]
+      const filePath = `${user.id}/${actualFileName}`
       await supabase.storage
         .from('dish-photos')
-        .remove([`${fileName}.jpg`, `${fileName}.jpeg`, `${fileName}.png`])
+        .remove([filePath])
 
       // Delete record
       const { error } = await supabase
