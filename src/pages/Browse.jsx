@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useLocationContext } from '../context/LocationContext'
 import { useDishes } from '../hooks/useDishes'
 import { useSavedDishes } from '../hooks/useSavedDishes'
-import { restaurantsApi } from '../api'
+import { restaurantsApi, dishesApi } from '../api'
 import { BrowseCard } from '../components/BrowseCard'
 import { DishModal } from '../components/DishModal'
 import { getPendingVoteFromStorage } from '../components/ReviewFlow'
@@ -62,6 +62,7 @@ export function Browse() {
   // Autocomplete state
   const [autocompleteOpen, setAutocompleteOpen] = useState(false)
   const [autocompleteIndex, setAutocompleteIndex] = useState(-1)
+  const [dishSuggestions, setDishSuggestions] = useState([])
   const [restaurantSuggestions, setRestaurantSuggestions] = useState([])
 
   const beforeVoteRef = useRef(null)
@@ -103,19 +104,24 @@ export function Browse() {
     setSortDropdownOpen(false)
   }
 
-  // Fetch restaurant suggestions for autocomplete
+  // Fetch autocomplete suggestions (dishes and restaurants)
   useEffect(() => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
+      setDishSuggestions([])
       setRestaurantSuggestions([])
       return
     }
 
-    const fetchRestaurants = async () => {
-      const results = await restaurantsApi.search(searchQuery, 3)
-      setRestaurantSuggestions(results)
+    const fetchSuggestions = async () => {
+      const [dishResults, restaurantResults] = await Promise.all([
+        dishesApi.search(searchQuery, 5),
+        restaurantsApi.search(searchQuery, 3),
+      ])
+      setDishSuggestions(dishResults)
+      setRestaurantSuggestions(restaurantResults)
     }
 
-    const timer = setTimeout(fetchRestaurants, 150)
+    const timer = setTimeout(fetchSuggestions, 150)
     return () => clearTimeout(timer)
   }, [searchQuery])
 
@@ -295,28 +301,20 @@ export function Browse() {
     setAutocompleteOpen(false)
   }
 
-  // Autocomplete suggestions (dishes from current results + restaurants)
+  // Autocomplete suggestions (dishes and restaurants from API search)
   const autocompleteSuggestions = useMemo(() => {
     if (!searchQuery.trim() || searchQuery.length < 2) return []
 
-    const query = searchQuery.toLowerCase()
+    // Use dish suggestions from API
+    const dishMatches = dishSuggestions.map(d => ({
+      type: 'dish',
+      id: d.dish_id,
+      name: d.dish_name,
+      subtitle: d.restaurant_name,
+      data: d,
+    }))
 
-    // Get matching dishes (limit to 5)
-    const dishMatches = dishes
-      .filter(d =>
-        d.dish_name?.toLowerCase().includes(query) ||
-        d.restaurant_name?.toLowerCase().includes(query)
-      )
-      .slice(0, 5)
-      .map(d => ({
-        type: 'dish',
-        id: d.dish_id,
-        name: d.dish_name,
-        subtitle: d.restaurant_name,
-        data: d,
-      }))
-
-    // Get matching restaurants
+    // Use restaurant suggestions from API
     const restaurantMatches = restaurantSuggestions.map(r => ({
       type: 'restaurant',
       id: r.id,
@@ -326,7 +324,7 @@ export function Browse() {
     }))
 
     return [...dishMatches, ...restaurantMatches]
-  }, [searchQuery, dishes, restaurantSuggestions])
+  }, [searchQuery, dishSuggestions, restaurantSuggestions])
 
   // Handle autocomplete selection
   const handleAutocompleteSelect = useCallback((suggestion) => {

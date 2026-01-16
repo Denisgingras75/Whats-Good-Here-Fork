@@ -104,6 +104,50 @@ export const dishesApi = {
   },
 
   /**
+   * Search dishes by name (for autocomplete)
+   * @param {string} query - Search query
+   * @param {number} limit - Max results
+   * @returns {Promise<Array>} Array of matching dishes
+   */
+  async search(query, limit = 5) {
+    try {
+      if (!query?.trim()) return []
+
+      const { data, error } = await supabase
+        .from('dishes')
+        .select(`
+          id,
+          name,
+          category,
+          restaurants!inner (
+            id,
+            name,
+            is_open
+          )
+        `)
+        .eq('restaurants.is_open', true)
+        .ilike('name', `%${query}%`)
+        .limit(limit)
+
+      if (error) {
+        throw error
+      }
+
+      // Transform to match expected format
+      return (data || []).map(dish => ({
+        dish_id: dish.id,
+        dish_name: dish.name,
+        category: dish.category,
+        restaurant_id: dish.restaurants.id,
+        restaurant_name: dish.restaurants.name,
+      }))
+    } catch (error) {
+      console.error('Error searching dishes:', error)
+      return []
+    }
+  },
+
+  /**
    * Get a single dish by ID
    * @param {string} dishId - Dish ID
    * @returns {Promise<Object>} Dish object
