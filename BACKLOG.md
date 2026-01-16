@@ -80,6 +80,73 @@ Ideas and features for future versions. Not prioritized yet.
 
 ---
 
+## Search Autocomplete
+
+**Summary:** Show matching suggestions as user types in search.
+
+**Flow:**
+1. User starts typing in search field
+2. Dropdown shows matching dishes and restaurants
+3. User can tap a suggestion to go directly to that item
+4. Or press enter to see full search results
+
+**Why it's good:**
+- Reduces typing friction
+- Helps users discover dishes they didn't know existed
+- Standard UX pattern users expect
+
+**Technical needs:**
+- Debounced search query (300ms)
+- Combined query for dishes + restaurants
+- Dropdown component with keyboard navigation
+
+---
+
+## No Results State
+
+**Summary:** When search returns nothing, show helpful suggestions instead of empty screen.
+
+**Flow:**
+1. User searches for something with no matches
+2. Instead of blank screen, show:
+   - "No dishes found for 'X'"
+   - "Try searching for: [popular categories]"
+   - "Or browse nearby restaurants"
+
+**Why it's good:**
+- Prevents dead-end frustration
+- Guides users toward content that exists
+- Easy win for UX polish
+
+**Technical needs:**
+- Simple conditional render
+- Curated list of popular search terms
+- Link to browse/restaurants pages
+
+---
+
+## Sorting Options
+
+**Summary:** Let users sort dish lists by different criteria.
+
+**Options:**
+- Closest (distance)
+- Most voted (total votes, high to low)
+- Trending (recent vote velocity)
+- Recently added
+
+**Why it's good:**
+- Users have different intents (exploring vs. deciding now)
+- "Most voted" surfaces trusted dishes
+- "Closest" helps when hungry NOW
+
+**Technical needs:**
+- Sort dropdown component
+- Update RPC function or client-side sort
+- Persist preference in localStorage
+
+---
+
 ## How to Add Ideas
 
 ```markdown
