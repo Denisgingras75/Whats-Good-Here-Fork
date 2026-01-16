@@ -102,7 +102,7 @@ export function LocationPicker({
   return (
     <>
       {/* Filter Chips Row */}
-      <div className="bg-white border-b px-4 py-3" style={{ borderColor: 'var(--color-divider)' }}>
+      <div className="bg-white px-4 py-2">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
           {/* Location Chip */}
           {getLocationChip()}

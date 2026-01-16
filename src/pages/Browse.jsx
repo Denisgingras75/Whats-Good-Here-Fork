@@ -384,13 +384,13 @@ export function Browse() {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Header */}
-      <header className="bg-white border-b border-neutral-200">
-        <div className="flex flex-col items-center py-3">
-          <img src="/logo.png" alt="What's Good Here" className="h-20 w-auto" />
+      <header className="bg-white">
+        <div className="flex flex-col items-center py-2">
+          <img src="/logo.png" alt="What's Good Here" className="h-12 w-auto" />
         </div>
 
         {/* Search bar with autocomplete */}
-        <div className="px-4 pb-3">
+        <div className="px-4 pb-2">
           <div className="relative">
             <svg
               xmlns="http://www.w3.org/2000/svg"

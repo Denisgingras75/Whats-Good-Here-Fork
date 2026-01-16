@@ -166,9 +166,9 @@ export function Profile() {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Header */}
-      <header className="bg-white border-b border-neutral-200 px-4 py-4">
+      <header className="bg-white px-4 py-2">
         <div className="flex flex-col items-center">
-          <img src="/logo.png" alt="What's Good Here" className="h-20 w-auto" />
+          <img src="/logo.png" alt="What's Good Here" className="h-12 w-auto" />
         </div>
       </header>
 

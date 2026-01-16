@@ -64,9 +64,9 @@ export function Restaurants() {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Header */}
-      <header className="bg-white border-b border-neutral-200 px-4 py-4">
-        <div className="flex flex-col items-center mb-4">
-          <img src="/logo.png" alt="What's Good Here" className="h-28 w-auto" />
+      <header className="bg-white px-4 py-2">
+        <div className="flex flex-col items-center mb-2">
+          <img src="/logo.png" alt="What's Good Here" className="h-12 w-auto" />
         </div>
 
         {/* Search bar */}

@@ -139,12 +139,12 @@ export function Home() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-surface)' }}>
       {/* Header */}
-      <header className="py-3" style={{ background: 'var(--color-bg)' }}>
+      <header className="py-2" style={{ background: 'var(--color-bg)' }}>
         <div className="flex justify-center">
           <img
             src="/logo.png"
             alt="What's Good Here"
-            className="h-14 w-auto"
+            className="h-12 w-auto"
           />
         </div>
       </header>
