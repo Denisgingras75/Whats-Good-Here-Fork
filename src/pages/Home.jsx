@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLocationContext } from '../context/LocationContext'
 import { useDishes } from '../hooks/useDishes'
 import { LocationPicker } from '../components/LocationPicker'
+import { DishSearch } from '../components/DishSearch'
 import { getCategoryImage } from '../constants/categoryImages'
 
 const MIN_VOTES_FOR_RANKING = 5
@@ -88,6 +89,11 @@ export function Home() {
         onUseDefault={useDefaultLocation}
         loading={locationLoading}
       />
+
+      {/* Search Bar */}
+      <div className="px-4 py-3" style={{ background: 'var(--color-bg)' }}>
+        <DishSearch dishes={dishes} loading={loading} />
+      </div>
 
       {/* Main Content */}
       <main className="px-4 py-6">
