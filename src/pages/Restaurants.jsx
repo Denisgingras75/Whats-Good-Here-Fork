@@ -97,17 +97,12 @@ export function Restaurants() {
     return stats
   }, [dishes])
 
-  // Filter restaurants by search and sort by total votes
+  // Filter restaurants by search and sort alphabetically
   const filteredRestaurants = useMemo(() => {
     return restaurants
       .filter(r => r.name.toLowerCase().includes(searchQuery.toLowerCase()))
-      .sort((a, b) => {
-        // Sort by total votes descending
-        const aVotes = restaurantStats[a.id]?.totalVotes || 0
-        const bVotes = restaurantStats[b.id]?.totalVotes || 0
-        return bVotes - aVotes
-      })
-  }, [restaurants, searchQuery, restaurantStats])
+      .sort((a, b) => a.name.localeCompare(b.name))
+  }, [restaurants, searchQuery])
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -159,9 +154,6 @@ export function Restaurants() {
             <h2 className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
               Restaurants near you
             </h2>
-            <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
-              Sorted by community votes
-            </p>
           </div>
 
           {loading || dishesLoading ? (
@@ -172,11 +164,8 @@ export function Restaurants() {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredRestaurants.map((restaurant, index) => {
+              {filteredRestaurants.map((restaurant) => {
                 const stats = restaurantStats[restaurant.id] || {}
-                const topDish = stats.topRankedDish || stats.topVotedDish
-                const isRanked = topDish && (topDish.total_votes || 0) >= MIN_VOTES_FOR_RANKING
-                const label = isRanked ? 'Most loved here' : topDish ? 'Popular here' : null
 
                 return (
                   <button
@@ -184,33 +173,22 @@ export function Restaurants() {
                     onClick={() => setSelectedRestaurant(restaurant)}
                     className="w-full bg-white rounded-xl border border-neutral-200 p-4 text-left hover:border-orange-300 hover:shadow-md transition-all group"
                   >
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center justify-between gap-3">
                       {/* Restaurant info */}
                       <div className="min-w-0 flex-1">
                         <h3 className="font-semibold text-neutral-900 group-hover:text-orange-600 transition-colors">
                           {restaurant.name}
                         </h3>
-
-                        {/* Top dish recommendation */}
-                        {topDish && (
-                          <p className="text-sm mt-1 flex items-center gap-1.5" style={{ color: 'var(--color-text-secondary)' }}>
-                            <span style={{ color: 'var(--color-primary)' }}>★</span>
-                            <span className="font-medium">{label}:</span>
-                            <span className="truncate">{topDish.dish_name}</span>
-                          </p>
-                        )}
-
-                        {/* Vote count */}
                         <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
                           {stats.totalVotes > 0
                             ? `${stats.totalVotes} total dish votes`
-                            : `${restaurant.dishCount} ${restaurant.dishCount === 1 ? 'dish' : 'dishes'} · No votes yet`
+                            : 'No votes yet'
                           }
                         </p>
                       </div>
 
                       {/* Chevron */}
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-neutral-400 group-hover:text-orange-400 transition-colors flex-shrink-0 mt-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-neutral-400 group-hover:text-orange-400 transition-colors flex-shrink-0">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                       </svg>
                     </div>
