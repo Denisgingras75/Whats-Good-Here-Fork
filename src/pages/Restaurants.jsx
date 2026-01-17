@@ -16,6 +16,7 @@ export function Restaurants() {
   const [restaurants, setRestaurants] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [dishSearchQuery, setDishSearchQuery] = useState('')
   const [selectedRestaurant, setSelectedRestaurant] = useState(null)
   const [loginModalOpen, setLoginModalOpen] = useState(false)
 
@@ -60,10 +61,53 @@ export function Restaurants() {
     await toggleSave(dishId)
   }
 
-  // Filter restaurants by search
-  const filteredRestaurants = restaurants.filter(r =>
-    r.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  // Compute top dish and total votes per restaurant
+  const restaurantStats = useMemo(() => {
+    if (!dishes?.length) return {}
+
+    const stats = {}
+    dishes.forEach(dish => {
+      const rid = dish.restaurant_id
+      if (!rid) return
+
+      if (!stats[rid]) {
+        stats[rid] = {
+          totalVotes: 0,
+          topRankedDish: null, // Highest rated with 5+ votes
+          topVotedDish: null,  // Most votes (fallback)
+        }
+      }
+
+      stats[rid].totalVotes += (dish.total_votes || 0)
+
+      // Track highest rated dish (with 5+ votes)
+      const isRanked = (dish.total_votes || 0) >= MIN_VOTES_FOR_RANKING
+      if (isRanked) {
+        if (!stats[rid].topRankedDish || (dish.avg_rating || 0) > (stats[rid].topRankedDish.avg_rating || 0)) {
+          stats[rid].topRankedDish = dish
+        }
+      }
+
+      // Track most voted dish (fallback)
+      if (!stats[rid].topVotedDish || (dish.total_votes || 0) > (stats[rid].topVotedDish.total_votes || 0)) {
+        stats[rid].topVotedDish = dish
+      }
+    })
+
+    return stats
+  }, [dishes])
+
+  // Filter restaurants by search and sort by total votes
+  const filteredRestaurants = useMemo(() => {
+    return restaurants
+      .filter(r => r.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      .sort((a, b) => {
+        // Sort by total votes descending
+        const aVotes = restaurantStats[a.id]?.totalVotes || 0
+        const bVotes = restaurantStats[b.id]?.totalVotes || 0
+        return bVotes - aVotes
+      })
+  }, [restaurants, searchQuery, restaurantStats])
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -73,7 +117,7 @@ export function Restaurants() {
           <img src="/logo.png" alt="What's Good Here" className="h-12 md:h-14 lg:h-16 w-auto" />
         </div>
 
-        {/* Search bar */}
+        {/* Search bar - context-aware */}
         <div className="relative">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -87,52 +131,103 @@ export function Restaurants() {
           </svg>
           <input
             type="text"
-            placeholder="Search restaurants..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={selectedRestaurant ? `Search dishes at ${selectedRestaurant.name}...` : "Search restaurants..."}
+            value={selectedRestaurant ? dishSearchQuery : searchQuery}
+            onChange={(e) => selectedRestaurant ? setDishSearchQuery(e.target.value) : setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-3 bg-neutral-100 rounded-xl border-0 focus:ring-2 focus:bg-white transition-all"
             style={{ '--tw-ring-color': 'var(--color-primary)' }}
           />
+          {/* Clear button when searching dishes */}
+          {selectedRestaurant && dishSearchQuery && (
+            <button
+              onClick={() => setDishSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-neutral-200 transition-colors"
+            >
+              <svg className="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
         </div>
       </header>
 
       {/* Restaurant List */}
       {!selectedRestaurant && (
         <div className="p-4">
-          {loading ? (
+          {/* Section Header */}
+          <div className="mb-4">
+            <h2 className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
+              Restaurants near you
+            </h2>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
+              Sorted by community votes
+            </p>
+          </div>
+
+          {loading || dishesLoading ? (
             <div className="space-y-3">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-20 bg-neutral-200 rounded-xl animate-pulse" />
+                <div key={i} className="h-24 bg-neutral-200 rounded-xl animate-pulse" />
               ))}
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredRestaurants.map((restaurant) => (
-                <button
-                  key={restaurant.id}
-                  onClick={() => setSelectedRestaurant(restaurant)}
-                  className="w-full bg-white rounded-xl border border-neutral-200 p-4 text-left hover:border-orange-300 hover:shadow-md transition-all group"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-neutral-900 group-hover:opacity-80 transition-colors">
-                        {restaurant.name}
-                      </h3>
-                      {restaurant.address && (
-                        <p className="text-sm text-neutral-500 mt-0.5 truncate">
-                          {restaurant.address.split(',')[0]}
+              {filteredRestaurants.map((restaurant, index) => {
+                const stats = restaurantStats[restaurant.id] || {}
+                const topDish = stats.topRankedDish || stats.topVotedDish
+                const isRanked = topDish && (topDish.total_votes || 0) >= MIN_VOTES_FOR_RANKING
+                const label = isRanked ? 'Most loved here' : topDish ? 'Popular here' : null
+
+                return (
+                  <button
+                    key={restaurant.id}
+                    onClick={() => setSelectedRestaurant(restaurant)}
+                    className="w-full bg-white rounded-xl border border-neutral-200 p-4 text-left hover:border-orange-300 hover:shadow-md transition-all group"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      {/* Rank number */}
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                        style={{
+                          background: index < 3 ? 'var(--color-primary)' : 'var(--color-surface)',
+                          color: index < 3 ? 'white' : 'var(--color-text-tertiary)',
+                        }}
+                      >
+                        {index + 1}
+                      </div>
+
+                      {/* Restaurant info */}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-neutral-900 group-hover:text-orange-600 transition-colors">
+                          {restaurant.name}
+                        </h3>
+
+                        {/* Top dish recommendation */}
+                        {topDish && (
+                          <p className="text-sm mt-1 flex items-center gap-1.5" style={{ color: 'var(--color-text-secondary)' }}>
+                            <span style={{ color: 'var(--color-primary)' }}>★</span>
+                            <span className="font-medium">{label}:</span>
+                            <span className="truncate">{topDish.dish_name}</span>
+                          </p>
+                        )}
+
+                        {/* Vote count */}
+                        <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
+                          {stats.totalVotes > 0
+                            ? `${stats.totalVotes} total dish votes`
+                            : `${restaurant.dishCount} ${restaurant.dishCount === 1 ? 'dish' : 'dishes'} · No votes yet`
+                          }
                         </p>
-                      )}
-                      <p className="text-xs text-neutral-400 mt-1">
-                        {restaurant.dishCount} {restaurant.dishCount === 1 ? 'dish' : 'dishes'}
-                      </p>
+                      </div>
+
+                      {/* Chevron */}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-neutral-400 group-hover:text-orange-400 transition-colors flex-shrink-0 mt-1">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                      </svg>
                     </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-neutral-400 group-hover:opacity-80 transition-colors flex-shrink-0 ml-2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                    </svg>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                )
+              })}
 
               {filteredRestaurants.length === 0 && (
                 <div className="text-center py-12 text-neutral-500">
@@ -151,7 +246,10 @@ export function Restaurants() {
           <div className="sticky top-0 z-20 bg-white border-b border-neutral-200 px-4 py-3">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setSelectedRestaurant(null)}
+                onClick={() => {
+                  setSelectedRestaurant(null)
+                  setDishSearchQuery('')
+                }}
                 className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center hover:bg-neutral-200 transition-colors flex-shrink-0"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
@@ -250,6 +348,7 @@ export function Restaurants() {
             isSaved={isSaved}
             onToggleSave={handleToggleSave}
             user={user}
+            searchQuery={dishSearchQuery}
           />
         </>
       )}
@@ -263,14 +362,24 @@ export function Restaurants() {
 }
 
 // Restaurant dishes component - Job #2: "What should I order?"
-function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequired, isSaved, onToggleSave, user }) {
+function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequired, isSaved, onToggleSave, user, searchQuery = '' }) {
   const [showAllDishes, setShowAllDishes] = useState(false)
 
-  // Sort dishes by order_again_percent (confidence ranking)
+  // Filter and sort dishes
   const sortedDishes = useMemo(() => {
-    if (!dishes?.length) return { top: [], rest: [] }
+    if (!dishes?.length) return { top: [], rest: [], filtered: false }
 
-    const sorted = [...dishes].sort((a, b) => {
+    // Filter by search query if provided
+    let filteredDishes = dishes
+    const query = searchQuery.toLowerCase().trim()
+    if (query) {
+      filteredDishes = dishes.filter(d =>
+        (d.dish_name || '').toLowerCase().includes(query) ||
+        (d.category || '').toLowerCase().includes(query)
+      )
+    }
+
+    const sorted = [...filteredDishes].sort((a, b) => {
       const aRanked = (a.total_votes || 0) >= MIN_VOTES_FOR_RANKING
       const bRanked = (b.total_votes || 0) >= MIN_VOTES_FOR_RANKING
       // Ranked dishes first
@@ -291,8 +400,10 @@ function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequired, isS
     return {
       top: sorted.slice(0, TOP_DISHES_COUNT),
       rest: sorted.slice(TOP_DISHES_COUNT),
+      filtered: query.length > 0,
+      totalMatches: filteredDishes.length,
     }
-  }, [dishes])
+  }, [dishes, searchQuery])
 
   const rankedCount = dishes?.filter(d => (d.total_votes || 0) >= MIN_VOTES_FOR_RANKING).length || 0
 
@@ -329,12 +440,17 @@ function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequired, isS
       {/* Section Header */}
       <div className="mb-4">
         <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
-          What should I order?
+          {sortedDishes.filtered
+            ? `Results for "${searchQuery}"`
+            : 'What should I order?'
+          }
         </h3>
         <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
-          {rankedCount > 0
-            ? `Top picks based on ${rankedCount} rated ${rankedCount === 1 ? 'dish' : 'dishes'}`
-            : 'Not enough votes yet — be the first to rate dishes here'
+          {sortedDishes.filtered
+            ? `${sortedDishes.totalMatches} ${sortedDishes.totalMatches === 1 ? 'dish' : 'dishes'} found`
+            : rankedCount > 0
+              ? `Top picks based on ${rankedCount} rated ${rankedCount === 1 ? 'dish' : 'dishes'}`
+              : 'Not enough votes yet — be the first to rate dishes here'
           }
         </p>
       </div>
@@ -360,8 +476,16 @@ function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequired, isS
           style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
         >
           <p className="text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-            No dishes at this restaurant yet
+            {sortedDishes.filtered
+              ? `No dishes matching "${searchQuery}"`
+              : 'No dishes at this restaurant yet'
+            }
           </p>
+          {sortedDishes.filtered && (
+            <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
+              Try a different search term
+            </p>
+          )}
         </div>
       )}
 
