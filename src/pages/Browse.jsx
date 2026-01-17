@@ -71,6 +71,7 @@ export function Browse() {
   const sortDropdownRef = useRef(null)
   const searchInputRef = useRef(null)
   const autocompleteRef = useRef(null)
+  const votingDishId = new URLSearchParams(window.location.search).get('votingDish')
 
   // Handle category from URL params (when coming from home page)
   useEffect(() => {
@@ -156,14 +157,14 @@ export function Browse() {
   const { isSaved, toggleSave } = useSavedDishes(user?.id)
 
   // Helper to find dish rank in current list
-  const getDishRank = (dishId, dishList) => {
+  const getDishRank = useCallback((dishId, dishList) => {
     const ranked = dishList?.filter(d => (d.total_votes || 0) >= MIN_VOTES_FOR_RANKING) || []
     const index = ranked.findIndex(d => d.dish_id === dishId)
     return index === -1 ? 999 : index + 1
-  }
+  }, [])
 
   // Open dish modal and capture before state for impact calculation
-  const openDishModal = (dish) => {
+  const openDishModal = useCallback((dish) => {
     beforeVoteRef.current = {
       dish_id: dish.dish_id,
       total_votes: dish.total_votes || 0,
@@ -171,15 +172,13 @@ export function Browse() {
       rank: getDishRank(dish.dish_id, dishes)
     }
     setSelectedDish(dish)
-  }
+  }, [dishes, getDishRank])
 
   // Auto-reopen modal after OAuth/magic link login if there's a pending vote
   useEffect(() => {
     if (!user || !dishes?.length || selectedDish) return
 
     // Check URL for votingDish param (from magic link redirect)
-    const params = new URLSearchParams(window.location.search)
-    const votingDishId = params.get('votingDish')
 
     // Also check localStorage as fallback
     const pending = getPendingVoteFromStorage()
@@ -200,7 +199,8 @@ export function Browse() {
 
     // Open modal immediately - dishes are guaranteed ready now
     openDishModal(dish)
-  }, [user, dishes, openDishModal, votingDishId])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, dishes, openDishModal, selectedDish])
 
   // Calculate impact when dishes update after voting
   useEffect(() => {
@@ -216,7 +216,7 @@ export function Browse() {
       setImpactFeedback(impact)
       setPendingVoteData(null)
     }
-  }, [dishes, pendingVoteData, setImpactFeedback])
+  }, [dishes, pendingVoteData, setImpactFeedback, getDishRank])
 
   const handleVote = () => {
     // Store before data and mark as pending
@@ -341,7 +341,7 @@ export function Browse() {
       // Navigate to restaurant page
       navigate(`/restaurants/${suggestion.id}`)
     }
-  }, [navigate])
+  }, [navigate, openDishModal])
 
   // Handle keyboard navigation in autocomplete
   const handleSearchKeyDown = useCallback((e) => {

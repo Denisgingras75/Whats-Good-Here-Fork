@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useLocationContext } from '../context/LocationContext'
@@ -59,14 +59,14 @@ export function Home() {
   const [pendingVoteData, setPendingVoteData] = useState(null)
 
   // Helper to find dish rank in current list
-  const getDishRank = (dishId, dishList) => {
+  const getDishRank = useCallback((dishId, dishList) => {
     const ranked = dishList?.filter(d => (d.total_votes || 0) >= MIN_VOTES_FOR_RANKING) || []
     const index = ranked.findIndex(d => d.dish_id === dishId)
     return index === -1 ? 999 : index + 1
-  }
+  }, [])
 
   // Open dish modal and capture before state for impact calculation
-  const openDishModal = (dish) => {
+  const openDishModal = useCallback((dish) => {
     beforeVoteRef.current = {
       dish_id: dish.dish_id,
       total_votes: dish.total_votes || 0,
@@ -74,15 +74,13 @@ export function Home() {
       rank: getDishRank(dish.dish_id, dishes)
     }
     setSelectedDish(dish)
-  }
+  }, [dishes, getDishRank])
+
+  const votingDishId = new URLSearchParams(window.location.search).get('votingDish')
 
   // Auto-reopen modal after OAuth/magic link login if there's a pending vote
   useEffect(() => {
     if (!user || !dishes?.length || selectedDish) return
-
-    // Check URL for votingDish param (from magic link redirect)
-    const params = new URLSearchParams(window.location.search)
-    const votingDishId = params.get('votingDish')
 
     // Also check localStorage as fallback
     const pending = getPendingVoteFromStorage()
@@ -103,7 +101,8 @@ export function Home() {
 
     // Open modal immediately - dishes are guaranteed ready now
     openDishModal(dish)
-  }, [user, dishes, openDishModal, votingDishId])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, dishes, selectedDish, openDishModal])
 
   // Calculate impact when dishes update after voting
   useEffect(() => {
@@ -119,7 +118,7 @@ export function Home() {
       setImpactFeedback(impact)
       setPendingVoteData(null)
     }
-  }, [dishes, pendingVoteData, setImpactFeedback])
+  }, [dishes, pendingVoteData, setImpactFeedback, getDishRank])
 
   const handleVote = () => {
     // Store before data and mark as pending

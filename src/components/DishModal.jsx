@@ -48,7 +48,7 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
 
   const handleRateNow = () => {
     setPhotoUploaded(null)
-    setShowReviewAfterPhoto(true)
+    onClose?.()
   }
 
   const handleLater = () => {
