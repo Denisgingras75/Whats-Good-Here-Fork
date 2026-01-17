@@ -56,7 +56,7 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
         ) : (
           <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-white/90 backdrop-blur-sm">
             <span className="text-xs font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-              {votesNeeded > 0 ? `${votesNeeded} vote${votesNeeded > 1 ? 's' : ''} to rank` : 'Needs votes'}
+              {votesNeeded > 0 ? `Needs ${votesNeeded} more vote${votesNeeded > 1 ? 's' : ''}` : 'Needs votes'}
             </span>
           </div>
         )}
