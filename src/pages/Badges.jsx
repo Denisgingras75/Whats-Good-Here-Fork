@@ -155,6 +155,70 @@ export function Badges() {
           )}
         </div>
 
+        {/* Category Expertise */}
+        <div className="bg-white rounded-2xl border border-neutral-200 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-lg">🍕</span>
+            <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+              Category Expertise
+            </h2>
+          </div>
+          <p className="text-sm text-neutral-600 mb-4">
+            Beyond badges, you also earn expertise titles in specific food categories. Rate enough
+            dishes in a category and you'll become recognized as an expert in that cuisine.
+          </p>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 p-2 rounded-lg bg-neutral-50">
+              <span className="text-xl">🌱</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-neutral-900">Explorer</span>
+                  <span className="text-xs px-2 py-0.5 bg-neutral-200 rounded-full text-neutral-600">5+ votes</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-2 rounded-lg bg-neutral-50">
+              <span className="text-xl">🔥</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-neutral-900">Fan</span>
+                  <span className="text-xs px-2 py-0.5 bg-neutral-200 rounded-full text-neutral-600">10+ votes</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-2 rounded-lg bg-neutral-50">
+              <span className="text-xl">💎</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-neutral-900">Connoisseur</span>
+                  <span className="text-xs px-2 py-0.5 bg-neutral-200 rounded-full text-neutral-600">20+ votes</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-2 rounded-lg bg-neutral-50">
+              <span className="text-xl">⭐</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-neutral-900">Expert</span>
+                  <span className="text-xs px-2 py-0.5 bg-neutral-200 rounded-full text-neutral-600">30+ votes</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-2 rounded-lg bg-neutral-50">
+              <span className="text-xl">👑</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-neutral-900">Master</span>
+                  <span className="text-xs px-2 py-0.5 bg-neutral-200 rounded-full text-neutral-600">50+ votes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-neutral-400 mt-4 text-center">
+            Your category titles are displayed on your profile as you earn them.
+          </p>
+        </div>
+
         {/* Tips */}
         <div className="bg-white rounded-2xl border border-neutral-200 p-6">
           <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>

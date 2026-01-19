@@ -486,9 +486,6 @@ export function Profile() {
                 </Link>
               )}
 
-              {/* How Ranks Work */}
-              <RanksInfoSection />
-
               {/* How Badges Work */}
               <a
                 href="/badges"
@@ -782,75 +779,6 @@ function UnratedDishCard({ dish, onClick }) {
         </div>
       </div>
     </button>
-  )
-}
-
-// Ranks info section with expandable details
-function RanksInfoSection() {
-  const [expanded, setExpanded] = useState(false)
-
-  const tiers = [
-    { min: 5, title: 'Explorer', icon: '🌱', description: 'Just getting started' },
-    { min: 10, title: 'Fan', icon: '🔥', description: 'Building your expertise' },
-    { min: 20, title: 'Connoisseur', icon: '💎', description: 'You know your stuff' },
-    { min: 30, title: 'Expert', icon: '⭐', description: 'A trusted voice' },
-    { min: 50, title: 'Master', icon: '👑', description: 'The ultimate authority' },
-  ]
-
-  return (
-    <div className="border-t border-neutral-100">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center">
-            🏆
-          </div>
-          <span className="font-medium text-neutral-900">How Ranks Work</span>
-        </div>
-        <svg
-          className={`w-5 h-5 text-neutral-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {expanded && (
-        <div className="px-4 pb-4">
-          <p className="text-sm text-neutral-600 mb-4">
-            Rate dishes in a category to earn ranks! Each category tracks your progress separately.
-          </p>
-
-          <div className="space-y-2">
-            {tiers.map((tier) => (
-              <div
-                key={tier.title}
-                className="flex items-center gap-3 p-2 rounded-lg bg-neutral-50"
-              >
-                <span className="text-xl">{tier.icon}</span>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-neutral-900">{tier.title}</span>
-                    <span className="text-xs px-2 py-0.5 bg-neutral-200 rounded-full text-neutral-600">
-                      {tier.min}+ votes
-                    </span>
-                  </div>
-                  <p className="text-xs text-neutral-500">{tier.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-xs text-neutral-400 mt-4 text-center">
-            Your rating style also earns you a personality badge based on your average scores.
-          </p>
-        </div>
-      )}
-    </div>
   )
 }
 
