@@ -126,12 +126,19 @@ export function Browse() {
     }
 
     const fetchSuggestions = async () => {
-      const [dishResults, restaurantResults] = await Promise.all([
-        dishesApi.search(searchQuery, 5),
-        restaurantsApi.search(searchQuery, 3),
-      ])
-      setDishSuggestions(dishResults)
-      setRestaurantSuggestions(restaurantResults)
+      try {
+        const [dishResults, restaurantResults] = await Promise.all([
+          dishesApi.search(searchQuery, 5),
+          restaurantsApi.search(searchQuery, 3),
+        ])
+        setDishSuggestions(dishResults)
+        setRestaurantSuggestions(restaurantResults)
+      } catch (error) {
+        // Gracefully degrade - show no suggestions on error
+        console.error('Search suggestions failed:', error)
+        setDishSuggestions([])
+        setRestaurantSuggestions([])
+      }
     }
 
     const timer = setTimeout(fetchSuggestions, 150)

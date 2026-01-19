@@ -75,14 +75,19 @@ export function Dish() {
     if (!dishId) return
 
     const fetchPhotos = async () => {
-      const [featured, community, all] = await Promise.all([
-        dishPhotosApi.getFeaturedPhoto(dishId),
-        dishPhotosApi.getCommunityPhotos(dishId),
-        dishPhotosApi.getAllVisiblePhotos(dishId),
-      ])
-      setFeaturedPhoto(featured)
-      setCommunityPhotos(community)
-      setAllPhotos(all)
+      try {
+        const [featured, community, all] = await Promise.all([
+          dishPhotosApi.getFeaturedPhoto(dishId),
+          dishPhotosApi.getCommunityPhotos(dishId),
+          dishPhotosApi.getAllVisiblePhotos(dishId),
+        ])
+        setFeaturedPhoto(featured)
+        setCommunityPhotos(community)
+        setAllPhotos(all)
+      } catch (error) {
+        console.error('Failed to fetch photos:', error)
+        // Gracefully degrade - show no photos
+      }
     }
 
     fetchPhotos()
@@ -91,14 +96,18 @@ export function Dish() {
   const handlePhotoUploaded = async (photo) => {
     setPhotoUploaded(photo)
     // Refresh photos
-    const [featured, community, all] = await Promise.all([
-      dishPhotosApi.getFeaturedPhoto(dishId),
-      dishPhotosApi.getCommunityPhotos(dishId),
-      dishPhotosApi.getAllVisiblePhotos(dishId),
-    ])
-    setFeaturedPhoto(featured)
-    setCommunityPhotos(community)
-    setAllPhotos(all)
+    try {
+      const [featured, community, all] = await Promise.all([
+        dishPhotosApi.getFeaturedPhoto(dishId),
+        dishPhotosApi.getCommunityPhotos(dishId),
+        dishPhotosApi.getAllVisiblePhotos(dishId),
+      ])
+      setFeaturedPhoto(featured)
+      setCommunityPhotos(community)
+      setAllPhotos(all)
+    } catch (error) {
+      console.error('Failed to refresh photos after upload:', error)
+    }
   }
 
   const handleVote = async () => {
