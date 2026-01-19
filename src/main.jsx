@@ -8,10 +8,17 @@ import App from './App.jsx'
 // Initialize PostHog for user analytics
 if (import.meta.env.VITE_PUBLIC_POSTHOG_KEY && import.meta.env.PROD) {
   posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY, {
-    api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
+    // Use reverse proxy to avoid ad blockers (configured in vercel.json)
+    api_host: '/ingest',
+    ui_host: 'https://us.posthog.com',
     capture_pageview: true,        // Auto-track page views
     capture_pageleave: true,       // Track when users leave
     autocapture: true,             // Auto-track clicks, form submissions
+    // Enable Web Vitals performance monitoring
+    capture_performance: {
+      web_vitals: true,            // Capture Core Web Vitals (LCP, FID, CLS)
+      web_vitals_allowed_metrics: ['LCP', 'CLS', 'FCP', 'INP', 'TTFB'],
+    },
     session_recording: {
       maskAllInputs: true,         // Mask all form inputs for privacy
       maskTextSelector: '[data-mask]', // Mask elements with data-mask attribute
