@@ -323,7 +323,7 @@ function RankedDishRow({ dish, rank }) {
               color: 'var(--color-text-tertiary)',
             }}
           >
-            {total_votes ? `Early · ${total_votes} vote${total_votes === 1 ? '' : 's'}` : 'Be first to vote'}
+            {total_votes ? `${total_votes} vote${total_votes === 1 ? '' : 's'}` : 'Be first to vote'}
           </div>
         )}
       </div>
