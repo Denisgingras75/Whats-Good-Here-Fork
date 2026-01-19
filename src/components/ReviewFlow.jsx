@@ -47,7 +47,7 @@ export function clearPendingVoteStorage() {
   }
 }
 
-export function ReviewFlow({ dishId, dishName, category, totalVotes = 0, yesVotes = 0, onVote, onLoginRequired }) {
+export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, category, price, totalVotes = 0, yesVotes = 0, onVote, onLoginRequired }) {
   const { user } = useAuth()
   const { submitVote, submitting } = useVote()
   const [userVote, setUserVote] = useState(null)
@@ -193,7 +193,10 @@ export function ReviewFlow({ dishId, dishName, category, totalVotes = 0, yesVote
       posthog.capture('vote_cast', {
         dish_id: dishId,
         dish_name: dishName,
+        restaurant_id: restaurantId,
+        restaurant_name: restaurantName,
         category: category,
+        price: price != null ? Number(price) : null,
         would_order_again: pendingVote,
         rating: sliderValue,
         is_update: previousVote !== null,

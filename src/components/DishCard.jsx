@@ -6,6 +6,7 @@ export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFa
   const {
     dish_id,
     dish_name,
+    restaurant_id,
     restaurant_name,
     category,
     price,
@@ -197,7 +198,10 @@ export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFa
           <ReviewFlow
             dishId={dish_id}
             dishName={dish_name}
+            restaurantId={restaurant_id}
+            restaurantName={restaurant_name}
             category={category}
+            price={price}
             totalVotes={totalVotes}
             yesVotes={yes_votes || 0}
             onVote={onVote}

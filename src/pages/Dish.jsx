@@ -381,7 +381,10 @@ export function Dish() {
               <ReviewFlow
                 dishId={dish.dish_id}
                 dishName={dish.dish_name}
+                restaurantId={dish.restaurant_id}
+                restaurantName={dish.restaurant_name}
                 category={dish.category}
+                price={dish.price}
                 totalVotes={dish.total_votes}
                 yesVotes={dish.yes_votes}
                 onVote={handleVote}
