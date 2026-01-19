@@ -6,6 +6,7 @@ import { useProfile } from '../hooks/useProfile'
 import { useUserVotes } from '../hooks/useUserVotes'
 import { useSavedDishes } from '../hooks/useSavedDishes'
 import { useUnratedDishes } from '../hooks/useUnratedDishes'
+import { useBadges } from '../hooks/useBadges'
 import { isSoundMuted, toggleSoundMute } from '../lib/sounds'
 import { getCategoryImage } from '../constants/categoryImages'
 import { PHOTO_TIERS_LIST } from '../constants/photoQuality'
@@ -36,6 +37,7 @@ export function Profile() {
   const { worthItDishes, avoidDishes, stats, loading: votesLoading, refetch: refetchVotes } = useUserVotes(user?.id)
   const { savedDishes, loading: savedLoading, unsaveDish } = useSavedDishes(user?.id)
   const { dishes: unratedDishes, count: unratedCount, loading: unratedLoading, refetch: refetchUnrated } = useUnratedDishes(user?.id)
+  const { badges, loading: badgesLoading } = useBadges(user?.id)
   const [selectedDish, setSelectedDish] = useState(null)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -273,6 +275,11 @@ export function Profile() {
                   <div className="text-xs text-neutral-500">Avg Rating</div>
                 </div>
               </div>
+            )}
+
+            {/* Achievements Section */}
+            {!badgesLoading && badges.length > 0 && (
+              <AchievementsSection badges={badges} />
             )}
 
             {/* Category Tiers */}
@@ -954,6 +961,146 @@ function MissionSection() {
               That's the mission.
             </p>
           </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Achievements section with badges
+function AchievementsSection({ badges }) {
+  const [expanded, setExpanded] = useState(false)
+
+  // Split badges into unlocked and locked
+  const unlockedBadges = badges.filter(b => b.unlocked)
+  const lockedBadges = badges.filter(b => !b.unlocked)
+
+  // Get next badge to unlock (first locked badge with highest progress percentage)
+  const nextBadge = lockedBadges.length > 0
+    ? lockedBadges.reduce((best, current) =>
+        current.percentage > best.percentage ? current : best
+      , lockedBadges[0])
+    : null
+
+  return (
+    <div className="mt-4">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between"
+      >
+        <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+          Achievements ({unlockedBadges.length}/{badges.length})
+        </h3>
+        <svg
+          className={`w-4 h-4 text-neutral-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Collapsed view: Show unlocked badges as icons */}
+      {!expanded && (
+        <div className="mt-2">
+          {unlockedBadges.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {unlockedBadges.map((badge) => (
+                <div
+                  key={badge.key}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-full"
+                  title={`${badge.name}: ${badge.description}`}
+                >
+                  <span className="text-lg">{badge.icon}</span>
+                  <span className="text-sm font-medium text-amber-800">{badge.name}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-neutral-400">Rate dishes to earn badges!</p>
+          )}
+
+          {/* Show next badge progress */}
+          {nextBadge && (
+            <div className="mt-3 p-3 bg-neutral-50 rounded-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xl opacity-50">{nextBadge.icon}</span>
+                <span className="text-sm font-medium text-neutral-600">
+                  Next: {nextBadge.name}
+                </span>
+                <span className="text-xs text-neutral-400 ml-auto">
+                  {nextBadge.progress}/{nextBadge.target}
+                </span>
+              </div>
+              <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{
+                    width: `${nextBadge.percentage}%`,
+                    background: 'var(--color-primary)',
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Expanded view: Show all badges with progress */}
+      {expanded && (
+        <div className="mt-3 space-y-3">
+          {/* Unlocked badges */}
+          {unlockedBadges.length > 0 && (
+            <div className="space-y-2">
+              {unlockedBadges.map((badge) => (
+                <div
+                  key={badge.key}
+                  className="flex items-center gap-3 p-3 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl"
+                >
+                  <span className="text-2xl">{badge.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-amber-900">{badge.name}</div>
+                    <div className="text-xs text-amber-700">{badge.subtitle}</div>
+                  </div>
+                  <div className="text-xs text-amber-600">
+                    {badge.unlocked_at && new Date(badge.unlocked_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Locked badges */}
+          {lockedBadges.length > 0 && (
+            <div className="space-y-2">
+              {lockedBadges.map((badge) => (
+                <div
+                  key={badge.key}
+                  className="flex items-center gap-3 p-3 bg-neutral-50 border border-neutral-200 rounded-xl"
+                >
+                  <span className="text-2xl opacity-40">{badge.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-neutral-500">{badge.name}</div>
+                    <div className="text-xs text-neutral-400">{badge.description}</div>
+                    {/* Progress bar */}
+                    <div className="mt-2">
+                      <div className="flex justify-between text-xs text-neutral-400 mb-1">
+                        <span>{badge.progress}/{badge.target}</span>
+                        <span>{badge.percentage}%</span>
+                      </div>
+                      <div className="h-1.5 bg-neutral-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all bg-neutral-400"
+                          style={{ width: `${badge.percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

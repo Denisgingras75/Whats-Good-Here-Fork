@@ -2,8 +2,9 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useVote } from '../hooks/useVote'
-import { authApi } from '../api'
+import { authApi, badgesApi } from '../api'
 import { FoodRatingSlider } from './FoodRatingSlider'
+import { showBadgeUnlockToasts } from './BadgeUnlockToast'
 
 // Helper to get/set pending vote from localStorage (survives OAuth redirect)
 const PENDING_VOTE_KEY = 'whats_good_here_pending_vote'
@@ -191,6 +192,17 @@ export function ReviewFlow({ dishId, dishName, category, totalVotes = 0, yesVote
       setStep(1)
       setPendingVote(null)
       onVote?.()
+
+      // Evaluate badges after successful vote
+      try {
+        const newlyUnlocked = await badgesApi.evaluateBadges(user.id)
+        if (newlyUnlocked.length > 0) {
+          showBadgeUnlockToasts(newlyUnlocked)
+        }
+      } catch (badgeError) {
+        console.error('Error evaluating badges:', badgeError)
+        // Don't block the vote flow on badge errors
+      }
     } else {
       setUserVote(previousVote)
       setUserRating(previousRating)
