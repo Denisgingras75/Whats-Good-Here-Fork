@@ -53,23 +53,31 @@ describe('useVote Hook', () => {
     })
 
     it('should set submitting state correctly', async () => {
-      votesApi.submitVote.mockResolvedValueOnce({ success: true })
+      // Use a deferred promise so we can control when the API resolves
+      let resolveApi
+      const apiPromise = new Promise(resolve => {
+        resolveApi = () => resolve({ success: true })
+      })
+      votesApi.submitVote.mockReturnValueOnce(apiPromise)
 
       const { result } = renderHook(() => useVote())
 
       expect(result.current.submitting).toBe(false)
 
-      let submittingDuringCall = null
-      await act(async () => {
-        const promise = result.current.submitVote('dish-1', true)
-        // Check submitting state during the async call
-        // Note: We can't check it synchronously in the same tick, so we check after a micro-task
-        await Promise.resolve()
-        submittingDuringCall = result.current.submitting
-        await promise
+      // Start the submission but don't await it yet
+      let submitPromise
+      act(() => {
+        submitPromise = result.current.submitVote('dish-1', true)
       })
 
-      expect(submittingDuringCall).toBe(true)
+      // Now submitting should be true (API hasn't resolved yet)
+      expect(result.current.submitting).toBe(true)
+
+      // Resolve the API and wait for the submission to complete
+      await act(async () => {
+        resolveApi()
+        await submitPromise
+      })
 
       // After the promise resolves, submitting should be false
       expect(result.current.submitting).toBe(false)

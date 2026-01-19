@@ -86,6 +86,7 @@ export function RestaurantSearch({ selectedRestaurant, onSelectRestaurant, onCle
           {selectedRestaurant && (
             <button
               onClick={handleClear}
+              aria-label="Clear restaurant filter"
               className="
                 absolute right-3 top-1/2 -translate-y-1/2
                 w-6 h-6

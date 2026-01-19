@@ -56,6 +56,7 @@ export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFa
                 e.stopPropagation()
                 onToggleFavorite(dish_id)
               }}
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               className={`w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-all ${
                 isFavorite
                   ? 'bg-red-500 text-white'

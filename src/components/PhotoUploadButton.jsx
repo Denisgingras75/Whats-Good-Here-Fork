@@ -62,6 +62,7 @@ export function PhotoUploadButton({
           disabled={isProcessing}
           className="photo-upload-btn-compact"
           title="Add photo"
+          aria-label="Add photo"
         >
           {isProcessing ? (
             <span className="upload-spinner" />

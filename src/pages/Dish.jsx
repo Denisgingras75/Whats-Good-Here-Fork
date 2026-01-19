@@ -209,6 +209,7 @@ export function Dish() {
       >
         <button
           onClick={handleBack}
+          aria-label="Go back"
           className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-neutral-100 transition-colors"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -222,6 +223,7 @@ export function Dish() {
         {/* Favorite button */}
         <button
           onClick={handleToggleSave}
+          aria-label={isSaved?.(dishId) ? 'Remove from favorites' : 'Add to favorites'}
           className={`ml-auto w-10 h-10 rounded-full flex items-center justify-center transition-all ${
             isSaved?.(dishId)
               ? 'bg-red-500 text-white'
@@ -333,6 +335,7 @@ export function Dish() {
                     <button
                       key={photo.id}
                       onClick={() => setLightboxPhoto(photo.photo_url)}
+                      aria-label={`View photo of ${dish.dish_name}`}
                       className="aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
                     >
                       <img
@@ -386,10 +389,13 @@ export function Dish() {
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
           onClick={() => setLightboxPhoto(null)}
+          role="dialog"
+          aria-label="Photo lightbox"
         >
           <button
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-2xl"
             onClick={() => setLightboxPhoto(null)}
+            aria-label="Close lightbox"
           >
             ×
           </button>

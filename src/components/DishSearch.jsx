@@ -161,6 +161,7 @@ export function DishSearch({ dishes = [], loading = false }) {
               setQuery('')
               inputRef.current?.focus()
             }}
+            aria-label="Clear search"
             className="p-1 rounded-full hover:bg-neutral-100 transition-colors"
           >
             <svg

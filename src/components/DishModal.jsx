@@ -105,6 +105,7 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
         {/* Close button */}
         <button
           onClick={onClose}
+          aria-label="Close modal"
           style={{
             position: 'absolute',
             top: '12px',
@@ -146,15 +147,16 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
 
             {/* Featured photo (hero) */}
             {featuredPhoto && (
-              <div
+              <button
                 className="dish-hero-photo"
                 onClick={() => setLightboxPhoto(featuredPhoto.photo_url)}
+                aria-label={`View featured photo of ${dish.dish_name}`}
               >
                 <img src={featuredPhoto.photo_url} alt={dish.dish_name} />
                 {featuredPhoto.source_type === 'restaurant' && (
                   <span className="photo-badge restaurant">Official</span>
                 )}
-              </div>
+              </button>
             )}
 
             {/* Community photos grid */}
@@ -165,13 +167,14 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
                 </h4>
                 <div className="photo-grid">
                   {displayPhotos.map((photo) => (
-                    <div
+                    <button
                       key={photo.id}
                       className="photo-grid-item"
                       onClick={() => setLightboxPhoto(photo.photo_url)}
+                      aria-label={`View photo of ${dish.dish_name}`}
                     >
                       <img src={photo.photo_url} alt={dish.dish_name} />
-                    </div>
+                    </button>
                   ))}
                 </div>
                 {hasMorePhotos && (
@@ -211,8 +214,10 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
         <div
           className="photo-lightbox"
           onClick={() => setLightboxPhoto(null)}
+          role="dialog"
+          aria-label="Photo lightbox"
         >
-          <button className="lightbox-close">×</button>
+          <button className="lightbox-close" aria-label="Close lightbox">×</button>
           <img src={lightboxPhoto} alt={dish.dish_name} />
         </div>
       )}
