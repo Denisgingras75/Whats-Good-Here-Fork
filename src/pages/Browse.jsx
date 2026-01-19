@@ -543,7 +543,7 @@ export function Browse() {
         /* Category Grid - Default View */
         <div className="px-4 py-6">
           <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-            Browse by Category
+            Categories
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {CATEGORIES.map((category) => (
@@ -682,13 +682,13 @@ export function Browse() {
                   </div>
                 </div>
 
-                {/* Browse all categories button */}
+                {/* All categories button */}
                 <button
                   onClick={handleBackToCategories}
                   className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 active:scale-[0.98] transition-all"
                   style={{ background: 'var(--color-primary)' }}
                 >
-                  Browse All Categories
+                  All Categories
                 </button>
               </div>
             ) : (
