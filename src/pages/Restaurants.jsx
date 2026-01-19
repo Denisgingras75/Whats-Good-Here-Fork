@@ -8,6 +8,7 @@ import { useSavedDishes } from '../hooks/useSavedDishes'
 import { DishCard } from '../components/DishCard'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { getCategoryImage } from '../constants/categoryImages'
+import { getRatingColor } from '../utils/ranking'
 
 const MIN_VOTES_FOR_RANKING = 5
 const TOP_DISHES_COUNT = 5
@@ -609,7 +610,7 @@ function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, onToggle
             <div className="flex items-center gap-3">
               {/* Rating block - stacked vertically */}
               <div className="flex flex-col items-center px-3 py-1.5 rounded-lg" style={{ background: 'var(--color-surface)' }}>
-                <span className="text-lg font-bold leading-none" style={{ color: 'var(--color-primary)' }}>
+                <span className="text-lg font-bold leading-none" style={{ color: getRatingColor(avg_rating) }}>
                   {avg_rating || '—'}
                 </span>
                 <span className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>

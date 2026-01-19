@@ -29,6 +29,19 @@ export function formatScore10(score) {
 }
 
 /**
+ * Get color for rating based on score
+ * @param {number} rating - Rating on 1-10 scale
+ * @returns {string} CSS color value
+ */
+export function getRatingColor(rating) {
+  if (rating === null || rating === undefined) return 'var(--color-text-tertiary)'
+  const score = Number(rating)
+  if (score >= 8.0) return '#16a34a' // green-600 - excellent
+  if (score >= 6.0) return '#f59e0b' // amber-500 - good
+  return '#ef4444' // red-500 - meh
+}
+
+/**
  * Get Worth-It badge based on score and vote count
  * @param {number} worthItScore10 - Worth-It score on 1-10 scale
  * @param {number} totalVotes - Total number of votes

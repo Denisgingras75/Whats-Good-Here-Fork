@@ -5,6 +5,7 @@ import { useDishes } from '../hooks/useDishes'
 import { LocationPicker } from '../components/LocationPicker'
 import { DishSearch } from '../components/DishSearch'
 import { getCategoryImage } from '../constants/categoryImages'
+import { getRatingColor } from '../utils/ranking'
 
 const MIN_VOTES_FOR_RANKING = 5
 
@@ -313,7 +314,7 @@ function RankedDishRow({ dish, rank }) {
       <div className="flex-shrink-0 text-right">
         {isRanked ? (
           <div className="flex flex-col items-end">
-            <span className="text-base font-bold leading-tight" style={{ color: 'var(--color-primary)' }}>
+            <span className="text-base font-bold leading-tight" style={{ color: getRatingColor(avg_rating) }}>
               {avg_rating || '—'}
             </span>
             <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
@@ -440,7 +441,7 @@ function Top10Row({ dish, rank, onClick }) {
       <div className="flex-shrink-0 text-right">
         {isRanked ? (
           <div className="flex flex-col items-end">
-            <span className="text-sm font-bold leading-tight" style={{ color: 'var(--color-primary)' }}>
+            <span className="text-sm font-bold leading-tight" style={{ color: getRatingColor(avg_rating) }}>
               {avg_rating}
             </span>
             <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>

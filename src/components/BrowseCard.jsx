@@ -1,4 +1,5 @@
 import { getCategoryImage } from '../constants/categoryImages'
+import { getRatingColor } from '../utils/ranking'
 
 const MIN_VOTES_FOR_RANKING = 5
 
@@ -49,7 +50,7 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
         {/* Rating badge - bottom left */}
         {isRanked ? (
           <div className="absolute bottom-3 left-3 px-2.5 py-1.5 rounded-lg bg-black/60 backdrop-blur-sm flex flex-col items-center">
-            <span className="text-base font-bold text-white leading-tight">
+            <span className="text-base font-bold leading-tight" style={{ color: getRatingColor(avg_rating) }}>
               {avg_rating || '—'}
             </span>
             <span className="text-[10px] text-white/70">

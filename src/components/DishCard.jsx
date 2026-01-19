@@ -1,5 +1,5 @@
 import { ReviewFlow } from './ReviewFlow'
-import { getWorthItBadge, formatScore10, calculateWorthItScore10 } from '../utils/ranking'
+import { getWorthItBadge, formatScore10, calculateWorthItScore10, getRatingColor } from '../utils/ranking'
 import { getCategoryImage } from '../constants/categoryImages'
 
 export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFavorite, showOrderAgainPercent = false }) {
@@ -159,7 +159,7 @@ export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFa
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                    <div className="text-2xl font-bold" style={{ color: getRatingColor(avg_rating) }}>
                       {avg_rating ? formatScore10(avg_rating) : '—'}
                     </div>
                     <div className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
@@ -171,7 +171,7 @@ export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFa
                 <>
                   {/* Discovery view: Avg Rating is primary (ranking criterion) */}
                   <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>
+                    <div className="text-2xl font-bold" style={{ color: getRatingColor(avg_rating) }}>
                       {avg_rating ? formatScore10(avg_rating) : '—'}
                     </div>
                     <div className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
