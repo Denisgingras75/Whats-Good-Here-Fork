@@ -6,20 +6,20 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 // Check if Supabase is properly configured
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey)
 
-// Warn in development, error in production if not configured
+// Throw in production if not configured - don't mask the error
 if (!isSupabaseConfigured) {
-  const message = 'Supabase not configured: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are required'
+  const message = 'Supabase not configured: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables are required'
   if (import.meta.env.PROD) {
-    console.error(`[CRITICAL] ${message}`)
+    throw new Error(`[CRITICAL] ${message}`)
   } else {
-    console.warn(`[DEV] ${message} - Some features will not work`)
+    console.error(`[DEV] ${message} - App will not function correctly!`)
   }
 }
 
-// Create client (will fail gracefully if not configured)
+// Create client - require real config (no silent placeholders)
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key',
+  supabaseUrl || '',
+  supabaseAnonKey || '',
   {
     auth: {
       persistSession: true,

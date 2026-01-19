@@ -206,7 +206,7 @@ export const dishPhotosApi = {
       return data
     } catch (error) {
       console.error('Error fetching user photo:', error)
-      return null
+      throw error
     }
   },
 
@@ -276,7 +276,7 @@ export const dishPhotosApi = {
       return unrated.length
     } catch (error) {
       console.error('Error getting unrated count:', error)
-      return 0
+      throw error
     }
   },
 
@@ -316,7 +316,7 @@ export const dishPhotosApi = {
       return data
     } catch (error) {
       console.error('Error fetching featured photo:', error)
-      return null
+      throw error
     }
   },
 
@@ -395,7 +395,7 @@ export const dishPhotosApi = {
       return counts
     } catch (error) {
       console.error('Error fetching photo counts:', error)
-      return { featured: 0, community: 0, hidden: 0, total: 0 }
+      throw error
     }
   },
 }

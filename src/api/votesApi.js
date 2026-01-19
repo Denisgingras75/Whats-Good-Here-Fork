@@ -203,7 +203,7 @@ export const votesApi = {
       return rankedCount
     } catch (error) {
       console.error('Error getting dishes helped rank:', error)
-      return 0
+      throw error
     }
   },
 }
