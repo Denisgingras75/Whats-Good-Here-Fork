@@ -574,15 +574,42 @@ export function Browse() {
 
       {/* Main Content */}
       {!showingDishes ? (
-        /* Category Grid - Default View - Plates on a premium dark surface */
+        /* Category Grid - Default View - Plates on a premium dark wood table */
         <div
-          className="px-4 py-6"
+          className="px-4 py-6 relative"
           style={{
             background: `
-              radial-gradient(ellipse at 50% 20%, rgba(45,40,38,0.25) 0%, transparent 50%),
-              radial-gradient(ellipse at 30% 80%, rgba(35,30,28,0.15) 0%, transparent 40%),
-              radial-gradient(ellipse at 70% 60%, rgba(40,35,32,0.12) 0%, transparent 35%),
-              linear-gradient(180deg, #1a1918 0%, #141312 50%, #0f0e0d 100%)
+              /* Table surface polish - subtle sheen */
+              radial-gradient(ellipse 100% 40% at 50% 0%, rgba(255,250,245,0.04) 0%, transparent 60%),
+              /* Wood grain - more visible horizontal bands */
+              repeating-linear-gradient(
+                180deg,
+                transparent 0px,
+                transparent 12px,
+                rgba(60,50,40,0.12) 13px,
+                rgba(45,38,32,0.08) 14px,
+                transparent 15px,
+                transparent 35px,
+                rgba(55,45,38,0.10) 36px,
+                transparent 38px,
+                transparent 55px
+              ),
+              /* Subtle vertical grain variation */
+              repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                rgba(50,42,35,0.03) 80px,
+                transparent 160px
+              ),
+              /* Base wood color - warm dark walnut */
+              linear-gradient(180deg, #231e1a 0%, #1a1614 50%, #151210 100%)
+            `,
+            borderTop: '2px solid rgba(90,75,60,0.4)',
+            borderBottom: '4px solid #0a0908',
+            boxShadow: `
+              inset 0 2px 4px rgba(255,250,245,0.03),
+              inset 0 -8px 20px rgba(0,0,0,0.4),
+              0 4px 12px rgba(0,0,0,0.5)
             `,
           }}
         >
