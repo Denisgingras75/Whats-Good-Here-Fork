@@ -579,19 +579,21 @@ export function Browse() {
           className="px-4 py-6"
           style={{
             background: `
-              radial-gradient(ellipse at 50% 0%, rgba(40,32,28,0.3) 0%, transparent 50%),
-              linear-gradient(180deg, rgba(18,18,18,0.95) 0%, transparent 8%, transparent 92%, rgba(18,18,18,0.95) 100%),
+              radial-gradient(ellipse at 50% 30%, rgba(60,48,40,0.35) 0%, transparent 55%),
+              linear-gradient(180deg, rgba(18,18,18,0.85) 0%, transparent 4%, transparent 96%, rgba(18,18,18,0.85) 100%),
               repeating-linear-gradient(
                 90deg,
-                #1a1614 0px,
-                #1e1916 4px,
-                #1c1714 8px,
-                #201b18 14px,
-                #1b1815 20px,
-                #1d1a16 28px,
-                #191512 36px
+                #1a1512 0px,
+                #2a221c 3px,
+                #1e1814 7px,
+                #2d251e 12px,
+                #1c1610 18px,
+                #28201a 24px,
+                #1a1410 31px,
+                #2c241c 38px,
+                #1b1512 46px
               ),
-              linear-gradient(180deg, #1c1917 0%, #141210 100%)
+              linear-gradient(180deg, #28211a 0%, #0e0c0a 100%)
             `,
           }}
         >
