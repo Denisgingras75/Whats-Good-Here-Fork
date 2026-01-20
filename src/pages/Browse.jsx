@@ -11,7 +11,7 @@ import { getPendingVoteFromStorage } from '../components/ReviewFlow'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { DishCardSkeleton } from '../components/Skeleton'
 import { ImpactFeedback, getImpactMessage } from '../components/ImpactFeedback'
-import { CategoryIconTile } from '../components/CategoryIconTile'
+import { CategoryImageCard } from '../components/CategoryImageCard'
 
 const MIN_VOTES_FOR_RANKING = 5
 
@@ -581,7 +581,7 @@ export function Browse() {
           </h2>
           <div className="grid grid-cols-3 gap-3">
             {CATEGORIES.map((category) => (
-              <CategoryIconTile
+              <CategoryImageCard
                 key={category.id}
                 category={category}
                 isActive={selectedCategory === category.id}
