@@ -7,126 +7,167 @@
  * - Single selection with warm accent highlight
  */
 
-// Line icons for each category (consistent 24x24 viewBox, strokeWidth 1.5)
+// Line icons for each category - warm orange style matching inspiration
+// Consistent 24x24 viewBox, strokeWidth 1.5, rounded caps/joins
 const CATEGORY_ICONS = {
   pizza: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2L2 19h20L12 2z" />
-      <circle cx="9" cy="13" r="1" fill="currentColor" stroke="none" />
-      <circle cx="14" cy="10" r="1" fill="currentColor" stroke="none" />
-      <circle cx="11" cy="16" r="1" fill="currentColor" stroke="none" />
+      {/* Pizza slice with pepperoni */}
+      <path d="M12 3L3 20h18L12 3z" />
+      <path d="M12 3v17" />
+      <circle cx="10" cy="12" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="14" cy="14" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="11" cy="17" r="1.5" fill="currentColor" stroke="none" />
     </svg>
   ),
   burger: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 18h16a2 2 0 002-2v-1a2 2 0 00-2-2H4a2 2 0 00-2 2v1a2 2 0 002 2z" />
-      <path d="M4 13h16" />
-      <path d="M5 9h14a5 5 0 00-14 0z" />
-      <path d="M6 13c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0" />
+      {/* Stacked burger */}
+      <path d="M5 8c0-2.5 3-5 7-5s7 2.5 7 5" />
+      <path d="M5 8h14" />
+      <path d="M4 11h16" />
+      <path d="M5 11c0 0 1 1.5 3 1.5s3-1.5 4-1.5 2 1.5 4 1.5 3-1.5 3-1.5" />
+      <path d="M4 14h16" />
+      <path d="M5 17h14c0 0 0 2-7 2s-7-2-7-2z" />
+      <path d="M5 14v3" />
+      <path d="M19 14v3" />
     </svg>
   ),
   taco: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 12c0 4.5 3.5 8 8 8s8-3.5 8-8" />
-      <path d="M4 12c0-4.5 3.5-8 8-8" />
-      <path d="M6 11c1.5 0 2.5 1 4 1s2.5-1 4-1 2.5 1 4 1" />
-      <circle cx="8" cy="14" r="0.5" fill="currentColor" stroke="none" />
-      <circle cx="12" cy="13" r="0.5" fill="currentColor" stroke="none" />
-      <circle cx="16" cy="14" r="0.5" fill="currentColor" stroke="none" />
+      {/* Taco with filling */}
+      <path d="M3 14c0 5 4 7 9 7s9-2 9-7" />
+      <path d="M3 14c0-6 4-10 9-10s9 4 9 10" />
+      <path d="M6 12c1 0 2 1 3 1s2-1 3-1 2 1 3 1 2-1 3-1" />
+      <circle cx="8" cy="15" r="1" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="14" r="1" fill="currentColor" stroke="none" />
+      <circle cx="16" cy="15" r="1" fill="currentColor" stroke="none" />
     </svg>
   ),
   wings: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 4c-3 0-6 2-7 5-1 3 0 6 2 8l3-2" />
-      <path d="M12 4c3 0 6 2 7 5 1 3 0 6-2 8l-3-2" />
-      <ellipse cx="12" cy="14" rx="3" ry="4" />
-      <line x1="12" y1="18" x2="12" y2="21" />
+      {/* Chicken drumstick */}
+      <ellipse cx="10" cy="8" rx="6" ry="5" />
+      <path d="M14 12c2 2 3 5 3 8" />
+      <path d="M17 20h-2" />
+      <path d="M6 10c-1 1-2 3-1 5" />
+      <circle cx="8" cy="7" r="1" fill="currentColor" stroke="none" />
+      <circle cx="11" cy="9" r="1" fill="currentColor" stroke="none" />
     </svg>
   ),
   sushi: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <ellipse cx="12" cy="12" rx="8" ry="5" />
-      <ellipse cx="12" cy="12" rx="5" ry="3" />
-      <path d="M7 12h10" />
+      {/* Two sushi rolls */}
+      <ellipse cx="8" cy="12" rx="5" ry="6" />
+      <ellipse cx="8" cy="12" rx="2" ry="3" />
+      <ellipse cx="17" cy="12" rx="4" ry="5" />
+      <ellipse cx="17" cy="12" rx="1.5" ry="2.5" />
     </svg>
   ),
   breakfast: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="10" r="6" />
-      <circle cx="12" cy="10" r="2" />
-      <path d="M4 18h16" />
-      <path d="M6 18v2h12v-2" />
+      {/* Eggs and bacon */}
+      <ellipse cx="9" cy="10" rx="5" ry="4" />
+      <ellipse cx="9" cy="10" rx="2" ry="1.5" fill="currentColor" stroke="none" />
+      <ellipse cx="16" cy="9" rx="3" ry="2.5" />
+      <ellipse cx="16" cy="9" rx="1" ry="0.8" fill="currentColor" stroke="none" />
+      <path d="M5 17c2 1 4 1.5 6 0" />
+      <path d="M13 18c2 1 4 0.5 6-1" />
+      <path d="M6 19c2 1 4 1 5 0" />
     </svg>
   ),
   'lobster roll': (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 14h16a2 2 0 01-2 4H6a2 2 0 01-2-4z" />
-      <path d="M5 14c1-3 3-4 7-4s6 1 7 4" />
-      <path d="M8 12c.5-1 1.5-1.5 2-1.5" />
-      <path d="M16 12c-.5-1-1.5-1.5-2-1.5" />
-      <circle cx="10" cy="15" r="0.5" fill="currentColor" stroke="none" />
-      <circle cx="14" cy="15" r="0.5" fill="currentColor" stroke="none" />
+      {/* Hot dog style roll with lobster chunks */}
+      <path d="M4 13c0-3 3-5 8-5s8 2 8 5" />
+      <path d="M4 13c0 3 3 5 8 5s8-2 8-5" />
+      <path d="M4 13h16" />
+      <path d="M7 10c1-1 2-1 3 0" />
+      <path d="M14 10c1-1 2-1 3 0" />
+      <circle cx="8" cy="15" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="14.5" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="16" cy="15" r="1.5" fill="currentColor" stroke="none" />
     </svg>
   ),
   seafood: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2 12c2-3 5-5 10-5s8 2 10 5c-2 3-5 5-10 5s-8-2-10-5z" />
-      <path d="M20 12l2-2m-2 2l2 2" />
-      <circle cx="7" cy="12" r="1" />
-      <path d="M12 9v6m-2-4l4 2m-4 0l4-2" />
+      {/* Shrimp */}
+      <path d="M6 8c-2 0-3 2-2 4s3 4 6 5c3 1 7 0 9-2s2-5 0-7" />
+      <path d="M17 8c-2-2-5-2-7 0s-3 5-2 7" />
+      <path d="M6 8c0-2 1-3 2-4" />
+      <path d="M6 8c-1-1-1-3 0-4" />
+      <circle cx="8" cy="9" r="1" fill="currentColor" stroke="none" />
+      <path d="M19 15l2 1" />
+      <path d="M19 17l2 0" />
+      <path d="M18 19l1 1" />
     </svg>
   ),
   chowder: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14a2 2 0 012 2v2a4 4 0 01-4 4H7a4 4 0 01-4-4v-2a2 2 0 012-2z" />
-      <path d="M8 12V8a4 4 0 018 0v4" />
-      <path d="M7 15c1 1 2 1 3 0s2-1 3 0 2 1 3 0" />
+      {/* Steaming bowl */}
+      <path d="M4 12h16" />
+      <path d="M5 12c0 5 3 8 7 8s7-3 7-8" />
+      <path d="M8 6c0-1 1-2 1-2s1 1 0 2 1 2 1 2" />
+      <path d="M12 5c0-1 1-2 1-2s1 1 0 2 1 2 1 2" />
+      <path d="M16 6c0-1 1-2 1-2s1 1 0 2 1 2 1 2" />
     </svg>
   ),
   pasta: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 4c0 4 2 6 2 10" />
-      <path d="M12 4c0 4 0 6 0 10" />
-      <path d="M16 4c0 4-2 6-2 10" />
-      <ellipse cx="12" cy="17" rx="6" ry="3" />
-      <path d="M6 17v2a6 3 0 0012 0v-2" />
+      {/* Fork with spaghetti twirl */}
+      <path d="M12 3v5" />
+      <path d="M9 3v4" />
+      <path d="M15 3v4" />
+      <path d="M9 7c0 2 1 3 3 3s3-1 3-3" />
+      <ellipse cx="12" cy="14" rx="6" ry="4" />
+      <path d="M8 13c1 1 2 2 4 2s3-1 4-2" />
+      <path d="M12 10v8" />
+      <path d="M12 18v3" />
     </svg>
   ),
   steak: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <ellipse cx="12" cy="12" rx="9" ry="6" />
-      <path d="M7 10c1 2 3 3 5 3s4-1 5-3" />
-      <ellipse cx="9" cy="12" rx="1.5" ry="1" fill="none" />
-      <ellipse cx="15" cy="12" rx="1.5" ry="1" fill="none" />
+      {/* T-bone steak */}
+      <path d="M4 10c0-3 3-6 8-6s8 3 8 6c0 4-3 8-8 10-5-2-8-6-8-10z" />
+      <path d="M12 4v16" />
+      <path d="M8 10h8" />
+      <ellipse cx="8" cy="13" rx="2" ry="1.5" />
+      <ellipse cx="16" cy="12" rx="2" ry="1.5" />
     </svg>
   ),
   sandwich: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 8l8-4 8 4" />
-      <path d="M4 8v2l8 4 8-4V8" />
-      <path d="M4 14l8 4 8-4" />
-      <path d="M4 14v2l8 4 8-4v-2" />
+      {/* Layered sub sandwich */}
+      <path d="M3 10c0-3 4-6 9-6s9 3 9 6" />
+      <path d="M3 10h18" />
+      <path d="M4 13h16" />
+      <path d="M3 13c0 0 1 2 2 2h14c1 0 2-2 2-2" />
+      <path d="M5 15c0 2 3 4 7 4s7-2 7-4" />
+      <path d="M6 10v3" />
+      <path d="M10 10v3" />
+      <path d="M14 10v3" />
+      <path d="M18 10v3" />
     </svg>
   ),
   salad: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 14c0 4 3.5 6 8 6s8-2 8-6" />
-      <path d="M4 14h16" />
-      <path d="M8 10c-1-2 0-4 2-5" />
-      <path d="M12 10c0-2 1-4 3-4" />
-      <path d="M16 10c1-2 0-4-2-5" />
-      <circle cx="9" cy="16" r="0.5" fill="currentColor" stroke="none" />
-      <circle cx="15" cy="16" r="0.5" fill="currentColor" stroke="none" />
+      {/* Bowl with leafy greens */}
+      <path d="M4 11h16" />
+      <path d="M5 11c0 5 3 8 7 8s7-3 7-8" />
+      <path d="M8 8c-1-2 0-4 2-4 1 0 2 1 2 2" />
+      <path d="M12 6c0-2 2-3 3-3 2 0 2 2 1 4" />
+      <path d="M15 8c1-1 3-1 4 1" />
+      <circle cx="9" cy="14" r="1" fill="currentColor" stroke="none" />
+      <circle cx="14" cy="13" r="1" fill="currentColor" stroke="none" />
+      <circle cx="11" cy="16" r="1" fill="currentColor" stroke="none" />
     </svg>
   ),
   tendys: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 8c-1 3 0 6 2 8l2-1" />
-      <path d="M10 7c-1 4 0 7 2 9l2-1" />
-      <path d="M14 6c-1 4 0 8 2 10l2-1" />
-      <path d="M6 8c1-2 3-3 4-3" />
-      <path d="M10 7c1-2 2-3 4-3" />
-      <path d="M14 6c1-2 2-2 4-2" />
+      {/* Chicken tenders */}
+      <path d="M5 7c0-1 1-2 2-2h2c2 0 3 2 2 4l-2 8c0 1-1 2-2 2H6c-1 0-2-1-1-2l1-8c0-1 0-2-1-2z" />
+      <path d="M11 6c0-1 1-2 2-2h2c2 0 3 2 2 4l-2 9c0 1-1 2-2 2h-1c-1 0-2-1-1-2l1-9c0-1 0-2-1-2z" />
+      <path d="M17 5c0-1 1-1 2-1s2 1 2 2c0 2-1 4-2 6l-1 6c0 1-1 1-1 1s-1 0-1-1l1-6c0-2 0-4 0-5 0-1 0-2 0-2z" />
     </svg>
   ),
 }
