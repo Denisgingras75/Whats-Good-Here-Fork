@@ -8,17 +8,36 @@ import { Layout } from './components/Layout'
 import { WelcomeModal } from './components/Auth/WelcomeModal'
 import { preloadSounds } from './lib/sounds'
 
+// Helper to handle chunk load failures after new deploys
+// If a lazy-loaded chunk fails to load (e.g., after deploy), reload the page
+function lazyWithRetry(importFn, namedExport) {
+  return lazy(() =>
+    importFn()
+      .then(m => ({ default: namedExport ? m[namedExport] : m.default }))
+      .catch((error) => {
+        // Check if this is a chunk load failure
+        if (error.message?.includes('Failed to fetch dynamically imported module')) {
+          // Reload the page to get fresh chunks
+          window.location.reload()
+          // Return empty component while reloading
+          return { default: () => null }
+        }
+        throw error
+      })
+  )
+}
+
 // Lazy load pages for code splitting
-const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })))
-const Browse = lazy(() => import('./pages/Browse').then(m => ({ default: m.Browse })))
-const Dish = lazy(() => import('./pages/Dish').then(m => ({ default: m.Dish })))
-const Restaurants = lazy(() => import('./pages/Restaurants').then(m => ({ default: m.Restaurants })))
-const Profile = lazy(() => import('./pages/Profile').then(m => ({ default: m.Profile })))
-const Admin = lazy(() => import('./pages/Admin').then(m => ({ default: m.Admin })))
-const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })))
-const Privacy = lazy(() => import('./pages/Privacy').then(m => ({ default: m.Privacy })))
-const Terms = lazy(() => import('./pages/Terms').then(m => ({ default: m.Terms })))
-const Badges = lazy(() => import('./pages/Badges').then(m => ({ default: m.Badges })))
+const Home = lazyWithRetry(() => import('./pages/Home'), 'Home')
+const Browse = lazyWithRetry(() => import('./pages/Browse'), 'Browse')
+const Dish = lazyWithRetry(() => import('./pages/Dish'), 'Dish')
+const Restaurants = lazyWithRetry(() => import('./pages/Restaurants'), 'Restaurants')
+const Profile = lazyWithRetry(() => import('./pages/Profile'), 'Profile')
+const Admin = lazyWithRetry(() => import('./pages/Admin'), 'Admin')
+const Login = lazyWithRetry(() => import('./pages/Login'), 'Login')
+const Privacy = lazyWithRetry(() => import('./pages/Privacy'), 'Privacy')
+const Terms = lazyWithRetry(() => import('./pages/Terms'), 'Terms')
+const Badges = lazyWithRetry(() => import('./pages/Badges'), 'Badges')
 
 // Loading fallback
 const PageLoader = () => (
