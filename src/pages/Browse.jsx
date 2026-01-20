@@ -574,11 +574,21 @@ export function Browse() {
 
       {/* Main Content */}
       {!showingDishes ? (
-        /* Category Grid - Default View - Plates on a table */
+        /* Category Grid - Default View - Plates on a dark wood table */
         <div
           className="px-4 py-6"
           style={{
-            background: `radial-gradient(ellipse at center, #1a1a1a 0%, #0f0f0f 100%)`,
+            background: `
+              linear-gradient(180deg, rgba(18,18,18,0.9) 0%, transparent 15%, transparent 85%, rgba(18,18,18,0.9) 100%),
+              repeating-linear-gradient(
+                90deg,
+                #1c1816 0px,
+                #201a17 8px,
+                #1a1614 16px,
+                #1e1915 24px,
+                #1b1714 32px
+              )
+            `,
           }}
         >
           <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
