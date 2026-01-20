@@ -11,7 +11,7 @@ import { getPendingVoteFromStorage } from '../components/ReviewFlow'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { DishCardSkeleton } from '../components/Skeleton'
 import { ImpactFeedback, getImpactMessage } from '../components/ImpactFeedback'
-import { CategoryIconRow } from '../components/CategoryIconTile'
+import { CategoryIconTile } from '../components/CategoryIconTile'
 
 const MIN_VOTES_FOR_RANKING = 5
 
@@ -572,34 +572,22 @@ export function Browse() {
         )}
       </header>
 
-      {/* Category Filter Row - Always visible */}
-      <div className="py-4" style={{ background: 'var(--color-surface)' }}>
-        <CategoryIconRow
-          categories={CATEGORIES}
-          selectedCategory={selectedCategory}
-          onSelect={handleCategoryChange}
-        />
-      </div>
-
       {/* Main Content */}
       {!showingDishes ? (
-        /* Empty state when no category selected */
-        <div className="px-4 py-12 text-center">
-          <div className="max-w-xs mx-auto">
-            <div
-              className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center"
-              style={{ background: 'var(--color-surface-elevated)' }}
-            >
-              <svg className="w-8 h-8" style={{ color: 'var(--color-text-tertiary)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-            </div>
-            <h3 className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>
-              Select a category
-            </h3>
-            <p className="text-sm" style={{ color: 'var(--color-text-tertiary)' }}>
-              Tap a category above to discover top-rated dishes near you
-            </p>
+        /* Category Grid - Default View */
+        <div className="px-4 py-6">
+          <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
+            Categories
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
+            {CATEGORIES.map((category) => (
+              <CategoryIconTile
+                key={category.id}
+                category={category}
+                isActive={selectedCategory === category.id}
+                onClick={() => handleCategoryChange(category.id)}
+              />
+            ))}
           </div>
         </div>
       ) : (

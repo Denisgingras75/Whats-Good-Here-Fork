@@ -188,23 +188,16 @@ export function CategoryIconTile({
 }) {
   const icon = CATEGORY_ICONS[category.id] || DEFAULT_ICON
 
-  const sizeClasses = size === 'compact'
-    ? 'w-14 h-14'
-    : 'w-[68px] h-[68px]'
-
-  const iconSize = size === 'compact' ? 'w-6 h-6' : 'w-7 h-7'
-
   return (
     <button
       onClick={onClick}
-      className={`
-        flex flex-col items-center justify-center gap-1.5
-        ${sizeClasses}
-        rounded-[16px]
+      className="
+        flex flex-col items-center justify-center gap-3
+        w-full py-6
+        rounded-2xl
         transition-all duration-200
-        active:scale-[0.96]
-        flex-shrink-0
-      `}
+        active:scale-[0.98]
+      "
       style={{
         background: isActive ? 'var(--color-primary)' : 'var(--color-surface-elevated)',
         border: isActive ? 'none' : '1px solid var(--color-divider)',
@@ -212,7 +205,7 @@ export function CategoryIconTile({
     >
       {/* Icon */}
       <div
-        className={iconSize}
+        className="w-10 h-10"
         style={{
           color: isActive ? '#1A1A1A' : 'var(--color-text-tertiary)'
         }}
@@ -222,9 +215,9 @@ export function CategoryIconTile({
 
       {/* Label */}
       <span
-        className="text-[10px] font-medium leading-tight text-center px-1 truncate w-full"
+        className="text-sm font-medium"
         style={{
-          color: isActive ? '#1A1A1A' : 'var(--color-text-tertiary)'
+          color: isActive ? '#1A1A1A' : 'var(--color-text-secondary)'
         }}
       >
         {category.label}
