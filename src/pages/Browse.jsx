@@ -416,163 +416,41 @@ export function Browse() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-surface)' }}>
-      {/* Header */}
-      <header style={{ background: 'var(--color-bg)' }}>
-        {/* Search bar with autocomplete */}
-        <div className="px-4 pt-3 pb-1.5">
-          <div className="relative">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 z-10"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search dishes or restaurants..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value)
-                if (e.target.value.length >= 2) {
-                  setAutocompleteOpen(true)
-                } else {
-                  setAutocompleteOpen(false)
-                }
-                setAutocompleteIndex(-1)
-              }}
-              onFocus={() => {
-                if (searchQuery.length >= 2 && autocompleteSuggestions.length > 0) {
-                  setAutocompleteOpen(true)
-                }
-              }}
-              onKeyDown={handleSearchKeyDown}
-              className="w-full pl-10 pr-10 py-2 rounded-xl border focus:ring-2 transition-all text-sm"
-              style={{
-                background: 'var(--color-surface-elevated)',
-                borderColor: 'var(--color-divider)',
-                color: 'var(--color-text-primary)',
-                '--tw-ring-color': 'var(--color-primary)'
-              }}
-            />
-            {searchQuery && (
+      {/* Header - only shows when viewing dishes */}
+      {showingDishes && (
+        <header style={{ background: 'var(--color-bg)' }}>
+          {/* Category indicator when viewing dishes */}
+          {selectedCategory && !debouncedSearchQuery.trim() && (
+            <div className="px-4 py-3 flex items-center gap-3">
+              <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
+                {CATEGORIES.find(c => c.id === selectedCategory)?.label}
+              </span>
               <button
-                onClick={clearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center transition-colors z-10"
-                style={{ background: 'var(--color-divider)' }}
+                onClick={handleBackToCategories}
+                className="text-xs font-medium px-2 py-1 rounded-lg transition-colors"
+                style={{ color: 'var(--color-primary)', background: 'var(--color-primary-muted)' }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4" style={{ color: 'var(--color-text-secondary)' }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                </svg>
+                Clear
               </button>
-            )}
+            </div>
+          )}
 
-            {/* Autocomplete dropdown */}
-            {autocompleteOpen && autocompleteSuggestions.length > 0 && (
-              <div
-                ref={autocompleteRef}
-                className="absolute top-full left-0 right-0 mt-1 rounded-xl shadow-lg border overflow-hidden z-50"
-                style={{ background: 'var(--color-surface)', borderColor: 'var(--color-divider)' }}
-              >
-                {autocompleteSuggestions.map((suggestion, index) => (
-                  <button
-                    key={`${suggestion.type}-${suggestion.id}`}
-                    onClick={() => handleAutocompleteSelect(suggestion)}
-                    className="w-full px-4 py-3 text-left flex items-center gap-3 transition-colors"
-                    style={{
-                      background: index === autocompleteIndex ? 'var(--color-primary-muted)' : 'transparent'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-surface-elevated)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = index === autocompleteIndex ? 'var(--color-primary-muted)' : 'transparent'}
-                  >
-                    {/* Icon */}
-                    <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        suggestion.type === 'dish'
-                          ? 'bg-orange-100 text-orange-600'
-                          : 'bg-blue-100 text-blue-600'
-                      }`}
-                    >
-                      {suggestion.type === 'dish' ? (
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                      ) : (
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                      )}
-                    </div>
-
-                    {/* Text */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-neutral-900 truncate">
-                        {suggestion.name}
-                      </p>
-                      <p className="text-xs text-neutral-500 truncate">
-                        {suggestion.type === 'dish' ? `at ${suggestion.subtitle}` : suggestion.subtitle}
-                      </p>
-                    </div>
-
-                    {/* Type badge */}
-                    <span
-                      className="text-xs px-2 py-0.5 rounded-full flex-shrink-0"
-                      style={{
-                        background: suggestion.type === 'dish' ? 'var(--color-primary-muted)' : 'rgba(59, 130, 246, 0.15)',
-                        color: suggestion.type === 'dish' ? 'var(--color-primary)' : '#60A5FA'
-                      }}
-                    >
-                      {suggestion.type === 'dish' ? 'Dish' : 'Spot'}
-                    </span>
-                  </button>
-                ))}
-
-                {/* Hint */}
-                <div className="px-4 py-2 border-t" style={{ background: 'var(--color-surface-elevated)', borderColor: 'var(--color-divider)' }}>
-                  <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
-                    Press Enter to search all, or select a suggestion
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Category indicator when viewing dishes */}
-        {showingDishes && selectedCategory && !debouncedSearchQuery.trim() && (
-          <div className="px-4 pb-3 flex items-center gap-3">
-            <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
-              {CATEGORIES.find(c => c.id === selectedCategory)?.label}
-            </span>
-            <button
-              onClick={handleBackToCategories}
-              className="text-xs font-medium px-2 py-1 rounded-lg transition-colors"
-              style={{ color: 'var(--color-primary)', background: 'var(--color-primary-muted)' }}
-            >
-              Clear
-            </button>
-          </div>
-        )}
-
-        {/* Search results heading */}
-        {debouncedSearchQuery.trim() && !selectedCategory && (
-          <div className="px-4 pb-3">
-            <h1 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-              Best "{debouncedSearchQuery}" near you
-            </h1>
-          </div>
-        )}
-      </header>
+          {/* Search results heading */}
+          {debouncedSearchQuery.trim() && !selectedCategory && (
+            <div className="px-4 py-3">
+              <h1 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                Best "{debouncedSearchQuery}" near you
+              </h1>
+            </div>
+          )}
+        </header>
+      )}
 
       {/* Main Content */}
       {!showingDishes ? (
         /* Category Grid - Table surface integrated with page */
         <div
-          className="px-4 pt-3 pb-4 relative"
+          className="px-3 pt-3 pb-3 relative"
           style={{
             /* Surface matches page but slightly darker */
             background: 'linear-gradient(180deg, #1a1a1a 0%, #151515 50%, #121212 100%)',
@@ -593,10 +471,10 @@ export function Browse() {
             }}
           />
 
-          {/* Reservation card style header */}
-          <div className="flex justify-center mb-3">
+          {/* Reservation card style header - TOP */}
+          <div className="flex justify-center mb-2">
             <div
-              className="px-6 py-1.5 rounded-sm"
+              className="px-5 py-1 rounded-sm"
               style={{
                 background: 'transparent',
                 border: '1px solid rgba(244, 162, 97, 0.4)',
@@ -604,7 +482,7 @@ export function Browse() {
               }}
             >
               <span
-                className="text-xs font-medium tracking-[0.2em] uppercase"
+                className="text-[10px] font-medium tracking-[0.2em] uppercase"
                 style={{ color: 'var(--color-primary)' }}
               >
                 Categories
@@ -612,15 +490,114 @@ export function Browse() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          {/* Category grid - smaller icons */}
+          <div className="grid grid-cols-4 gap-2 mb-3">
             {CATEGORIES.map((category) => (
               <CategoryImageCard
                 key={category.id}
                 category={category}
                 isActive={selectedCategory === category.id}
                 onClick={() => handleCategoryChange(category.id)}
+                size="compact"
               />
             ))}
+          </div>
+
+          {/* Search bar at BOTTOM */}
+          <div className="relative">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 z-10"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search dishes or restaurants"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                if (e.target.value.length >= 2) {
+                  setAutocompleteOpen(true)
+                } else {
+                  setAutocompleteOpen(false)
+                }
+                setAutocompleteIndex(-1)
+              }}
+              onFocus={() => {
+                if (searchQuery.length >= 2 && autocompleteSuggestions.length > 0) {
+                  setAutocompleteOpen(true)
+                }
+              }}
+              onKeyDown={handleSearchKeyDown}
+              className="w-full pl-9 pr-9 py-1.5 rounded-lg border focus:ring-1 transition-all text-xs"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                borderColor: 'rgba(255,255,255,0.1)',
+                color: 'var(--color-text-primary)',
+                '--tw-ring-color': 'var(--color-primary)'
+              }}
+            />
+            {searchQuery && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center transition-colors z-10"
+                style={{ background: 'var(--color-divider)' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3" style={{ color: 'var(--color-text-secondary)' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+
+            {/* Autocomplete dropdown */}
+            {autocompleteOpen && autocompleteSuggestions.length > 0 && (
+              <div
+                ref={autocompleteRef}
+                className="absolute bottom-full left-0 right-0 mb-1 rounded-lg shadow-lg border overflow-hidden z-50"
+                style={{ background: 'var(--color-surface)', borderColor: 'var(--color-divider)' }}
+              >
+                {autocompleteSuggestions.map((suggestion, index) => (
+                  <button
+                    key={`${suggestion.type}-${suggestion.id}`}
+                    onClick={() => handleAutocompleteSelect(suggestion)}
+                    className="w-full px-3 py-2 text-left flex items-center gap-2 transition-colors"
+                    style={{
+                      background: index === autocompleteIndex ? 'var(--color-primary-muted)' : 'transparent'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-surface-elevated)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = index === autocompleteIndex ? 'var(--color-primary-muted)' : 'transparent'}
+                  >
+                    {/* Text */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate" style={{ color: 'var(--color-text-primary)' }}>
+                        {suggestion.name}
+                      </p>
+                      <p className="text-xs truncate" style={{ color: 'var(--color-text-tertiary)' }}>
+                        {suggestion.type === 'dish' ? `at ${suggestion.subtitle}` : suggestion.subtitle}
+                      </p>
+                    </div>
+
+                    {/* Type badge */}
+                    <span
+                      className="text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0"
+                      style={{
+                        background: suggestion.type === 'dish' ? 'var(--color-primary-muted)' : 'rgba(59, 130, 246, 0.15)',
+                        color: suggestion.type === 'dish' ? 'var(--color-primary)' : '#60A5FA'
+                      }}
+                    >
+                      {suggestion.type === 'dish' ? 'Dish' : 'Spot'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       ) : (
