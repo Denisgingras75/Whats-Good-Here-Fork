@@ -4,11 +4,15 @@ import { getPendingVoteFromStorage } from '../ReviewFlow'
 
 const REMEMBERED_EMAIL_KEY = 'whats-good-here-email'
 
-export function LoginModal({ isOpen, onClose }) {
+export function LoginModal({ isOpen, onClose, pendingAction = null }) {
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState(null)
   const [showEmailForm, setShowEmailForm] = useState(false)
+
+  // Check for pending vote from storage
+  const pendingVote = getPendingVoteFromStorage()
+  const hasPendingVote = pendingVote !== null
 
   // Load remembered email when modal opens
   useEffect(() => {
@@ -117,18 +121,21 @@ export function LoginModal({ isOpen, onClose }) {
             </svg>
           </button>
 
-          {/* Icon */}
-          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: 'var(--color-primary)' }}>
-            <span className="text-3xl">🍽️</span>
+          {/* Icon - shows pending vote if exists */}
+          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: hasPendingVote ? (pendingVote.vote ? '#10b981' : '#ef4444') : 'var(--color-primary)' }}>
+            <span className="text-3xl">{hasPendingVote ? (pendingVote.vote ? '👍' : '👎') : '🍽️'}</span>
           </div>
 
-          {/* Header */}
+          {/* Header - contextual based on pending action */}
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-              Sign in to vote
+              {hasPendingVote ? 'Sign in to save your vote' : 'Sign in to vote'}
             </h2>
             <p className="text-neutral-600 text-sm">
-              Join the community and help others discover the best dishes
+              {hasPendingVote
+                ? `Your ${pendingVote.vote ? '"Yes"' : '"No"'} vote is ready — just sign in to record it`
+                : 'Join the community and help others discover the best dishes'
+              }
             </p>
           </div>
 

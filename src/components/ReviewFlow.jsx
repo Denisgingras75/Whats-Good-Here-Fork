@@ -135,24 +135,24 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
   }, [step, user, onLoginRequired])
 
   const handleVoteClick = (wouldOrderAgain) => {
+    setPendingVote(wouldOrderAgain)
+
+    // Auth gate: check if user is logged in BEFORE showing confirmation
+    if (!user) {
+      // Save to localStorage so it survives OAuth redirect
+      setPendingVoteToStorage(dishId, wouldOrderAgain)
+      setAwaitingLogin(true)
+      onLoginRequired?.()
+      // Don't show confirmation animation - go straight to login
+      return
+    }
+
+    // User is authenticated - show confirmation then proceed to rating
     setConfirmationType(wouldOrderAgain ? 'yes' : 'no')
     setShowConfirmation(true)
-    setPendingVote(wouldOrderAgain)
 
     setTimeout(() => {
       setShowConfirmation(false)
-
-      // Auth gate: check if user is logged in BEFORE going to rating step
-      if (!user) {
-        // Save to localStorage so it survives OAuth redirect
-        setPendingVoteToStorage(dishId, wouldOrderAgain)
-        setAwaitingLogin(true)
-        onLoginRequired?.()
-        // Don't advance to step 2 - wait for login
-        return
-      }
-
-      // User is authenticated - proceed to rating
       setStep(2)
     }, 350)
   }
@@ -273,9 +273,11 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
 
         {/* Show "sign in to continue" note when awaiting login */}
         {awaitingLogin && pendingVote !== null && (
-          <p className="text-xs text-center" style={{ color: 'var(--color-primary)' }}>
-            Sign in to continue rating
-          </p>
+          <div className="p-3 rounded-xl text-center" style={{ background: 'color-mix(in srgb, var(--color-primary) 10%, white)' }}>
+            <p className="text-sm font-medium" style={{ color: 'var(--color-primary)' }}>
+              {pendingVote ? '👍' : '👎'} Vote selected — sign in to save it
+            </p>
+          </div>
         )}
 
         {localTotalVotes > 0 && !awaitingLogin ? (
