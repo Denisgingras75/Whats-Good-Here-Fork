@@ -574,13 +574,31 @@ export function Browse() {
 
       {/* Main Content */}
       {!showingDishes ? (
-        /* Category Grid - Warm charcoal surface for neon amber icons */
+        /* Category Grid - TABLE with visible thick edge */
         <div
-          className="px-4 py-6 relative"
+          className="mx-4 mt-4 mb-6 pt-6 pb-6 relative rounded-xl overflow-hidden"
           style={{
-            background: 'linear-gradient(180deg, #151312 0%, #121110 40%, #0f0f0e 100%)',
+            /* Table surface - warm dark wood tone */
+            background: `
+              radial-gradient(ellipse 120% 60% at 50% 0%, rgba(50,40,30,0.3) 0%, transparent 50%),
+              linear-gradient(180deg, #1e1a17 0%, #171412 60%, #12100e 100%)
+            `,
+            /* Table outer edge/rim */
+            border: '3px solid #252019',
+            boxShadow: `
+              inset 0 2px 4px rgba(70,55,40,0.15),
+              0 8px 24px rgba(0,0,0,0.5),
+              0 2px 4px rgba(0,0,0,0.3)
+            `,
           }}
         >
+          {/* Table surface highlight - polished wood sheen */}
+          <div
+            className="absolute top-0 left-0 right-0 h-12 pointer-events-none"
+            style={{
+              background: 'linear-gradient(180deg, rgba(80,65,50,0.12) 0%, transparent 100%)',
+            }}
+          />
           <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
             Categories
           </h2>
