@@ -53,6 +53,7 @@ export function CategoryImageCard({
             src={imageSrc}
             alt={category.label}
             className="w-full h-full object-cover"
+            style={{ transform: 'scale(1.4)' }}
             onError={(e) => {
               e.target.style.display = 'none'
             }}
