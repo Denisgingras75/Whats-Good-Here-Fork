@@ -31,13 +31,11 @@ const CATEGORIES = [
   { id: 'sushi', label: 'Sushi', emoji: '🍣' },
   { id: 'breakfast', label: 'Breakfast', emoji: '🍳' },
   { id: 'lobster roll', label: 'Lobster Rolls', emoji: '🦞' },
-  { id: 'seafood', label: 'Seafood', emoji: '🦐' },
   { id: 'chowder', label: 'Chowder', emoji: '🍲' },
   { id: 'pasta', label: 'Pasta', emoji: '🍝' },
   { id: 'steak', label: 'Steak', emoji: '🥩' },
   { id: 'sandwich', label: 'Sandwiches', emoji: '🥪' },
   { id: 'salad', label: 'Salads', emoji: '🥗' },
-  { id: 'tendys', label: 'Tendys', emoji: '🍗' },
 ]
 
 export function Browse() {
@@ -483,21 +481,9 @@ export function Browse() {
             </div>
           </div>
 
-          {/* Category grid - generous spacing like place settings */}
-          <div className="grid grid-cols-3 gap-x-6 gap-y-5 mb-8">
-            {CATEGORIES.slice(0, 9).map((category) => (
-              <CategoryImageCard
-                key={category.id}
-                category={category}
-                isActive={selectedCategory === category.id}
-                onClick={() => handleCategoryChange(category.id)}
-              />
-            ))}
-          </div>
-
-          {/* Second table / More categories */}
-          <div className="grid grid-cols-3 gap-x-6 gap-y-5 mb-8">
-            {CATEGORIES.slice(9).map((category) => (
+          {/* Category grid - 12 items, 4 rows of 3 */}
+          <div className="grid grid-cols-3 gap-x-6 gap-y-5">
+            {CATEGORIES.map((category) => (
               <CategoryImageCard
                 key={category.id}
                 category={category}
