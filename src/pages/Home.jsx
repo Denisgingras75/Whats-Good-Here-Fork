@@ -87,6 +87,7 @@ export function Home() {
             src="/logo.png"
             alt="What's Good Here"
             className="h-[72px] md:h-[84px] lg:h-24 w-auto"
+            style={{ mixBlendMode: 'lighten' }}
           />
         </div>
       </header>

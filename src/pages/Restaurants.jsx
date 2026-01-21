@@ -137,11 +137,7 @@ export function Restaurants() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-surface)' }}>
       {/* Header */}
-      <header className="px-4 py-2" style={{ background: 'var(--color-bg)' }}>
-        <div className="flex flex-col items-center mb-2">
-          <img src="/logo.png" alt="What's Good Here" className="h-12 md:h-14 lg:h-16 w-auto" />
-        </div>
-
+      <header className="px-4 pt-3 pb-2" style={{ background: 'var(--color-bg)' }}>
         {/* Search bar - context-aware */}
         <div className="relative">
           <svg
