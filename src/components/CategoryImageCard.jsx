@@ -26,24 +26,20 @@ const CATEGORY_IMAGES = {
   tendys: '/categories/tendys.webp',
 }
 
-// 12-point scalloped plate - pronounced curves, clearly reads as plate
+// 10-point scalloped plate shape - dramatic, clearly visible scallops
 const PLATE_CLIP_PATH = `polygon(
   50% 0%,
-  62% 0%, 72% 5%,
-  82% 5%, 90% 15%,
-  95% 25%, 100% 38%,
+  68% 2%, 80% 10%,
+  95% 20%, 100% 35%,
   100% 50%,
-  100% 62%, 95% 75%,
-  90% 85%, 82% 95%,
-  72% 95%, 62% 100%,
+  100% 65%, 95% 80%,
+  80% 90%, 68% 98%,
   50% 100%,
-  38% 100%, 28% 95%,
-  18% 95%, 10% 85%,
-  5% 75%, 0% 62%,
+  32% 98%, 20% 90%,
+  5% 80%, 0% 65%,
   0% 50%,
-  0% 38%, 5% 25%,
-  10% 15%, 18% 5%,
-  28% 5%, 38% 0%
+  0% 35%, 5% 20%,
+  20% 10%, 32% 2%
 )`
 
 export function CategoryImageCard({
