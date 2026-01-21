@@ -85,7 +85,7 @@ export function Home() {
         <div className="flex justify-center">
           {/* Logo in scalloped plate frame - matches category icons */}
           <div
-            className="relative w-[80px] h-[80px] md:w-[96px] md:h-[96px] lg:w-[112px] lg:h-[112px]"
+            className="relative w-[112px] h-[112px] md:w-[134px] md:h-[134px] lg:w-[156px] lg:h-[156px]"
             style={{
               filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.5))',
             }}
