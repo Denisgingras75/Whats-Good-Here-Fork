@@ -40,30 +40,31 @@ export function CategoryImageCard({
         active:scale-[0.97]
       "
     >
-      {/* Fancy plate - subtle scalloped edge */}
+      {/* Fancy plate - pronounced scalloped edge */}
       <div
         className="
           relative aspect-square
           overflow-hidden
           transition-all duration-200
-          w-[75%]
+          w-[85%]
         "
         style={{
           background: '#131211',
-          /* Scalloped plate shape - 12 subtle curves */
+          /* Scalloped plate shape - 8 pronounced curves */
           clipPath: `polygon(
             50% 0%,
-            61% 2%, 71% 6%, 79% 13%,
-            87% 21%, 94% 29%, 98% 39%,
-            100% 50%,
-            98% 61%, 94% 71%, 87% 79%,
-            79% 87%, 71% 94%, 61% 98%,
-            50% 100%,
-            39% 98%, 29% 94%, 21% 87%,
-            13% 79%, 6% 71%, 2% 61%,
-            0% 50%,
-            2% 39%, 6% 29%, 13% 21%,
-            21% 13%, 29% 6%, 39% 2%
+            65% 4%, 75% 8%,
+            85% 15%, 92% 25%,
+            96% 35%, 100% 50%,
+            96% 65%, 92% 75%,
+            85% 85%, 75% 92%,
+            65% 96%, 50% 100%,
+            35% 96%, 25% 92%,
+            15% 85%, 8% 75%,
+            4% 65%, 0% 50%,
+            4% 35%, 8% 25%,
+            15% 15%, 25% 8%,
+            35% 4%
           )`,
           boxShadow: isActive
             ? `
