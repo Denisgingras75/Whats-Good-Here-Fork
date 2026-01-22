@@ -22,7 +22,7 @@ function transformVote(vote) {
 /**
  * Category tier thresholds and titles
  */
-const TIER_THRESHOLDS = [
+export const TIER_THRESHOLDS = [
   { min: 50, level: 5, title: 'Master', icon: '👑' },
   { min: 30, level: 4, title: 'Expert', icon: '⭐' },
   { min: 20, level: 3, title: 'Connoisseur', icon: '💎' },
@@ -33,7 +33,7 @@ const TIER_THRESHOLDS = [
 /**
  * Category display info
  */
-const CATEGORY_INFO = {
+export const CATEGORY_INFO = {
   'pizza': { emoji: '🍕', label: 'Pizza' },
   'burger': { emoji: '🍔', label: 'Burger' },
   'taco': { emoji: '🌮', label: 'Taco' },
@@ -60,7 +60,7 @@ const CATEGORY_INFO = {
  * Major categories eligible for profile rank display
  * Sub-categories like fries, apps, tendys, breakfast sandwich are excluded
  */
-const MAJOR_CATEGORIES = new Set([
+export const MAJOR_CATEGORIES = new Set([
   'pizza',
   'burger',
   'taco',
@@ -82,7 +82,7 @@ const MAJOR_CATEGORIES = new Set([
 /**
  * Get tier for a vote count
  */
-function getTierForCount(count) {
+export function getTierForCount(count) {
   for (const tier of TIER_THRESHOLDS) {
     if (count >= tier.min) {
       return tier
@@ -94,7 +94,7 @@ function getTierForCount(count) {
 /**
  * Get next tier info for a vote count
  */
-function getNextTierInfo(count) {
+export function getNextTierInfo(count) {
   // Find the next tier threshold above current count
   const sortedThresholds = [...TIER_THRESHOLDS].sort((a, b) => a.min - b.min)
 
@@ -116,7 +116,7 @@ function getNextTierInfo(count) {
  * Calculate progress towards next tier for each category
  * Only includes major categories
  */
-function calculateCategoryProgress(categoryCounts) {
+export function calculateCategoryProgress(categoryCounts) {
   const progress = []
 
   for (const [category, count] of Object.entries(categoryCounts)) {
@@ -172,7 +172,7 @@ function getRatingPersonality(avgRating) {
  * Calculate category tiers from vote counts
  * Only includes major categories
  */
-function calculateCategoryTiers(categoryCounts) {
+export function calculateCategoryTiers(categoryCounts) {
   const tiers = []
 
   for (const [category, count] of Object.entries(categoryCounts)) {

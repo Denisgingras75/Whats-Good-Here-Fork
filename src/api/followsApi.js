@@ -180,25 +180,31 @@ export const followsApi = {
   },
 
   /**
-   * Get follow counts for a user
+   * Get follow counts for a user (counted live from follows table)
    * @param {string} userId - User ID
    * @returns {Promise<{followers: number, following: number}>}
    */
   async getFollowCounts(userId) {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('follower_count, following_count')
-      .eq('id', userId)
-      .single()
+    // Count followers (people who follow this user)
+    const { count: followerCount, error: followerError } = await supabase
+      .from('follows')
+      .select('*', { count: 'exact', head: true })
+      .eq('followed_id', userId)
 
-    if (error) {
-      console.error('Error fetching follow counts:', error)
+    // Count following (people this user follows)
+    const { count: followingCount, error: followingError } = await supabase
+      .from('follows')
+      .select('*', { count: 'exact', head: true })
+      .eq('follower_id', userId)
+
+    if (followerError || followingError) {
+      console.error('Error fetching follow counts:', followerError || followingError)
       return { followers: 0, following: 0 }
     }
 
     return {
-      followers: data?.follower_count || 0,
-      following: data?.following_count || 0,
+      followers: followerCount || 0,
+      following: followingCount || 0,
     }
   },
 
@@ -258,7 +264,7 @@ export const followsApi = {
     // Get basic profile info
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('id, display_name, follower_count, following_count, created_at')
+      .select('id, display_name, created_at')
       .eq('id', userId)
       .single()
 
@@ -266,6 +272,21 @@ export const followsApi = {
       console.error('Error fetching user profile:', profileError)
       return null
     }
+
+    // Get live follow counts from follows table
+    const { count: followerCount } = await supabase
+      .from('follows')
+      .select('*', { count: 'exact', head: true })
+      .eq('followed_id', userId)
+
+    const { count: followingCount } = await supabase
+      .from('follows')
+      .select('*', { count: 'exact', head: true })
+      .eq('follower_id', userId)
+
+    // Add counts to profile
+    profile.follower_count = followerCount || 0
+    profile.following_count = followingCount || 0
 
     // Get vote stats
     const { data: votes, error: votesError } = await supabase

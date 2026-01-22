@@ -11,10 +11,13 @@ export function Login() {
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
   const [message, setMessage] = useState(null)
-  const [showEmailForm, setShowEmailForm] = useState(false)
   const [splashComplete, setSplashComplete] = useState(false)
   const [showLogin, setShowLogin] = useState(false) // Controls welcome vs login view
+  const [mode, setMode] = useState('options') // 'options' | 'signin' | 'signup' | 'forgot'
+  const [usernameStatus, setUsernameStatus] = useState(null) // null | 'checking' | 'available' | 'taken'
 
   // Load remembered email on mount
   useEffect(() => {
@@ -22,15 +25,38 @@ export function Login() {
       const savedEmail = localStorage.getItem(REMEMBERED_EMAIL_KEY)
       if (savedEmail) {
         setEmail(savedEmail)
-        setShowEmailForm(true) // Auto-expand if we have a saved email
       }
     } catch (error) {
       console.warn('Login: unable to read remembered email', error)
     }
   }, [])
 
-  // Don't auto-redirect logged in users - let them see the welcome page
-  // They can click "Get Started" to go to homepage
+  // Reset form when switching modes
+  useEffect(() => {
+    if (!showLogin) {
+      setMode('options')
+      setPassword('')
+      setUsername('')
+      setMessage(null)
+      setUsernameStatus(null)
+    }
+  }, [showLogin])
+
+  // Check username availability with debounce
+  useEffect(() => {
+    if (mode !== 'signup' || !username || username.length < 2) {
+      setUsernameStatus(null)
+      return
+    }
+
+    setUsernameStatus('checking')
+    const timer = setTimeout(async () => {
+      const available = await authApi.isUsernameAvailable(username)
+      setUsernameStatus(available ? 'available' : 'taken')
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [username, mode])
 
   const handleGoogleSignIn = async () => {
     try {
@@ -42,22 +68,92 @@ export function Login() {
     }
   }
 
-  const handleMagicLink = async (event) => {
-    event.preventDefault()
+  const handleSignIn = async (e) => {
+    e.preventDefault()
     try {
       setLoading(true)
-      // Remember the email for next time
+      setMessage(null)
+
+      // Remember the email
       try {
         localStorage.setItem(REMEMBERED_EMAIL_KEY, email)
       } catch (error) {
         console.warn('Login: unable to persist remembered email', error)
       }
-      await authApi.signInWithMagicLink(email)
+
+      await authApi.signInWithPassword(email, password)
+      navigate('/')
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSignUp = async (e) => {
+    e.preventDefault()
+
+    if (usernameStatus === 'taken') {
+      setMessage({ type: 'error', text: 'This username is already taken.' })
+      return
+    }
+
+    if (username.length < 2) {
+      setMessage({ type: 'error', text: 'Username must be at least 2 characters.' })
+      return
+    }
+
+    if (password.length < 6) {
+      setMessage({ type: 'error', text: 'Password must be at least 6 characters.' })
+      return
+    }
+
+    try {
+      setLoading(true)
+      setMessage(null)
+
+      // Remember the email
+      try {
+        localStorage.setItem(REMEMBERED_EMAIL_KEY, email)
+      } catch (error) {
+        console.warn('Login: unable to persist remembered email', error)
+      }
+
+      const result = await authApi.signUpWithPassword(email, password, username)
+
+      if (result.success) {
+        setMessage({
+          type: 'success',
+          text: 'Account created! Check your email to verify, then sign in.'
+        })
+        setMode('signin')
+        setPassword('')
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault()
+
+    if (!email) {
+      setMessage({ type: 'error', text: 'Please enter your email address.' })
+      return
+    }
+
+    try {
+      setLoading(true)
+      setMessage(null)
+
+      await authApi.resetPassword(email)
+
       setMessage({
         type: 'success',
-        text: 'Check your email for the login link!',
+        text: 'Password reset link sent! Check your email.'
       })
-      // Don't clear email - keep it visible so they know where to check
     } catch (error) {
       setMessage({ type: 'error', text: error.message })
     } finally {
@@ -78,7 +174,15 @@ export function Login() {
         {/* Header */}
         <header className="px-4 pt-6 pb-4">
           <button
-            onClick={() => showLogin ? setShowLogin(false) : navigate('/')}
+            onClick={() => {
+              if (showLogin && mode !== 'options') {
+                setMode('options')
+              } else if (showLogin) {
+                setShowLogin(false)
+              } else {
+                navigate('/')
+              }
+            }}
             className="flex items-center gap-2 text-sm font-medium"
             style={{ color: 'var(--color-text-secondary)' }}
           >
@@ -181,10 +285,17 @@ export function Login() {
 
             {/* Heading */}
             <h1 className="text-2xl font-bold text-center mb-2" style={{ color: 'var(--color-text-primary)' }}>
-              Sign in to vote
+              {mode === 'signup' ? 'Create Account' : mode === 'signin' ? 'Welcome Back' : mode === 'forgot' ? 'Reset Password' : 'Sign in to vote'}
             </h1>
             <p className="text-center text-sm mb-8" style={{ color: 'var(--color-text-secondary)' }}>
-              Help others find the best dishes
+              {mode === 'signup'
+                ? 'Choose a unique username for your profile'
+                : mode === 'signin'
+                ? 'Enter your email and password'
+                : mode === 'forgot'
+                ? "Enter your email and we'll send you a reset link"
+                : 'Help others find the best dishes'
+              }
             </p>
 
             {/* Messages */}
@@ -200,41 +311,62 @@ export function Login() {
               </div>
             )}
 
-            <div className="w-full max-w-sm space-y-3">
-              {/* Google Sign In */}
-              <button
-                onClick={handleGoogleSignIn}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-semibold active:scale-[0.98] transition-all disabled:opacity-50"
-                style={{ background: 'var(--color-surface-elevated)', color: 'var(--color-text-primary)', border: '2px solid var(--color-divider)' }}
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                </svg>
-                Continue with Google
-              </button>
-
-              {/* Divider */}
-              <div className="flex items-center gap-4">
-                <div className="flex-1 h-px" style={{ background: 'var(--color-divider)' }} />
-                <span className="text-xs font-medium" style={{ color: 'var(--color-text-tertiary)' }}>or</span>
-                <div className="flex-1 h-px" style={{ background: 'var(--color-divider)' }} />
-              </div>
-
-              {/* Magic Link */}
-              {!showEmailForm ? (
+            {/* Options Mode */}
+            {mode === 'options' && (
+              <div className="w-full max-w-sm space-y-4">
+                {/* Google Sign In */}
                 <button
-                  onClick={() => setShowEmailForm(true)}
-                  className="w-full px-6 py-4 rounded-xl font-semibold transition-all"
-                  style={{ color: 'var(--color-text-secondary)', background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-semibold active:scale-[0.98] transition-all disabled:opacity-50"
+                  style={{ background: 'var(--color-surface-elevated)', color: 'var(--color-text-primary)', border: '2px solid var(--color-divider)' }}
                 >
-                  Sign in with email
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                  </svg>
+                  Continue with Google
                 </button>
-              ) : (
-                <form onSubmit={handleMagicLink} className="space-y-3">
+
+                {/* Divider */}
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 h-px" style={{ background: 'var(--color-divider)' }} />
+                  <span className="text-xs font-medium" style={{ color: 'var(--color-text-tertiary)' }}>or</span>
+                  <div className="flex-1 h-px" style={{ background: 'var(--color-divider)' }} />
+                </div>
+
+                {/* Email Sign In */}
+                <button
+                  onClick={() => setMode('signin')}
+                  className="w-full px-6 py-4 rounded-xl font-semibold active:scale-[0.98] transition-all"
+                  style={{ background: 'var(--color-primary)', color: '#1A1A1A' }}
+                >
+                  Sign in with Email
+                </button>
+
+                {/* Sign Up Link */}
+                <p className="text-center text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                  Don't have an account?{' '}
+                  <button
+                    onClick={() => setMode('signup')}
+                    className="font-semibold underline"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    Sign up
+                  </button>
+                </p>
+              </div>
+            )}
+
+            {/* Sign In Mode */}
+            {mode === 'signin' && (
+              <form onSubmit={handleSignIn} className="w-full max-w-sm space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-secondary)' }}>
+                    Email
+                  </label>
                   <input
                     type="email"
                     value={email}
@@ -245,25 +377,202 @@ export function Login() {
                     className="w-full px-4 py-3 rounded-xl focus:outline-none transition-colors"
                     style={{ background: 'var(--color-bg)', border: '2px solid var(--color-divider)', color: 'var(--color-text-primary)' }}
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-secondary)' }}>
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                    className="w-full px-4 py-3 rounded-xl focus:outline-none transition-colors"
+                    style={{ background: 'var(--color-bg)', border: '2px solid var(--color-divider)', color: 'var(--color-text-primary)' }}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full px-6 py-4 font-semibold rounded-xl hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
+                  style={{ background: 'var(--color-primary)', color: '#1A1A1A' }}
+                >
+                  {loading ? 'Signing in...' : 'Sign In'}
+                </button>
+
+                <div className="flex items-center justify-between text-sm">
                   <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full px-6 py-4 font-semibold rounded-xl hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
-                    style={{ background: 'var(--color-primary)', color: '#1A1A1A' }}
+                    type="button"
+                    onClick={() => setMode('options')}
+                    style={{ color: 'var(--color-text-tertiary)' }}
                   >
-                    {loading ? 'Sending...' : 'Send magic link'}
+                    Back
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowEmailForm(false)}
-                    className="w-full text-sm py-2"
+                    onClick={() => setMode('forgot')}
+                    className="font-medium"
+                    style={{ color: 'var(--color-text-secondary)' }}
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+
+                <p className="text-center text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                  Don't have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => setMode('signup')}
+                    className="font-semibold underline"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    Sign up
+                  </button>
+                </p>
+              </form>
+            )}
+
+            {/* Forgot Password Mode */}
+            {mode === 'forgot' && (
+              <form onSubmit={handleForgotPassword} className="w-full max-w-sm space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-secondary)' }}>
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    autoFocus
+                    className="w-full px-4 py-3 rounded-xl focus:outline-none transition-colors"
+                    style={{ background: 'var(--color-bg)', border: '2px solid var(--color-divider)', color: 'var(--color-text-primary)' }}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full px-6 py-4 font-semibold rounded-xl hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
+                  style={{ background: 'var(--color-primary)', color: '#1A1A1A' }}
+                >
+                  {loading ? 'Sending...' : 'Send Reset Link'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setMode('signin')}
+                  className="w-full text-center text-sm"
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                >
+                  Back to sign in
+                </button>
+              </form>
+            )}
+
+            {/* Sign Up Mode */}
+            {mode === 'signup' && (
+              <form onSubmit={handleSignUp} className="w-full max-w-sm space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-secondary)' }}>
+                    Username
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value.replace(/\s/g, ''))}
+                      placeholder="Choose a unique username"
+                      required
+                      autoFocus
+                      minLength={2}
+                      maxLength={30}
+                      className="w-full px-4 py-3 rounded-xl focus:outline-none transition-colors pr-10"
+                      style={{
+                        background: 'var(--color-bg)',
+                        border: `2px solid ${usernameStatus === 'taken' ? '#ef4444' : usernameStatus === 'available' ? '#10b981' : 'var(--color-divider)'}`,
+                        color: 'var(--color-text-primary)'
+                      }}
+                    />
+                    {usernameStatus && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg">
+                        {usernameStatus === 'checking' && '⏳'}
+                        {usernameStatus === 'available' && '✓'}
+                        {usernameStatus === 'taken' && '✗'}
+                      </span>
+                    )}
+                  </div>
+                  {usernameStatus === 'taken' && (
+                    <p className="text-xs mt-1" style={{ color: '#ef4444' }}>This username is taken</p>
+                  )}
+                  {usernameStatus === 'available' && (
+                    <p className="text-xs mt-1" style={{ color: '#10b981' }}>Username available!</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-secondary)' }}>
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    className="w-full px-4 py-3 rounded-xl focus:outline-none transition-colors"
+                    style={{ background: 'var(--color-bg)', border: '2px solid var(--color-divider)', color: 'var(--color-text-primary)' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-secondary)' }}>
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="At least 6 characters"
+                    required
+                    minLength={6}
+                    className="w-full px-4 py-3 rounded-xl focus:outline-none transition-colors"
+                    style={{ background: 'var(--color-bg)', border: '2px solid var(--color-divider)', color: 'var(--color-text-primary)' }}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading || usernameStatus === 'taken' || usernameStatus === 'checking'}
+                  className="w-full px-6 py-4 font-semibold rounded-xl hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
+                  style={{ background: 'var(--color-primary)', color: '#1A1A1A' }}
+                >
+                  {loading ? 'Creating account...' : 'Create Account'}
+                </button>
+
+                <div className="flex items-center justify-between text-sm">
+                  <button
+                    type="button"
+                    onClick={() => setMode('options')}
                     style={{ color: 'var(--color-text-tertiary)' }}
                   >
-                    Cancel
+                    Back
                   </button>
-                </form>
-              )}
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => setMode('signin')}
+                    className="font-medium"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    Already have an account?
+                  </button>
+                </div>
+              </form>
+            )}
 
             {/* Footer */}
             <p className="mt-6 text-xs text-center" style={{ color: 'var(--color-text-tertiary)' }}>

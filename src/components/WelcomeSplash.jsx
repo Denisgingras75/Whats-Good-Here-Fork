@@ -21,13 +21,13 @@ export function WelcomeSplash({ onComplete }) {
     setShouldShow(true)
     const timers = []
 
-    // Animation timeline
-    timers.push(setTimeout(() => setPhase('glow-in'), 300))      // Image fades in with glow
-    timers.push(setTimeout(() => setPhase('glow-peak'), 1000))   // Glow intensifies
-    timers.push(setTimeout(() => setPhase('settle'), 1500))      // Glow settles, slight scale
-    timers.push(setTimeout(() => setPhase('tagline'), 2000))     // Tagline appears
-    timers.push(setTimeout(() => setPhase('done'), 3000))        // Hold for a moment
-    timers.push(setTimeout(() => setPhase('fade-out'), 3300))    // Fade out splash
+    // Animation timeline (drawn out ~2.5s longer total)
+    timers.push(setTimeout(() => setPhase('glow-in'), 400))      // Image fades in with glow
+    timers.push(setTimeout(() => setPhase('glow-peak'), 1800))   // Glow intensifies
+    timers.push(setTimeout(() => setPhase('settle'), 2800))      // Glow settles, slight scale
+    timers.push(setTimeout(() => setPhase('tagline'), 3800))     // Tagline appears
+    timers.push(setTimeout(() => setPhase('done'), 5200))        // Hold for a moment
+    timers.push(setTimeout(() => setPhase('fade-out'), 5700))    // Fade out splash
     timers.push(setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, 'true')
@@ -36,7 +36,7 @@ export function WelcomeSplash({ onComplete }) {
       }
       setShouldShow(false)
       onComplete?.()
-    }, 3800))
+    }, 6300))
 
     return () => timers.forEach(clearTimeout)
   }, [onComplete])

@@ -61,6 +61,153 @@ export const authApi = {
   },
 
   /**
+   * Sign up with email, password, and username
+   * @param {string} email - User email
+   * @param {string} password - User password
+   * @param {string} username - Display name (must be unique)
+   * @returns {Promise<Object>} Auth response
+   */
+  async signUpWithPassword(email, password, username) {
+    try {
+      posthog.capture('signup_started', { method: 'password' })
+
+      // Check if username is already taken
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('id')
+        .ilike('display_name', username)
+        .single()
+
+      if (existingUser) {
+        throw new Error('This username is already taken. Please choose another.')
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: username,
+          },
+        },
+      })
+
+      if (error) {
+        posthog.capture('signup_failed', { method: 'password', error: error.message })
+        throw error
+      }
+
+      // Update the profile with the display name
+      if (data.user) {
+        await supabase
+          .from('profiles')
+          .update({ display_name: username })
+          .eq('id', data.user.id)
+      }
+
+      posthog.capture('signup_completed', { method: 'password' })
+      return { success: true, user: data.user }
+    } catch (error) {
+      console.error('Error signing up:', error)
+      throw error
+    }
+  },
+
+  /**
+   * Sign in with email and password
+   * @param {string} email - User email
+   * @param {string} password - User password
+   * @returns {Promise<Object>} Auth response
+   */
+  async signInWithPassword(email, password) {
+    try {
+      posthog.capture('login_started', { method: 'password' })
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) {
+        posthog.capture('login_failed', { method: 'password', error: error.message })
+        throw error
+      }
+
+      posthog.capture('login_completed', { method: 'password' })
+      return { success: true, user: data.user }
+    } catch (error) {
+      console.error('Error signing in:', error)
+      throw error
+    }
+  },
+
+  /**
+   * Send password reset email
+   * @param {string} email - User email
+   * @returns {Promise<Object>} Result
+   */
+  async resetPassword(email) {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      })
+
+      if (error) {
+        throw error
+      }
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error sending password reset:', error)
+      throw error
+    }
+  },
+
+  /**
+   * Update password (after clicking reset link)
+   * @param {string} newPassword - New password
+   * @returns {Promise<Object>} Result
+   */
+  async updatePassword(newPassword) {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      })
+
+      if (error) {
+        throw error
+      }
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error updating password:', error)
+      throw error
+    }
+  },
+
+  /**
+   * Check if a username is available
+   * @param {string} username - Username to check
+   * @returns {Promise<boolean>} True if available
+   */
+  async isUsernameAvailable(username) {
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id')
+        .ilike('display_name', username)
+        .single()
+
+      return !data
+    } catch (error) {
+      // PGRST116 means no rows found, which means username is available
+      if (error.code === 'PGRST116') return true
+      console.error('Error checking username:', error)
+      return false
+    }
+  },
+
+  /**
    * Get current user's vote for a dish
    * @param {string} dishId - Dish ID
    * @param {string} userId - User ID

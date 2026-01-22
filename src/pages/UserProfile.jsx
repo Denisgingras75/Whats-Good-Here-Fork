@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { followsApi } from '../api'
@@ -6,6 +6,11 @@ import { getCategoryImage } from '../constants/categoryImages'
 import { getRatingColor } from '../utils/ranking'
 import { FollowListModal } from '../components/FollowListModal'
 import { supabase } from '../lib/supabase'
+import {
+  calculateCategoryTiers,
+  calculateCategoryProgress,
+  CATEGORY_INFO,
+} from '../hooks/useUserVotes'
 
 /**
  * Public User Profile Page
@@ -141,6 +146,27 @@ export function UserProfile() {
     if (avgRating >= 5.5) return { emoji: '🤔', title: 'Fair Judge' }
     return { emoji: '😤', title: 'Tough Critic' }
   }
+
+  // Calculate category tiers and progress from recent_votes
+  const { categoryTiers, categoryProgress } = useMemo(() => {
+    if (!profile?.recent_votes?.length) {
+      return { categoryTiers: [], categoryProgress: [] }
+    }
+
+    // Count votes per category
+    const categoryCounts = {}
+    profile.recent_votes.forEach(vote => {
+      const cat = vote.dish?.category
+      if (cat) {
+        categoryCounts[cat] = (categoryCounts[cat] || 0) + 1
+      }
+    })
+
+    return {
+      categoryTiers: calculateCategoryTiers(categoryCounts),
+      categoryProgress: calculateCategoryProgress(categoryCounts),
+    }
+  }, [profile?.recent_votes])
 
   // Format member since date
   const memberSince = profile?.created_at
@@ -311,6 +337,78 @@ export function UserProfile() {
                   <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
                     {badge.name}
                   </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Category Tiers - Achieved Ranks */}
+        {categoryTiers.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--color-text-secondary)' }}>
+              {isOwnProfile ? 'Your Ranks' : `${profile.display_name}'s Ranks`}
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {categoryTiers.map((tier) => (
+                <div
+                  key={tier.category}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border"
+                  style={{ background: 'var(--color-card)', borderColor: 'var(--color-divider)' }}
+                >
+                  <span>{tier.emoji}</span>
+                  <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{tier.label}</span>
+                  <span style={{ color: 'var(--color-text-tertiary)' }}>·</span>
+                  <span className="font-semibold" style={{ color: 'var(--color-primary)' }}>
+                    {tier.icon} {tier.title}
+                  </span>
+                  <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>({tier.count})</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Category Progress - Working towards next tier */}
+        {categoryProgress.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--color-text-secondary)' }}>
+              {categoryTiers.length > 0 ? 'Level Up' : 'Progress'}
+            </h3>
+            <div className="space-y-2">
+              {categoryProgress.slice(0, 3).map((prog) => (
+                <div
+                  key={prog.category}
+                  className="rounded-xl p-3 border"
+                  style={{ background: 'var(--color-card)', borderColor: 'var(--color-divider)' }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span>{prog.emoji}</span>
+                      <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{prog.label}</span>
+                      {prog.currentTier && (
+                        <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                          {prog.currentTier.icon} {prog.currentTier.title}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs font-medium" style={{ color: 'var(--color-primary)' }}>
+                      {prog.votesNeeded} more to {prog.nextTier.icon} {prog.nextTier.title}
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--color-surface-elevated)' }}>
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${Math.round(prog.progress * 100)}%`,
+                        background: 'var(--color-primary)',
+                      }}
+                    />
+                  </div>
+                  <div className="flex justify-between mt-1">
+                    <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>{prog.count} votes</span>
+                    <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>{prog.nextTier.min} needed</span>
+                  </div>
                 </div>
               ))}
             </div>

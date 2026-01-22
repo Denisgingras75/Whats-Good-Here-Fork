@@ -39,6 +39,7 @@ const Privacy = lazyWithRetry(() => import('./pages/Privacy'), 'Privacy')
 const Terms = lazyWithRetry(() => import('./pages/Terms'), 'Terms')
 const Badges = lazyWithRetry(() => import('./pages/Badges'), 'Badges')
 const UserProfile = lazyWithRetry(() => import('./pages/UserProfile'), 'UserProfile')
+const ResetPassword = lazyWithRetry(() => import('./pages/ResetPassword'), 'ResetPassword')
 
 // Loading fallback
 const PageLoader = () => (
@@ -85,6 +86,7 @@ function App() {
               <Route path="/profile" element={<Layout><Profile /></Layout>} />
               <Route path="/user/:userId" element={<Layout><UserProfile /></Layout>} />
               <Route path="/login" element={<Login />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
