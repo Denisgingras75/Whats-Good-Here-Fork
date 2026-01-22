@@ -422,15 +422,13 @@ function RecentVoteCard({ vote, myRating }) {
         {hasMyRating && (
           <p className="text-xs mt-0.5 font-medium">
             <span style={{ color: 'var(--color-text-secondary)' }}>You: </span>
-            <span style={{ color: myRatingNum > theirRating ? '#10b981' : myRatingNum < theirRating ? '#ef4444' : 'var(--color-primary)' }}>
-              {myRatingNum}
-              {myRatingNum !== theirRating && (
-                <span style={{ marginLeft: 4 }}>
-                  ({myRatingNum > theirRating ? '+' : ''}{Math.round((myRatingNum - theirRating) * 10) / 10})
-                </span>
-              )}
-              {myRatingNum === theirRating && ' (Same!)'}
-            </span>
+            <span style={{ color: getRatingColor(myRatingNum) }}>{myRatingNum}</span>
+            {myRatingNum !== theirRating && (
+              <span style={{ color: myRatingNum > theirRating ? '#10b981' : '#ef4444', marginLeft: 4 }}>
+                ({myRatingNum > theirRating ? '+' : ''}{Math.round((myRatingNum - theirRating) * 10) / 10})
+              </span>
+            )}
+            {myRatingNum === theirRating && <span style={{ color: 'var(--color-primary)', marginLeft: 4 }}>(Same!)</span>}
           </p>
         )}
       </div>
