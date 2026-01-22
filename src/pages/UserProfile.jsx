@@ -23,6 +23,7 @@ export function UserProfile() {
   const [followLoading, setFollowLoading] = useState(false)
   const [followListModal, setFollowListModal] = useState(null) // 'followers' | 'following' | null
   const [myRatings, setMyRatings] = useState({}) // { dishId: rating }
+  const [showAllRatings, setShowAllRatings] = useState(false)
 
   // Check if viewing own profile
   const isOwnProfile = currentUser?.id === userId
@@ -320,14 +321,30 @@ export function UserProfile() {
       {/* Recent Ratings */}
       <div className="px-4 py-4">
         <h3 className="text-sm font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--color-text-secondary)' }}>
-          Recent Ratings
+          {profile.display_name}'s Ratings
         </h3>
 
         {profile.recent_votes?.length > 0 ? (
           <div className="space-y-3">
-            {profile.recent_votes.map((vote, index) => (
+            {(showAllRatings ? profile.recent_votes : profile.recent_votes.slice(0, 5)).map((vote, index) => (
               <RecentVoteCard key={index} vote={vote} myRating={myRatings[vote.dish?.id]} />
             ))}
+
+            {/* View more / View less button */}
+            {profile.recent_votes.length > 5 && (
+              <button
+                onClick={() => setShowAllRatings(!showAllRatings)}
+                className="w-full py-3 text-center rounded-xl border-2 border-dashed hover:bg-white/5 transition-colors"
+                style={{ borderColor: 'var(--color-divider)' }}
+              >
+                <span className="text-sm font-medium" style={{ color: 'var(--color-primary)' }}>
+                  {showAllRatings
+                    ? 'Show less'
+                    : `View ${profile.recent_votes.length - 5} more ${profile.recent_votes.length - 5 === 1 ? 'dish' : 'dishes'}`
+                  }
+                </span>
+              </button>
+            )}
           </div>
         ) : (
           <div className="py-8 text-center">

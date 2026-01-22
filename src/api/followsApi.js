@@ -285,7 +285,7 @@ export const followsApi = {
       ? Math.round((voteList.reduce((sum, v) => sum + (v.rating_10 || 0), 0) / totalVotes) * 10) / 10
       : null
 
-    // Get recent votes with dish info
+    // Get all votes with dish info (for expand/collapse in UI)
     const { data: recentVotes, error: recentError } = await supabase
       .from('votes')
       .select(`
@@ -306,7 +306,7 @@ export const followsApi = {
       `)
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
-      .limit(5)
+      .limit(50)
 
     if (recentError) {
       console.error('Error fetching recent votes:', recentError)
