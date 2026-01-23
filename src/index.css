@@ -883,3 +883,19 @@
 .lightbox-close:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* ===========================
+   Performance Utilities
+   =========================== */
+
+/* content-visibility for long lists - skip rendering off-screen items */
+.dish-card-virtualized {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 420px;
+}
+
+/* Smaller card variant for browse grid */
+.browse-card-virtualized {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 280px;
+}

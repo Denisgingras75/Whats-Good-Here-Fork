@@ -27,7 +27,7 @@ export const DishCard = memo(function DishCard({ dish, onVote, onLoginRequired, 
   const imageUrl = photo_url || getCategoryImage(category)
 
   return (
-    <article className="card-elevated overflow-hidden mb-6 stagger-item">
+    <article className="card-elevated overflow-hidden mb-6 stagger-item dish-card-virtualized">
       {/* Dish Photo - Hero Element */}
       <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-stone-100 to-stone-200 overflow-hidden group">
         <img

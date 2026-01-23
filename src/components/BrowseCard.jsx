@@ -33,7 +33,7 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
       tabIndex={0}
       onClick={onClick}
       onKeyDown={handleKeyDown}
-      className="w-full rounded-2xl overflow-hidden border shadow-sm transition-all duration-200 hover:shadow-xl hover:-translate-y-1 active:scale-[0.98] active:shadow-md text-left group cursor-pointer"
+      className="w-full rounded-2xl overflow-hidden border shadow-sm transition-all duration-200 hover:shadow-xl hover:-translate-y-1 active:scale-[0.98] active:shadow-md text-left group cursor-pointer browse-card-virtualized"
       style={{ background: 'var(--color-card)', borderColor: 'var(--color-divider)' }}
     >
       {/* Image with rating badge */}

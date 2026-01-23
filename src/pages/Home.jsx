@@ -46,7 +46,7 @@ export function Home() {
       )
 
       // Sort by avg_rating (ranked dishes first, then by score)
-      const sorted = [...categoryDishes].sort((a, b) => {
+      const sorted = categoryDishes.toSorted((a, b) => {
         const aRanked = (a.total_votes || 0) >= MIN_VOTES_FOR_RANKING
         const bRanked = (b.total_votes || 0) >= MIN_VOTES_FOR_RANKING
         if (aRanked && !bRanked) return -1
@@ -69,7 +69,7 @@ export function Home() {
   const top10Dishes = useMemo(() => {
     if (!dishes?.length) return []
 
-    return [...dishes].sort((a, b) => {
+    return dishes.toSorted((a, b) => {
       const aRanked = (a.total_votes || 0) >= MIN_VOTES_FOR_RANKING
       const bRanked = (b.total_votes || 0) >= MIN_VOTES_FOR_RANKING
       if (aRanked && !bRanked) return -1

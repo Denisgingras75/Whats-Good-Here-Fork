@@ -6,6 +6,7 @@ import { useDishes } from '../hooks/useDishes'
 import { useSavedDishes } from '../hooks/useSavedDishes'
 import { restaurantsApi } from '../api/restaurantsApi'
 import { dishesApi } from '../api/dishesApi'
+import { getStorageItem, setStorageItem } from '../lib/storage'
 import { BrowseCard } from '../components/BrowseCard'
 import { DishModal } from '../components/DishModal'
 import { getPendingVoteFromStorage } from '../components/ReviewFlow'
@@ -50,13 +51,7 @@ export function Browse() {
   const [selectedDish, setSelectedDish] = useState(null)
   const [impactFeedback, setImpactFeedback] = useState(null)
   const [pendingVoteData, setPendingVoteData] = useState(null)
-  const [sortBy, setSortBy] = useState(() => {
-    try {
-      return localStorage.getItem('browse_sort') || 'top_rated'
-    } catch {
-      return 'top_rated'
-    }
-  })
+  const [sortBy, setSortBy] = useState(() => getStorageItem('browse_sort') || 'top_rated')
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false)
 
   // Autocomplete state
@@ -108,18 +103,14 @@ export function Browse() {
         setSortDropdownOpen(false)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside, { passive: true })
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   // Handle sort change
   const handleSortChange = (sortId) => {
     setSortBy(sortId)
-    try {
-      localStorage.setItem('browse_sort', sortId)
-    } catch {
-      // localStorage may be unavailable in private browsing or restricted contexts
-    }
+    setStorageItem('browse_sort', sortId)
     setSortDropdownOpen(false)
   }
 
@@ -162,7 +153,7 @@ export function Browse() {
         setAutocompleteOpen(false)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside, { passive: true })
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
@@ -302,15 +293,15 @@ export function Browse() {
     // Then sort based on selected option
     switch (sortBy) {
       case 'most_voted':
-        result = [...result].sort((a, b) => (b.total_votes || 0) - (a.total_votes || 0))
+        result = result.toSorted((a, b) => (b.total_votes || 0) - (a.total_votes || 0))
         break
       case 'closest':
-        result = [...result].sort((a, b) => (a.distance_miles || 999) - (b.distance_miles || 999))
+        result = result.toSorted((a, b) => (a.distance_miles || 999) - (b.distance_miles || 999))
         break
       case 'top_rated':
       default:
         // Sort by avg_rating (1-10 scale) for Discovery view
-        result = [...result].sort((a, b) => {
+        result = result.toSorted((a, b) => {
           const aRanked = (a.total_votes || 0) >= MIN_VOTES_FOR_RANKING
           const bRanked = (b.total_votes || 0) >= MIN_VOTES_FOR_RANKING
           // Ranked dishes first
