@@ -49,7 +49,13 @@ export function AuthProvider({ children }) {
         posthog.reset()
       } else if (event === 'TOKEN_REFRESHED') {
         // Token was refreshed - session is still valid, user stays logged in
-        // No action needed, just update state
+        // Update state to ensure we have fresh user data
+      } else if (event === 'USER_DELETED' || !session) {
+        // User was deleted or session is invalid - clear state
+        if (prevUserRef.current) {
+          posthog.capture('session_expired')
+          posthog.reset()
+        }
       }
 
       setUser(newUser)

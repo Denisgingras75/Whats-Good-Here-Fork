@@ -1,13 +1,21 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { votesApi } from '../api'
 
 export function useVote() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
+  // Track in-flight requests per dish to prevent double submissions
+  const inFlightRef = useRef(new Set())
 
   // Submit both wouldOrderAgain AND rating_10 in one call
-  const submitVote = async (dishId, wouldOrderAgain, rating10) => {
+  const submitVote = useCallback(async (dishId, wouldOrderAgain, rating10) => {
+    // Prevent duplicate submissions for the same dish
+    if (inFlightRef.current.has(dishId)) {
+      return { success: false, error: 'Vote already in progress' }
+    }
+
     try {
+      inFlightRef.current.add(dishId)
       setSubmitting(true)
       setError(null)
 
@@ -23,9 +31,10 @@ export function useVote() {
       setError(err.message)
       return { success: false, error: err.message }
     } finally {
-      setSubmitting(false)
+      inFlightRef.current.delete(dishId)
+      setSubmitting(inFlightRef.current.size > 0)
     }
-  }
+  }, [])
 
   const getUserVotes = async () => {
     try {
