@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { authApi } from '../api'
+import { authApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
 import { WelcomeSplash } from '../components/WelcomeSplash'
 

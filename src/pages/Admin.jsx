@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { restaurantsApi, adminApi } from '../api'
+import { restaurantsApi } from '../api/restaurantsApi'
+import { adminApi } from '../api/adminApi'
 import { CATEGORY_IMAGES } from '../constants/categoryImages'
 
 const CATEGORIES = Object.keys(CATEGORY_IMAGES)

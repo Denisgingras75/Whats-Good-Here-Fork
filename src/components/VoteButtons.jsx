@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useVote } from '../hooks/useVote'
-import { authApi } from '../api'
+import { authApi } from '../api/authApi'
 
 export function VoteButtons({ dishId, onVote, onLoginRequired }) {
   const { user } = useAuth()

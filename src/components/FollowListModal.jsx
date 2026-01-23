@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { followsApi } from '../api'
+import { followsApi } from '../api/followsApi'
 
 /**
  * Modal to display followers or following list with pagination

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { restaurantsApi } from '../api'
+import { restaurantsApi } from '../api/restaurantsApi'
 
 export function RestaurantSearch({ selectedRestaurant, onSelectRestaurant, onClearRestaurant }) {
   const [searchQuery, setSearchQuery] = useState('')

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { followsApi } from '../api'
+import { followsApi } from '../api/followsApi'
 
 /**
  * UserSearch - Search for users by name

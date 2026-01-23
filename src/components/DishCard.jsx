@@ -1,8 +1,9 @@
+import { memo } from 'react'
 import { ReviewFlow } from './ReviewFlow'
 import { getWorthItBadge, formatScore10, calculateWorthItScore10, getRatingColor } from '../utils/ranking'
 import { getCategoryImage } from '../constants/categoryImages'
 
-export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFavorite, showOrderAgainPercent = false }) {
+export const DishCard = memo(function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFavorite, showOrderAgainPercent = false }) {
   const {
     dish_id,
     dish_name,
@@ -211,4 +212,4 @@ export function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFa
       </div>
     </article>
   )
-}
+})

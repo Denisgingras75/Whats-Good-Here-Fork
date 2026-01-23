@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
-import { votesApi } from '../api'
+import { votesApi } from '../api/votesApi'
 
 export function useVote() {
   const [submitting, setSubmitting] = useState(false)

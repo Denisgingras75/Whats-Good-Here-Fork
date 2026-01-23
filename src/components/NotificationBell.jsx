@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { notificationsApi } from '../api'
+import { notificationsApi } from '../api/notificationsApi'
 
 /**
  * Notification bell icon with dropdown

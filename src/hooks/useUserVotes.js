@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { votesApi } from '../api'
+import { votesApi } from '../api/votesApi'
 
 /**
  * Transform raw vote data to dish format

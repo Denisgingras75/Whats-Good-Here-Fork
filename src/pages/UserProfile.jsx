@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { followsApi } from '../api'
+import { followsApi } from '../api/followsApi'
 import { getCategoryImage } from '../constants/categoryImages'
 import { getRatingColor } from '../utils/ranking'
 import { FollowListModal } from '../components/FollowListModal'

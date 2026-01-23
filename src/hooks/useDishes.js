@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { dishesApi } from '../api'
+import { dishesApi } from '../api/dishesApi'
 import { withRetry, getUserMessage } from '../utils/errorHandler'
 
 export function useDishes(location, radius, category = null, restaurantId = null) {

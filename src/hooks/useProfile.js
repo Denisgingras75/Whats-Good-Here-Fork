@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { profileApi } from '../api'
+import { profileApi } from '../api/profileApi'
 
 export function useProfile(userId) {
   const [profile, setProfile] = useState(null)

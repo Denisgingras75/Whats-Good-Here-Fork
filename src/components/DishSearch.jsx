@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import posthog from 'posthog-js'
-import { dishesApi } from '../api'
+import { dishesApi } from '../api/dishesApi'
 import { getCategoryImage } from '../constants/categoryImages'
 import { getRatingColor } from '../utils/ranking'
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import posthog from 'posthog-js'
-import { favoritesApi } from '../api'
+import { favoritesApi } from '../api/favoritesApi'
 
 export function useSavedDishes(userId) {
   const [savedDishIds, setSavedDishIds] = useState([])

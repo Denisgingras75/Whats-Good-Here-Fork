@@ -1,15 +1,26 @@
+import { useMemo } from 'react'
 import { DishCard } from './DishCard'
 
 const MIN_VOTES_FOR_RANKING = 5
 
 export function DishFeed({ dishes, loading, error, onVote, onLoginRequired, selectedRestaurant, isSaved, onToggleSave, isConfidenceView = false }) {
   // For Confidence view, separate dishes into ranked (5+ votes) and unranked
-  const rankedDishes = isConfidenceView
-    ? dishes.filter(d => (d.total_votes || 0) >= MIN_VOTES_FOR_RANKING)
-    : dishes
-  const unrankedDishes = isConfidenceView
-    ? dishes.filter(d => (d.total_votes || 0) < MIN_VOTES_FOR_RANKING)
-    : []
+  // Single iteration instead of two filter passes
+  const { rankedDishes, unrankedDishes } = useMemo(() => {
+    if (!isConfidenceView) {
+      return { rankedDishes: dishes, unrankedDishes: [] }
+    }
+    const ranked = []
+    const unranked = []
+    for (const dish of dishes) {
+      if ((dish.total_votes || 0) >= MIN_VOTES_FOR_RANKING) {
+        ranked.push(dish)
+      } else {
+        unranked.push(dish)
+      }
+    }
+    return { rankedDishes: ranked, unrankedDishes: unranked }
+  }, [dishes, isConfidenceView])
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4">
