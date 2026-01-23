@@ -9,16 +9,17 @@ export const followsApi = {
   /**
    * Follow a user
    * @param {string} followedId - User ID to follow
-   * @returns {Promise<{success: boolean, error?: string}>}
+   * @returns {Promise<void>}
+   * @throws {Error} Not authenticated, self-follow, or API error
    */
   async follow(followedId) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return { success: false, error: 'Not authenticated' }
+      throw new Error('Not authenticated')
     }
 
     if (user.id === followedId) {
-      return { success: false, error: 'Cannot follow yourself' }
+      throw new Error('Cannot follow yourself')
     }
 
     const { error } = await supabase
@@ -29,26 +30,24 @@ export const followsApi = {
       })
 
     if (error) {
-      // Handle duplicate follow gracefully
+      // Handle duplicate follow gracefully - not an error
       if (error.code === '23505') {
-        return { success: true } // Already following
+        return // Already following, success
       }
-      console.error('Error following user:', error)
-      return { success: false, error: error.message }
+      throw error
     }
-
-    return { success: true }
   },
 
   /**
    * Unfollow a user
    * @param {string} followedId - User ID to unfollow
-   * @returns {Promise<{success: boolean, error?: string}>}
+   * @returns {Promise<void>}
+   * @throws {Error} Not authenticated or API error
    */
   async unfollow(followedId) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return { success: false, error: 'Not authenticated' }
+      throw new Error('Not authenticated')
     }
 
     const { error } = await supabase
@@ -58,11 +57,8 @@ export const followsApi = {
       .eq('followed_id', followedId)
 
     if (error) {
-      console.error('Error unfollowing user:', error)
-      return { success: false, error: error.message }
+      throw error
     }
-
-    return { success: true }
   },
 
   /**
@@ -287,44 +283,67 @@ export const followsApi = {
    * @returns {Promise<Object|null>}
    */
   async getUserProfile(userId) {
-    // Get basic profile info
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id, display_name, created_at')
-      .eq('id', userId)
-      .single()
+    // Run all independent queries in parallel for faster loading
+    const [
+      profileResult,
+      followerResult,
+      followingResult,
+      votesResult,
+      badgesResult,
+    ] = await Promise.all([
+      // 1. Get basic profile info
+      supabase
+        .from('profiles')
+        .select('id, display_name, created_at')
+        .eq('id', userId)
+        .single(),
+      // 2. Get follower count
+      supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('followed_id', userId),
+      // 3. Get following count
+      supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('follower_id', userId),
+      // 4. Get votes with dish info (includes data for stats calculation)
+      supabase
+        .from('votes')
+        .select(`
+          rating_10,
+          would_order_again,
+          created_at,
+          dishes (
+            id,
+            name,
+            photo_url,
+            category,
+            avg_rating,
+            restaurants (
+              id,
+              name
+            )
+          )
+        `)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(50),
+      // 5. Get badges
+      supabase.rpc('get_user_badges', { p_user_id: userId, p_public_only: false }),
+    ])
 
-    if (profileError) {
-      console.error('Error fetching user profile:', profileError)
+    // Check for profile error (required)
+    if (profileResult.error) {
       return null
     }
 
-    // Get live follow counts from follows table
-    const { count: followerCount } = await supabase
-      .from('follows')
-      .select('*', { count: 'exact', head: true })
-      .eq('followed_id', userId)
+    const profile = profileResult.data
+    profile.follower_count = followerResult.count || 0
+    profile.following_count = followingResult.count || 0
 
-    const { count: followingCount } = await supabase
-      .from('follows')
-      .select('*', { count: 'exact', head: true })
-      .eq('follower_id', userId)
-
-    // Add counts to profile
-    profile.follower_count = followerCount || 0
-    profile.following_count = followingCount || 0
-
-    // Get vote stats
-    const { data: votes, error: votesError } = await supabase
-      .from('votes')
-      .select('rating_10, would_order_again, created_at')
-      .eq('user_id', userId)
-
-    if (votesError) {
-      console.error('Error fetching user votes:', votesError)
-    }
-
-    const voteList = votes || []
+    // Calculate stats from votes (no separate query needed)
+    const voteList = votesResult.data || []
     const totalVotes = voteList.length
     const worthItCount = voteList.filter(v => v.would_order_again).length
     const avoidCount = voteList.filter(v => !v.would_order_again).length
@@ -332,43 +351,10 @@ export const followsApi = {
       ? Math.round((voteList.reduce((sum, v) => sum + (v.rating_10 || 0), 0) / totalVotes) * 10) / 10
       : null
 
-    // Get all votes with dish info (for expand/collapse in UI)
-    const { data: recentVotes, error: recentError } = await supabase
-      .from('votes')
-      .select(`
-        rating_10,
-        would_order_again,
-        created_at,
-        dishes (
-          id,
-          name,
-          photo_url,
-          category,
-          avg_rating,
-          restaurants (
-            id,
-            name
-          )
-        )
-      `)
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(50)
-
-    if (recentError) {
-      console.error('Error fetching recent votes:', recentError)
-    }
-
-    // Get all unlocked badges (not just public-eligible ones)
-    const { data: badges, error: badgesError } = await supabase
-      .rpc('get_user_badges', { p_user_id: userId, p_public_only: false })
-
-    if (badgesError) {
-      console.error('Error fetching badges:', badgesError)
-    }
+    const badges = badgesResult.data || []
 
     // Map badge_key to key for consistency with UI
-    const mappedBadges = (badges || []).map(b => ({
+    const mappedBadges = badges.map(b => ({
       key: b.badge_key,
       name: b.name,
       subtitle: b.subtitle,
@@ -385,7 +371,7 @@ export const followsApi = {
         avoid: avoidCount,
         avg_rating: avgRating,
       },
-      recent_votes: (recentVotes || []).map(v => ({
+      recent_votes: voteList.map(v => ({
         rating: v.rating_10,
         would_order_again: v.would_order_again,
         voted_at: v.created_at,

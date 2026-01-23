@@ -5,6 +5,15 @@ import posthog from 'posthog-js'
 import './index.css'
 import App from './App.jsx'
 
+// Silence console in production (errors still go to Sentry)
+if (import.meta.env.PROD) {
+  console.log = () => {}
+  console.warn = () => {}
+  console.info = () => {}
+  console.debug = () => {}
+  // Keep console.error - it's caught by Sentry
+}
+
 // Initialize PostHog for user analytics
 if (import.meta.env.VITE_PUBLIC_POSTHOG_KEY && import.meta.env.PROD) {
   posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY, {

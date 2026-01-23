@@ -14,6 +14,7 @@ import { DishModal } from '../components/DishModal'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { UserSearch } from '../components/UserSearch'
 import { FollowListModal } from '../components/FollowListModal'
+import { ProfileSkeleton } from '../components/Skeleton'
 
 const TABS = [
   { id: 'unrated', label: 'Unrated', emoji: '📷' },
@@ -225,11 +226,7 @@ export function Profile() {
     : null
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20" style={{ background: 'var(--color-surface)' }}>
-        <div className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
-      </div>
-    )
+    return <ProfileSkeleton />
   }
 
   return (

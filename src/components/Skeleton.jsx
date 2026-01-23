@@ -57,6 +57,55 @@ export function DishRowSkeleton() {
   )
 }
 
+// ProfileSkeleton - matches UserProfile layout
+export function ProfileSkeleton() {
+  return (
+    <div className="min-h-screen" style={{ background: 'var(--color-surface)' }}>
+      <div className="animate-pulse">
+        {/* Header */}
+        <div className="px-4 pt-4 pb-2 flex justify-between items-center">
+          <div className="w-8 h-8 rounded-full" style={{ background: 'var(--color-divider)' }} />
+          <div className="w-8 h-8 rounded-full" style={{ background: 'var(--color-divider)' }} />
+        </div>
+
+        {/* Profile card */}
+        <div className="px-4 pb-4">
+          <div className="rounded-3xl p-6" style={{ background: 'var(--color-bg)' }}>
+            {/* Avatar + name */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-20 h-20 rounded-full" style={{ background: 'var(--color-divider)' }} />
+              <div className="space-y-2">
+                <div className="h-6 w-32 rounded" style={{ background: 'var(--color-divider)' }} />
+                <div className="h-4 w-24 rounded" style={{ background: 'var(--color-divider)' }} />
+              </div>
+            </div>
+
+            {/* Stats row */}
+            <div className="flex justify-center gap-8 mb-6">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="text-center space-y-1">
+                  <div className="h-6 w-8 mx-auto rounded" style={{ background: 'var(--color-divider)' }} />
+                  <div className="h-3 w-12 mx-auto rounded" style={{ background: 'var(--color-divider)' }} />
+                </div>
+              ))}
+            </div>
+
+            {/* Follow button */}
+            <div className="h-10 w-full rounded-xl" style={{ background: 'var(--color-divider)' }} />
+          </div>
+        </div>
+
+        {/* Content sections */}
+        <div className="px-4 space-y-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-20 rounded-xl" style={{ background: 'var(--color-divider)' }} />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // DishCardSkeleton - matches BrowseCard layout (image, content area)
 export function DishCardSkeleton() {
   return (

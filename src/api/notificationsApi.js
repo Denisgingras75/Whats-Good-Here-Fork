@@ -2,16 +2,20 @@ import { supabase } from '../lib/supabase'
 
 /**
  * Notifications API
+ * All methods throw on error - handle in UI layer
  */
 export const notificationsApi = {
   /**
    * Get notifications for current user
    * @param {number} limit - Max results
    * @returns {Promise<Array>}
+   * @throws {Error} Not authenticated or API error
    */
   async getNotifications(limit = 20) {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return []
+    if (!user) {
+      throw new Error('Not authenticated')
+    }
 
     const { data, error } = await supabase
       .from('notifications')
@@ -21,8 +25,7 @@ export const notificationsApi = {
       .limit(limit)
 
     if (error) {
-      console.error('Error fetching notifications:', error)
-      return []
+      throw error
     }
 
     return data || []
@@ -31,10 +34,13 @@ export const notificationsApi = {
   /**
    * Get unread notification count
    * @returns {Promise<number>}
+   * @throws {Error} Not authenticated or API error
    */
   async getUnreadCount() {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return 0
+    if (!user) {
+      throw new Error('Not authenticated')
+    }
 
     const { count, error } = await supabase
       .from('notifications')
@@ -43,8 +49,7 @@ export const notificationsApi = {
       .eq('read', false)
 
     if (error) {
-      console.error('Error fetching unread count:', error)
-      return 0
+      throw error
     }
 
     return count || 0
@@ -52,11 +57,14 @@ export const notificationsApi = {
 
   /**
    * Mark all notifications as read
-   * @returns {Promise<boolean>}
+   * @returns {Promise<void>}
+   * @throws {Error} Not authenticated or API error
    */
   async markAllAsRead() {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return false
+    if (!user) {
+      throw new Error('Not authenticated')
+    }
 
     const { error } = await supabase
       .from('notifications')
@@ -65,20 +73,20 @@ export const notificationsApi = {
       .eq('read', false)
 
     if (error) {
-      console.error('Error marking notifications as read:', error)
-      return false
+      throw error
     }
-
-    return true
   },
 
   /**
    * Delete all notifications for current user
-   * @returns {Promise<boolean>}
+   * @returns {Promise<void>}
+   * @throws {Error} Not authenticated or API error
    */
   async deleteAll() {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return false
+    if (!user) {
+      throw new Error('Not authenticated')
+    }
 
     const { error } = await supabase
       .from('notifications')
@@ -86,21 +94,21 @@ export const notificationsApi = {
       .eq('user_id', user.id)
 
     if (error) {
-      console.error('Error deleting notifications:', error)
-      return false
+      throw error
     }
-
-    return true
   },
 
   /**
    * Mark a single notification as read
    * @param {string} notificationId
-   * @returns {Promise<boolean>}
+   * @returns {Promise<void>}
+   * @throws {Error} Not authenticated or API error
    */
   async markAsRead(notificationId) {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return false
+    if (!user) {
+      throw new Error('Not authenticated')
+    }
 
     const { error } = await supabase
       .from('notifications')
@@ -109,10 +117,7 @@ export const notificationsApi = {
       .eq('user_id', user.id)
 
     if (error) {
-      console.error('Error marking notification as read:', error)
-      return false
+      throw error
     }
-
-    return true
   },
 }

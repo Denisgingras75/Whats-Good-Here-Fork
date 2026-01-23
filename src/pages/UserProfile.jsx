@@ -5,6 +5,7 @@ import { followsApi } from '../api'
 import { getCategoryImage } from '../constants/categoryImages'
 import { getRatingColor } from '../utils/ranking'
 import { FollowListModal } from '../components/FollowListModal'
+import { ProfileSkeleton } from '../components/Skeleton'
 import { supabase } from '../lib/supabase'
 import {
   calculateCategoryTiers,
@@ -114,26 +115,27 @@ export function UserProfile() {
     }
 
     setFollowLoading(true)
-    if (isFollowing) {
-      const result = await followsApi.unfollow(userId)
-      if (result.success) {
+    try {
+      if (isFollowing) {
+        await followsApi.unfollow(userId)
         setIsFollowing(false)
         setProfile(prev => ({
           ...prev,
           follower_count: Math.max(0, (prev.follower_count || 0) - 1)
         }))
-      }
-    } else {
-      const result = await followsApi.follow(userId)
-      if (result.success) {
+      } else {
+        await followsApi.follow(userId)
         setIsFollowing(true)
         setProfile(prev => ({
           ...prev,
           follower_count: (prev.follower_count || 0) + 1
         }))
       }
+    } catch (err) {
+      // Error is already logged by Sentry, just fail silently for UX
+    } finally {
+      setFollowLoading(false)
     }
-    setFollowLoading(false)
   }
 
   // Handle share profile
@@ -190,11 +192,7 @@ export function UserProfile() {
     : null
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-surface)' }}>
-        <div className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
-      </div>
-    )
+    return <ProfileSkeleton />
   }
 
   if (error || !profile) {
