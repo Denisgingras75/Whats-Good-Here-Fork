@@ -19,6 +19,8 @@ import { UserSearch } from '../components/UserSearch'
 import { FollowListModal } from '../components/FollowListModal'
 import { ProfileSkeleton } from '../components/Skeleton'
 import { CategoryPicker } from '../components/CategoryPicker'
+import { StreakCard } from '../components/StreakCard'
+import { FriendsLeaderboard } from '../components/FriendsLeaderboard'
 import { getRatingColor } from '../utils/ranking'
 
 const TABS = [
@@ -422,6 +424,16 @@ export function Profile() {
             {!badgesLoading && badges.length > 0 && (
               <AchievementsSection badges={badges} />
             )}
+
+            {/* Streak Card */}
+            <div className="mt-4">
+              <StreakCard userId={user?.id} />
+            </div>
+
+            {/* Friends Leaderboard */}
+            <div className="mt-4">
+              <FriendsLeaderboard />
+            </div>
 
             {/* Category Tiers */}
             {stats.categoryTiers.length > 0 && (
