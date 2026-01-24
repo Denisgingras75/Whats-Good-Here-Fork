@@ -48,16 +48,19 @@ export function clearPendingVoteStorage() {
   }
 }
 
+const MAX_REVIEW_LENGTH = 200
+
 export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, category, price, totalVotes = 0, yesVotes = 0, onVote, onLoginRequired }) {
   const { user } = useAuth()
   const { submitVote, submitting } = useVote()
   const [userVote, setUserVote] = useState(null)
   const [userRating, setUserRating] = useState(null)
+  const [userReviewText, setUserReviewText] = useState(null)
 
   const [localTotalVotes, setLocalTotalVotes] = useState(totalVotes)
   const [localYesVotes, setLocalYesVotes] = useState(yesVotes)
 
-  // Flow: 1 = yes/no, 2 = rating, 3 = preview/confirm
+  // Flow: 1 = yes/no, 2 = rating, 3 = review prompt, 4 = write review
   // Initialize from localStorage if there's a pending vote for this dish (survives page reload after magic link)
   const [step, setStep] = useState(() => {
     const stored = getPendingVoteFromStorage()
@@ -68,6 +71,8 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
     return (stored && stored.dishId === dishId) ? stored.vote : null
   })
   const [sliderValue, setSliderValue] = useState(0)
+  const [reviewText, setReviewText] = useState('')
+  const [reviewError, setReviewError] = useState(null)
 
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [confirmationType, setConfirmationType] = useState(null)
@@ -88,6 +93,7 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
       if (!user) {
         setUserVote(null)
         setUserRating(null)
+        setUserReviewText(null)
         return
       }
       try {
@@ -95,7 +101,9 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
         if (vote) {
           setUserVote(vote.would_order_again)
           setUserRating(vote.rating_10)
+          setUserReviewText(vote.review_text || null)
           if (vote.rating_10) setSliderValue(vote.rating_10)
+          if (vote.review_text) setReviewText(vote.review_text)
         }
       } catch (error) {
         console.error('Error fetching user vote:', error)
@@ -129,7 +137,7 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
 
   // Auth guard: if on step 2+ without auth, kick back to step 1
   useEffect(() => {
-    if ((step === 2 || step === 3) && !user) {
+    if ((step === 2 || step === 3 || step === 4) && !user) {
       setStep(1)
       setAwaitingLogin(true)
       onLoginRequired?.()
@@ -169,10 +177,29 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
   }
 
   const handleRatingNext = () => {
-    setStep(3) // Go to preview
+    setStep(3) // Go to review prompt
   }
 
-  const handleSubmit = async () => {
+  const handleSkipReview = async () => {
+    // Submit without review
+    await doSubmit(null)
+  }
+
+  const handleWriteReview = () => {
+    setStep(4) // Go to review input
+  }
+
+  const handleSubmitWithReview = async () => {
+    // Validate review length
+    if (reviewText.length > MAX_REVIEW_LENGTH) {
+      setReviewError(`${reviewText.length - MAX_REVIEW_LENGTH} characters over limit`)
+      return
+    }
+    setReviewError(null)
+    await doSubmit(reviewText.trim() || null)
+  }
+
+  const doSubmit = async (reviewTextToSubmit) => {
     if (pendingVote === null) return
 
     if (!user) {
@@ -188,6 +215,7 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
 
     const previousVote = userVote
     const previousRating = userRating
+    const previousReview = userReviewText
 
     if (previousVote === null) {
       setLocalTotalVotes(prev => prev + 1)
@@ -202,8 +230,9 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
 
     setUserVote(pendingVote)
     setUserRating(sliderValue)
+    if (reviewTextToSubmit) setUserReviewText(reviewTextToSubmit)
 
-    const result = await submitVote(dishId, pendingVote, sliderValue)
+    const result = await submitVote(dishId, pendingVote, sliderValue, reviewTextToSubmit)
 
     if (result.success) {
       // Track vote submission - the core conversion event
@@ -216,12 +245,15 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
         price: price != null ? Number(price) : null,
         would_order_again: pendingVote,
         rating: sliderValue,
+        has_review: !!reviewTextToSubmit,
         is_update: previousVote !== null,
       })
 
       clearPendingVoteStorage()
       setStep(1)
       setPendingVote(null)
+      setReviewText('')
+      setReviewError(null)
       onVote?.()
 
       // Evaluate badges after successful vote
@@ -237,8 +269,13 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
     } else {
       setUserVote(previousVote)
       setUserRating(previousRating)
+      setUserReviewText(previousReview)
       setLocalTotalVotes(totalVotes)
       setLocalYesVotes(yesVotes)
+      // Show error toast
+      if (result.error) {
+        setReviewError(result.error)
+      }
     }
   }
 
@@ -252,6 +289,11 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
             <span className="text-2xl">{userVote ? '👍' : '👎'}</span>
             <span className="text-xl font-bold" style={{ color: 'var(--color-success)' }}>{Number(userRating).toFixed(1)}</span>
           </div>
+          {userReviewText && (
+            <p className="mt-3 text-sm text-center italic" style={{ color: 'var(--color-text-secondary)' }}>
+              "{userReviewText}"
+            </p>
+          )}
         </div>
         <div className="flex items-center justify-center gap-4 text-sm">
           <span className="flex items-center gap-1.5 font-semibold" style={{ color: 'var(--color-success)' }}>
@@ -266,8 +308,10 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
           onClick={() => {
             setPendingVote(userVote)
             setSliderValue(userRating)
+            if (userReviewText) setReviewText(userReviewText)
             setUserVote(null)
             setUserRating(null)
+            setUserReviewText(null)
             setStep(1)
           }}
           className="w-full py-2 text-sm transition-colors"
@@ -379,59 +423,110 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
     )
   }
 
-  // Step 3: Preview & Confirm
-  return (
-    <div className="space-y-4 animate-fadeIn">
-      <p className="text-sm font-medium text-center" style={{ color: 'var(--color-text-secondary)' }}>Review your answers</p>
-
-      {/* Preview card */}
-      <div className="p-4 rounded-xl space-y-3" style={{ background: 'var(--color-surface-elevated)', border: '1px solid var(--color-divider)' }}>
-        {/* Yes/No answer */}
+  // Step 3: Review Prompt
+  if (step === 3) {
+    return (
+      <div className="space-y-4 animate-fadeIn">
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--color-text-tertiary)' }}>Would order again?</span>
-          <button
-            onClick={() => setStep(1)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors"
-            style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
-          >
-            <span className="text-lg">{pendingVote ? '👍' : '👎'}</span>
-            <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{pendingVote ? 'Yes' : 'No'}</span>
-            <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>Edit</span>
+          <button onClick={() => setStep(2)} className="text-sm transition-colors flex items-center gap-1" style={{ color: 'var(--color-text-tertiary)' }}>
+            <span>←</span> Back
           </button>
+          <p className="text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }}>Almost done!</p>
+          <div className="w-12" />
         </div>
 
-        {/* Rating answer */}
-        <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--color-text-tertiary)' }}>Rating</span>
+        {/* Summary of vote */}
+        <div className="p-3 rounded-xl flex items-center justify-center gap-4" style={{ background: 'var(--color-surface-elevated)', border: '1px solid var(--color-divider)' }}>
+          <span className="text-xl">{pendingVote ? '👍' : '👎'}</span>
+          <span className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>{sliderValue.toFixed(1)}</span>
+        </div>
+
+        <p className="text-center text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+          Want to add a quick review?
+        </p>
+
+        <div className="grid grid-cols-2 gap-3">
           <button
-            onClick={() => setStep(2)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors"
-            style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+            onClick={handleSkipReview}
+            disabled={submitting}
+            className="py-4 px-4 rounded-xl font-semibold text-sm transition-all duration-200 ease-out focus-ring active:scale-95"
+            style={{ background: 'var(--color-surface-elevated)', color: 'var(--color-text-primary)', border: '2px solid var(--color-divider)' }}
           >
-            <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{sliderValue.toFixed(1)}</span>
-            <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>Edit</span>
+            {submitting ? 'Saving...' : 'Skip'}
+          </button>
+          <button
+            onClick={handleWriteReview}
+            disabled={submitting}
+            className="py-4 px-4 rounded-xl font-semibold text-sm transition-all duration-200 ease-out focus-ring active:scale-95"
+            style={{ background: 'var(--color-primary)', color: '#1A1A1A' }}
+          >
+            Write Review
           </button>
         </div>
       </div>
+    )
+  }
+
+  // Step 4: Write Review
+  return (
+    <div className="space-y-4 animate-fadeIn">
+      <div className="flex items-center justify-between">
+        <button onClick={() => setStep(3)} className="text-sm transition-colors flex items-center gap-1" style={{ color: 'var(--color-text-tertiary)' }}>
+          <span>←</span> Back
+        </button>
+        <p className="text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }}>Write your review</p>
+        <div className="w-12" />
+      </div>
+
+      {/* Review text input */}
+      <div className="relative">
+        <textarea
+          value={reviewText}
+          onChange={(e) => {
+            setReviewText(e.target.value)
+            if (reviewError) setReviewError(null)
+          }}
+          placeholder="What made this dish great (or not)?"
+          maxLength={MAX_REVIEW_LENGTH + 50} // Allow typing over to show error
+          rows={3}
+          className="w-full p-4 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-opacity-50"
+          style={{
+            background: 'var(--color-surface-elevated)',
+            border: reviewError ? '2px solid var(--color-danger)' : '1px solid var(--color-divider)',
+            color: 'var(--color-text-primary)',
+          }}
+        />
+        <div className="absolute bottom-2 right-3 text-xs" style={{ color: reviewText.length > MAX_REVIEW_LENGTH ? 'var(--color-danger)' : 'var(--color-text-tertiary)' }}>
+          {reviewText.length}/{MAX_REVIEW_LENGTH}
+        </div>
+      </div>
+
+      {/* Error message */}
+      {reviewError && (
+        <p className="text-sm text-center" style={{ color: 'var(--color-danger)' }}>
+          {reviewError}
+        </p>
+      )}
 
       {/* Submit button */}
       <button
-        onClick={handleSubmit}
-        disabled={submitting}
+        onClick={handleSubmitWithReview}
+        disabled={submitting || reviewText.length > MAX_REVIEW_LENGTH}
         className={`w-full py-4 px-6 rounded-xl font-semibold shadow-lg transition-all duration-200 ease-out focus-ring
-          ${submitting ? 'opacity-50 cursor-not-allowed' : 'active:scale-98 hover:shadow-xl'}`}
+          ${submitting || reviewText.length > MAX_REVIEW_LENGTH ? 'opacity-50 cursor-not-allowed' : 'active:scale-98 hover:shadow-xl'}`}
         style={{ background: 'linear-gradient(to right, #10B981, #14B8A6)', color: 'white', boxShadow: '0 10px 15px -3px rgba(16, 185, 129, 0.3)' }}
       >
-        {submitting ? 'Adding vote...' : 'Add Your Vote'}
+        {submitting ? 'Saving...' : 'Submit Review'}
       </button>
 
-      {/* Back button */}
+      {/* Skip option */}
       <button
-        onClick={() => setStep(2)}
+        onClick={handleSkipReview}
+        disabled={submitting}
         className="w-full py-2 text-sm transition-colors"
         style={{ color: 'var(--color-text-tertiary)' }}
       >
-        ← Go back
+        Skip and submit without review
       </button>
     </div>
   )

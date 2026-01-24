@@ -1,6 +1,9 @@
 import { supabase } from '../lib/supabase'
 import posthog from 'posthog-js'
 import { checkVoteRateLimit } from '../lib/rateLimiter'
+import { containsBlockedContent } from '../lib/reviewBlocklist'
+
+const MAX_REVIEW_LENGTH = 200
 
 /**
  * Votes API - Centralized data fetching and mutation for votes
@@ -13,14 +16,30 @@ export const votesApi = {
    * @param {string} params.dishId - Dish ID
    * @param {boolean} params.wouldOrderAgain - Vote value
    * @param {number} params.rating10 - Optional 1-10 rating
+   * @param {string} params.reviewText - Optional review text (max 200 chars)
    * @returns {Promise<Object>} Success status
    */
-  async submitVote({ dishId, wouldOrderAgain, rating10 = null }) {
+  async submitVote({ dishId, wouldOrderAgain, rating10 = null, reviewText = null }) {
     // Quick client-side check first (better UX)
       const clientRateLimit = checkVoteRateLimit()
       if (!clientRateLimit.allowed) {
         throw new Error(clientRateLimit.message)
       }
+
+      // Validate review text if provided
+      if (reviewText) {
+        // Check length
+        if (reviewText.length > MAX_REVIEW_LENGTH) {
+          throw new Error(`Review is ${reviewText.length - MAX_REVIEW_LENGTH} characters over limit`)
+        }
+        // Check for blocked content
+        if (containsBlockedContent(reviewText)) {
+          throw new Error('Review contains inappropriate content. Please revise.')
+        }
+      }
+
+      // Treat empty string as no review
+      const cleanReviewText = reviewText?.trim() || null
 
       // Check if user is authenticated
       const { data: { user } } = await supabase.auth.getUser()
@@ -39,20 +58,25 @@ export const votesApi = {
         throw new Error(serverRateLimit.message || 'Too many votes. Please wait.')
       }
 
-      // Upsert vote with both fields
+      // Upsert vote with all fields
+      const voteData = {
+        dish_id: dishId,
+        user_id: user.id,
+        would_order_again: wouldOrderAgain,
+        rating_10: rating10,
+      }
+
+      // Only include review fields if there's a review
+      if (cleanReviewText) {
+        voteData.review_text = cleanReviewText
+        voteData.review_created_at = new Date().toISOString()
+      }
+
       const { error } = await supabase
         .from('votes')
-        .upsert(
-          {
-            dish_id: dishId,
-            user_id: user.id,
-            would_order_again: wouldOrderAgain,
-            rating_10: rating10,
-          },
-          {
-            onConflict: 'dish_id,user_id',
-          }
-        )
+        .upsert(voteData, {
+          onConflict: 'dish_id,user_id',
+        })
 
       if (error) {
         throw error
@@ -62,6 +86,7 @@ export const votesApi = {
         dish_id: dishId,
         would_order_again: wouldOrderAgain,
         rating: rating10,
+        has_review: !!cleanReviewText,
       })
 
       return { success: true }
@@ -80,7 +105,7 @@ export const votesApi = {
 
       const { data, error } = await supabase
         .from('votes')
-        .select('dish_id, would_order_again, rating_10')
+        .select('dish_id, would_order_again, rating_10, review_text, review_created_at')
         .eq('user_id', user.id)
 
       if (error) {
@@ -92,6 +117,8 @@ export const votesApi = {
         acc[vote.dish_id] = {
           wouldOrderAgain: vote.would_order_again,
           rating10: vote.rating_10,
+          reviewText: vote.review_text,
+          reviewCreatedAt: vote.review_created_at,
         }
         return acc
       }, {})
@@ -118,6 +145,8 @@ export const votesApi = {
           id,
           would_order_again,
           rating_10,
+          review_text,
+          review_created_at,
           created_at,
           dishes (
             id,
@@ -216,6 +245,84 @@ export const votesApi = {
     } catch (error) {
       console.error('Error getting dishes helped rank:', error)
       throw error
+    }
+  },
+
+  /**
+   * Get all reviews for a dish with user info
+   * @param {string} dishId - Dish ID
+   * @param {Object} options - Pagination options
+   * @returns {Promise<Array>} Array of reviews with user info
+   */
+  async getReviewsForDish(dishId, { limit = 10, offset = 0 } = {}) {
+    try {
+      const { data, error } = await supabase
+        .from('votes')
+        .select(`
+          id,
+          review_text,
+          rating_10,
+          would_order_again,
+          review_created_at,
+          user_id,
+          profiles!inner (
+            id,
+            display_name
+          )
+        `)
+        .eq('dish_id', dishId)
+        .not('review_text', 'is', null)
+        .neq('review_text', '')
+        .order('review_created_at', { ascending: false })
+        .range(offset, offset + limit - 1)
+
+      if (error) {
+        throw error
+      }
+
+      return data || []
+    } catch (error) {
+      console.error('Error fetching reviews for dish:', error)
+      throw error
+    }
+  },
+
+  /**
+   * Get smart snippet for a dish (best review to show on card)
+   * Priority: 9+ rated reviews first, then most recent
+   * @param {string} dishId - Dish ID
+   * @returns {Promise<Object|null>} Best review or null
+   */
+  async getSmartSnippetForDish(dishId) {
+    try {
+      const { data, error } = await supabase
+        .from('votes')
+        .select(`
+          review_text,
+          rating_10,
+          review_created_at,
+          user_id,
+          profiles!inner (
+            id,
+            display_name
+          )
+        `)
+        .eq('dish_id', dishId)
+        .not('review_text', 'is', null)
+        .neq('review_text', '')
+        .order('rating_10', { ascending: false })
+        .order('review_created_at', { ascending: false })
+        .limit(1)
+
+      if (error) {
+        throw error
+      }
+
+      // Return the best review or null
+      return data?.[0] || null
+    } catch (error) {
+      console.error('Error fetching smart snippet:', error)
+      return null // Graceful degradation - don't break the UI
     }
   },
 }

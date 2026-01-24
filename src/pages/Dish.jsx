@@ -5,13 +5,37 @@ import { useAuth } from '../context/AuthContext'
 import { dishesApi } from '../api/dishesApi'
 import { followsApi } from '../api/followsApi'
 import { dishPhotosApi } from '../api/dishPhotosApi'
+import { votesApi } from '../api/votesApi'
 import { useSavedDishes } from '../hooks/useSavedDishes'
 import { ReviewFlow } from '../components/ReviewFlow'
 import { PhotoUploadButton } from '../components/PhotoUploadButton'
 import { PhotoUploadConfirmation } from '../components/PhotoUploadConfirmation'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { getCategoryImage } from '../constants/categoryImages'
-import { getRatingColor } from '../utils/ranking'
+import { getRatingColor, formatScore10 } from '../utils/ranking'
+
+// Helper for relative time display
+function formatRelativeTime(dateString) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now - date
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffDays < 1) {
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    if (diffHours < 1) {
+      const diffMins = Math.floor(diffMs / (1000 * 60))
+      return diffMins < 1 ? 'just now' : `${diffMins}m ago`
+    }
+    return `${diffHours}h ago`
+  }
+  if (diffDays === 1) return 'yesterday'
+  if (diffDays < 7) return `${diffDays}d ago`
+
+  // For older dates, show absolute date
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined })
+}
 
 export function Dish() {
   const { dishId } = useParams()
@@ -30,6 +54,8 @@ export function Dish() {
   const [lightboxPhoto, setLightboxPhoto] = useState(null)
   const [loginModalOpen, setLoginModalOpen] = useState(false)
   const [friendsVotes, setFriendsVotes] = useState([])
+  const [reviews, setReviews] = useState([])
+  const [reviewsLoading, setReviewsLoading] = useState(false)
 
   const { isSaved, toggleSave } = useSavedDishes(user?.id)
 
@@ -107,6 +133,26 @@ export function Dish() {
     fetchFriendsVotes()
   }, [dishId, user])
 
+  // Fetch reviews
+  useEffect(() => {
+    if (!dishId) return
+
+    const fetchReviews = async () => {
+      setReviewsLoading(true)
+      try {
+        const data = await votesApi.getReviewsForDish(dishId, { limit: 20 })
+        setReviews(data)
+      } catch (error) {
+        console.error('Failed to fetch reviews:', error)
+        setReviews([])
+      } finally {
+        setReviewsLoading(false)
+      }
+    }
+
+    fetchReviews()
+  }, [dishId])
+
   // Fetch photos
   useEffect(() => {
     if (!dishId) return
@@ -148,9 +194,12 @@ export function Dish() {
   }
 
   const handleVote = async () => {
-    // Refetch dish data after voting
+    // Refetch dish data and reviews after voting
     try {
-      const data = await dishesApi.getDishById(dishId)
+      const [data, reviewsData] = await Promise.all([
+        dishesApi.getDishById(dishId),
+        votesApi.getReviewsForDish(dishId, { limit: 20 }),
+      ])
       const transformedDish = {
         dish_id: data.id,
         dish_name: data.name,
@@ -168,6 +217,7 @@ export function Dish() {
         avg_rating: data.avg_rating,
       }
       setDish(transformedDish)
+      setReviews(reviewsData)
     } catch (err) {
       console.error('Failed to refresh dish data after vote:', err)
       // UI continues with stale data - vote was still recorded
@@ -464,6 +514,73 @@ export function Dish() {
                 onLoginRequired={handleLoginRequired}
               />
             </div>
+
+            {/* Reviews Section */}
+            {reviews.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>
+                  Reviews ({reviews.length})
+                </h3>
+                <div className="space-y-3">
+                  {reviews.map((review) => (
+                    <div
+                      key={review.id}
+                      className="p-4 rounded-xl"
+                      style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+                    >
+                      {/* Header: User info and rating */}
+                      <div className="flex items-center justify-between mb-2">
+                        <Link
+                          to={`/profile/${review.user_id}`}
+                          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                        >
+                          {/* Avatar */}
+                          <div
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                            style={{ background: 'var(--color-primary)' }}
+                          >
+                            {review.profiles?.display_name?.charAt(0).toUpperCase() || '?'}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
+                              @{review.profiles?.display_name || 'Anonymous'}
+                            </p>
+                          </div>
+                        </Link>
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{review.would_order_again ? '👍' : '👎'}</span>
+                          <span className="text-lg font-bold" style={{ color: getRatingColor(review.rating_10) }}>
+                            {review.rating_10 ? formatScore10(review.rating_10) : ''}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Review text */}
+                      <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                        {review.review_text}
+                      </p>
+
+                      {/* Timestamp */}
+                      <p className="text-xs mt-2" style={{ color: 'var(--color-text-tertiary)' }}>
+                        {formatRelativeTime(review.review_created_at)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* No reviews message */}
+            {!reviewsLoading && reviews.length === 0 && dish.total_votes > 0 && (
+              <div
+                className="mb-6 p-4 rounded-xl text-center"
+                style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+              >
+                <p className="text-sm" style={{ color: 'var(--color-text-tertiary)' }}>
+                  No written reviews yet — be the first to share your thoughts!
+                </p>
+              </div>
+            )}
 
             {/* Photo Upload */}
             <PhotoUploadButton
