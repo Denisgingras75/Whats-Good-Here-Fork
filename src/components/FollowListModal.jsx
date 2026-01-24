@@ -157,9 +157,6 @@ export function FollowListModal({ userId, type, onClose }) {
                       <p className="font-medium truncate" style={{ color: 'var(--color-text-primary)' }}>
                         {user.display_name || 'Anonymous'}
                       </p>
-                      <p className="text-sm" style={{ color: 'var(--color-text-tertiary)' }}>
-                        {user.follower_count || 0} followers
-                      </p>
                     </div>
 
                     {/* Arrow */}
