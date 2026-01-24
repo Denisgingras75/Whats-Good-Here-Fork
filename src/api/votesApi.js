@@ -105,7 +105,7 @@ export const votesApi = {
 
       const { data, error } = await supabase
         .from('votes')
-        .select('dish_id, would_order_again, rating_10, review_text, review_created_at')
+        .select('dish_id, would_order_again, rating_10')
         .eq('user_id', user.id)
 
       if (error) {
@@ -117,8 +117,6 @@ export const votesApi = {
         acc[vote.dish_id] = {
           wouldOrderAgain: vote.would_order_again,
           rating10: vote.rating_10,
-          reviewText: vote.review_text,
-          reviewCreatedAt: vote.review_created_at,
         }
         return acc
       }, {})
@@ -145,8 +143,6 @@ export const votesApi = {
           id,
           would_order_again,
           rating_10,
-          review_text,
-          review_created_at,
           created_at,
           dishes (
             id,
@@ -265,7 +261,7 @@ export const votesApi = {
           would_order_again,
           review_created_at,
           user_id,
-          profiles!inner (
+          profiles (
             id,
             display_name
           )
@@ -273,17 +269,18 @@ export const votesApi = {
         .eq('dish_id', dishId)
         .not('review_text', 'is', null)
         .neq('review_text', '')
-        .order('review_created_at', { ascending: false })
+        .order('review_created_at', { ascending: false, nullsFirst: false })
         .range(offset, offset + limit - 1)
 
       if (error) {
-        throw error
+        console.error('Error fetching reviews for dish:', error)
+        return [] // Graceful degradation
       }
 
       return data || []
     } catch (error) {
       console.error('Error fetching reviews for dish:', error)
-      throw error
+      return [] // Graceful degradation - don't break the UI
     }
   },
 
@@ -302,7 +299,7 @@ export const votesApi = {
           rating_10,
           review_created_at,
           user_id,
-          profiles!inner (
+          profiles (
             id,
             display_name
           )
@@ -310,12 +307,13 @@ export const votesApi = {
         .eq('dish_id', dishId)
         .not('review_text', 'is', null)
         .neq('review_text', '')
-        .order('rating_10', { ascending: false })
-        .order('review_created_at', { ascending: false })
+        .order('rating_10', { ascending: false, nullsFirst: false })
+        .order('review_created_at', { ascending: false, nullsFirst: false })
         .limit(1)
 
       if (error) {
-        throw error
+        console.error('Error fetching smart snippet:', error)
+        return null // Graceful degradation
       }
 
       // Return the best review or null
