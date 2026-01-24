@@ -209,14 +209,11 @@ export function PizzaRatingSlider({ value, onChange, min = 1, max = 10, step = 0
 }
 
 function getRatingLabel(value) {
-  if (value >= 10) return "🏆 PERFECT! Ate every bite!"
-  if (value >= 9.5) return "🏆 The absolute BEST!"
-  if (value >= 9) return "⭐ Exceptional - almost perfect!"
-  if (value >= 8) return "🔥 Really great!"
-  if (value >= 7) return "👍 Pretty good!"
-  if (value >= 6) return "😐 It's okay"
-  if (value >= 5) return "🤷 Meh..."
-  if (value >= 3) return "😕 Not great"
-  if (value >= 1) return "❌ Skip this one"
+  if (value >= 9.5) return "🏆 Excellent Here"
+  if (value >= 8.5) return "🔥 Great Here"
+  if (value >= 7.5) return "👍 Good Here"
+  if (value >= 7) return "😊 Pretty Good Here"
+  if (value >= 6) return "😐 Not Bad Here"
+  if (value >= 0.1) return "👎 Bad Here"
   return "🍕 Slide to rate!"
 }
