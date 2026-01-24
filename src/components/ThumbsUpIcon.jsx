@@ -2,7 +2,7 @@
  * ThumbsUpIcon - Neon thumbs up icon to replace emoji
  */
 
-export function ThumbsUpIcon({ size = 20, className = '' }) {
+export function ThumbsUpIcon({ size = 20, className = '', active = false }) {
   return (
     <img
       src="/thumbs-up.png"
@@ -11,6 +11,7 @@ export function ThumbsUpIcon({ size = 20, className = '' }) {
       style={{
         width: size,
         height: size,
+        filter: active ? 'brightness(0) invert(1)' : 'none',
       }}
     />
   )

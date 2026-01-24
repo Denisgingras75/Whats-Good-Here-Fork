@@ -2,7 +2,7 @@
  * HeartIcon - Neon heart icon to replace emoji
  */
 
-export function HeartIcon({ size = 20, className = '' }) {
+export function HeartIcon({ size = 20, className = '', active = false }) {
   return (
     <img
       src="/heart.png"
@@ -11,6 +11,7 @@ export function HeartIcon({ size = 20, className = '' }) {
       style={{
         width: size,
         height: size,
+        filter: active ? 'brightness(0) invert(1)' : 'none',
       }}
     />
   )

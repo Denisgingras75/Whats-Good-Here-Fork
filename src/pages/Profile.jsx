@@ -325,7 +325,7 @@ export function Profile() {
                     ? { background: 'var(--color-primary)' }
                     : { background: 'var(--color-surface-elevated)' }}
                 >
-                  {tab.id === 'saved' ? <HeartIcon size={24} /> : tab.id === 'worth-it' ? <ThumbsUpIcon size={24} /> : <span>{tab.emoji}</span>}
+                  {tab.id === 'saved' ? <HeartIcon size={24} active={activeTab === tab.id} /> : tab.id === 'worth-it' ? <ThumbsUpIcon size={24} active={activeTab === tab.id} /> : <span>{tab.emoji}</span>}
                   <span>{tab.label}</span>
                   <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs ${
                     activeTab === tab.id ? 'bg-white/20' : 'bg-black/20'
