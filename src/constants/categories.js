@@ -86,3 +86,27 @@ export function getCategoryEmoji(id) {
   const category = getCategoryById(id)
   return category?.emoji || '🍽️'
 }
+
+// Category neon image mappings
+const CATEGORY_NEON_IMAGES = {
+  pizza: '/categories/pizza.webp',
+  burger: '/categories/burgers.webp',
+  taco: '/categories/tacos.webp',
+  wings: '/categories/wings.webp',
+  sushi: '/categories/sushi.webp',
+  breakfast: '/categories/breakfast.webp',
+  'lobster roll': '/categories/lobster-rolls.webp',
+  seafood: '/categories/seafood.webp',
+  chowder: '/categories/chowder.webp',
+  pasta: '/categories/pasta.webp',
+  steak: '/categories/steak.webp',
+  sandwich: '/categories/sandwiches.webp',
+  salad: '/categories/salads.webp',
+  tendys: '/categories/tendys.webp',
+}
+
+// Get neon image path for a category id
+export function getCategoryNeonImage(id) {
+  if (!id) return null
+  return CATEGORY_NEON_IMAGES[id.toLowerCase()] || null
+}

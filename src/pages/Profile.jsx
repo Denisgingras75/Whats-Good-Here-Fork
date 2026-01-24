@@ -21,6 +21,7 @@ import { UserSearch } from '../components/UserSearch'
 import { FollowListModal } from '../components/FollowListModal'
 import { ProfileSkeleton } from '../components/Skeleton'
 import { CategoryPicker } from '../components/CategoryPicker'
+import { CategoryIcon } from '../components/CategoryIcon'
 import { getRatingColor } from '../utils/ranking'
 
 const TABS = [
@@ -1195,8 +1196,8 @@ function IdentitySnapshot({ categoryTiers, categoryProgress }) {
     // Add current tiers first (up to 3)
     categoryTiers.slice(0, 3).forEach(tier => {
       rows.push({
-        emoji: tier.emoji,
-        category: tier.label,
+        categoryId: tier.category,
+        categoryLabel: tier.label,
         tier: tier.title,
         tierIcon: tier.icon,
         isNear: false,
@@ -1207,10 +1208,10 @@ function IdentitySnapshot({ categoryTiers, categoryProgress }) {
     if (rows.length < 3 && categoryProgress.length > 0) {
       categoryProgress.slice(0, 3 - rows.length).forEach(prog => {
         // Only add if not already in rows
-        if (!rows.find(r => r.category === prog.label)) {
+        if (!rows.find(r => r.categoryLabel === prog.label)) {
           rows.push({
-            emoji: prog.emoji,
-            category: prog.label,
+            categoryId: prog.category,
+            categoryLabel: prog.label,
             tier: `Near ${prog.nextTier.title}`,
             tierIcon: prog.nextTier.icon,
             isNear: true,
@@ -1236,8 +1237,8 @@ function IdentitySnapshot({ categoryTiers, categoryProgress }) {
             className="w-full flex items-center justify-between py-2 px-3 rounded-lg transition-colors hover:bg-[color:var(--color-surface-elevated)]"
           >
             <div className="flex items-center gap-3">
-              <span className="text-lg">{row.emoji}</span>
-              <span className="font-medium text-[color:var(--color-text-primary)]">{row.category}</span>
+              <CategoryIcon category={row.categoryId} size={24} />
+              <span className="font-medium text-[color:var(--color-text-primary)]">{row.categoryLabel}</span>
               <span className="text-[color:var(--color-text-tertiary)]">·</span>
               <span
                 className={`font-semibold ${row.isNear ? 'text-[color:var(--color-text-secondary)]' : ''}`}
