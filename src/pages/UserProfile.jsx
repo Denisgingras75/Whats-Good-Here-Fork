@@ -7,6 +7,7 @@ import { getCategoryImage } from '../constants/categoryImages'
 import { getRatingColor } from '../utils/ranking'
 import { FollowListModal } from '../components/FollowListModal'
 import { ProfileSkeleton } from '../components/Skeleton'
+import { CategoryIcon } from '../components/CategoryIcon'
 import { supabase } from '../lib/supabase'
 import {
   calculateCategoryTiers,
@@ -393,7 +394,7 @@ export function UserProfile() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border"
                   style={{ background: 'var(--color-card)', borderColor: 'var(--color-divider)' }}
                 >
-                  <span>{tier.emoji}</span>
+                  <CategoryIcon category={tier.category} size={18} />
                   <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{tier.label}</span>
                   <span style={{ color: 'var(--color-text-tertiary)' }}>·</span>
                   <span className="font-semibold" style={{ color: 'var(--color-primary)' }}>
@@ -421,7 +422,7 @@ export function UserProfile() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span>{prog.emoji}</span>
+                      <CategoryIcon category={prog.category} size={20} />
                       <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{prog.label}</span>
                       {prog.currentTier && (
                         <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useProfile } from '../../hooks/useProfile'
 import { CategoryPicker } from '../CategoryPicker'
+import { HeartIcon } from '../HeartIcon'
 import posthog from 'posthog-js'
 
 const STEPS = [
@@ -151,7 +152,7 @@ export function WelcomeModal() {
             className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center shadow-lg transition-all"
             style={{ background: 'var(--color-primary)' }}
           >
-            <span className="text-4xl">{currentStep.emoji}</span>
+            {currentStep.id === 'favorites' ? <HeartIcon size={40} /> : <span className="text-4xl">{currentStep.emoji}</span>}
           </div>
 
           {/* Header */}
