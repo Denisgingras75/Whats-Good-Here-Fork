@@ -1,5 +1,3 @@
-import { logger } from '../utils/logger'
-
 // Category to image URL mapping - v3.0 CACHE BUST
 // ONE consistent, high-quality photo per category
 // ALL dishes in the same category show the EXACT SAME image
@@ -35,20 +33,12 @@ export const CATEGORY_IMAGES = {
 // Fallback image - PIZZA for testing
 export const DEFAULT_DISH_IMAGE = `https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80&${CACHE_BUST}`
 
-// Get image URL for a category
+// Get image URL for a category (silently falls back to default)
 export function getCategoryImage(category) {
   if (!category) {
-    logger.warn('getCategoryImage: category is null/undefined, using default')
     return DEFAULT_DISH_IMAGE
   }
 
   const lowerCategory = category.toLowerCase().trim()
-  const imageUrl = CATEGORY_IMAGES[lowerCategory]
-
-  if (!imageUrl) {
-    logger.warn(`getCategoryImage: No image found for category="${category}", using default`)
-    return DEFAULT_DISH_IMAGE
-  }
-
-  return imageUrl
+  return CATEGORY_IMAGES[lowerCategory] || DEFAULT_DISH_IMAGE
 }
