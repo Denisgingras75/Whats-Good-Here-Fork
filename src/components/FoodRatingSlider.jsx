@@ -2,26 +2,28 @@ import { useState, useEffect, useRef } from 'react'
 import { playBiteSound } from '../lib/sounds'
 
 // Food SVG components
-import { PizzaSVG } from './foods/PizzaSVG'
-import { BurgerSVG } from './foods/BurgerSVG'
-import { SandwichSVG } from './foods/SandwichSVG'
-import { BreakfastSandwichSVG } from './foods/BreakfastSandwichSVG'
-import { PastaSVG } from './foods/PastaSVG'
-import { SushiSVG } from './foods/SushiSVG'
-import { PokeBowlSVG } from './foods/PokeBowlSVG'
-import { TacoSVG } from './foods/TacoSVG'
-import { WingsSVG } from './foods/WingsSVG'
-import { TendysSVG } from './foods/TendysSVG'
-import { LobsterRollSVG } from './foods/LobsterRollSVG'
-import { FriesSVG } from './foods/FriesSVG'
-import { SeafoodSVG } from './foods/SeafoodSVG'
-import { ChowderSVG } from './foods/ChowderSVG'
-import { SoupSVG } from './foods/SoupSVG'
-import { BreakfastSVG } from './foods/BreakfastSVG'
-import { SaladSVG } from './foods/SaladSVG'
-import { AppsSVG } from './foods/AppsSVG'
-import { FriedChickenSVG } from './foods/FriedChickenSVG'
-import { EntreeSVG } from './foods/EntreeSVG'
+import {
+  AppsSVG,
+  BreakfastSVG,
+  BreakfastSandwichSVG,
+  BurgerSVG,
+  ChowderSVG,
+  EntreeSVG,
+  FriedChickenSVG,
+  FriesSVG,
+  LobsterRollSVG,
+  PastaSVG,
+  PizzaSVG,
+  PokeBowlSVG,
+  SaladSVG,
+  SandwichSVG,
+  SeafoodSVG,
+  SoupSVG,
+  SushiSVG,
+  TacoSVG,
+  TendysSVG,
+  WingsSVG,
+} from './foods'
 
 export function FoodRatingSlider({ value, onChange, min = 0, max = 10, step = 0.1, category }) {
   const [crumbs, setCrumbs] = useState([])
