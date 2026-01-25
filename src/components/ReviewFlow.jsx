@@ -9,6 +9,7 @@ import { FoodRatingSlider } from './FoodRatingSlider'
 import { showBadgeUnlockToasts } from './BadgeUnlockToast'
 import { ThumbsUpIcon } from './ThumbsUpIcon'
 import { ThumbsDownIcon } from './ThumbsDownIcon'
+import { MAX_REVIEW_LENGTH } from '../constants/app'
 
 // Helper to get/set pending vote from localStorage (survives OAuth redirect)
 const PENDING_VOTE_KEY = 'whats_good_here_pending_vote'
@@ -49,8 +50,6 @@ export function clearPendingVoteStorage() {
     console.warn('Unable to clear pending vote from storage', error)
   }
 }
-
-const MAX_REVIEW_LENGTH = 200
 
 export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, category, price, totalVotes = 0, yesVotes = 0, onVote, onLoginRequired }) {
   const { user } = useAuth()

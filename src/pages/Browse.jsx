@@ -8,6 +8,7 @@ import { restaurantsApi } from '../api/restaurantsApi'
 import { dishesApi } from '../api/dishesApi'
 import { getStorageItem, setStorageItem } from '../lib/storage'
 import { BROWSE_CATEGORIES } from '../constants/categories'
+import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { BrowseCard } from '../components/BrowseCard'
 import { DishModal } from '../components/DishModal'
 import { getPendingVoteFromStorage } from '../components/ReviewFlow'
@@ -15,8 +16,6 @@ import { LoginModal } from '../components/Auth/LoginModal'
 import { DishCardSkeleton } from '../components/Skeleton'
 import { ImpactFeedback, getImpactMessage } from '../components/ImpactFeedback'
 import { CategoryImageCard } from '../components/CategoryImageCard'
-
-const MIN_VOTES_FOR_RANKING = 5
 
 const SORT_OPTIONS = [
   { id: 'top_rated', label: 'Top Rated', icon: '⭐' },
@@ -289,15 +288,15 @@ export function Browse() {
     // Then sort based on selected option
     switch (sortBy) {
       case 'most_voted':
-        result = result.toSorted((a, b) => (b.total_votes || 0) - (a.total_votes || 0))
+        result = result.slice().sort((a, b) => (b.total_votes || 0) - (a.total_votes || 0))
         break
       case 'closest':
-        result = result.toSorted((a, b) => (a.distance_miles || 999) - (b.distance_miles || 999))
+        result = result.slice().sort((a, b) => (a.distance_miles || 999) - (b.distance_miles || 999))
         break
       case 'top_rated':
       default:
         // Sort by avg_rating (1-10 scale) for Discovery view
-        result = result.toSorted((a, b) => {
+        result = result.slice().sort((a, b) => {
           const aRanked = (a.total_votes || 0) >= MIN_VOTES_FOR_RANKING
           const bRanked = (b.total_votes || 0) >= MIN_VOTES_FOR_RANKING
           // Ranked dishes first

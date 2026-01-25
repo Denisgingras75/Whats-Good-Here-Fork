@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import posthog from 'posthog-js'
 import { dishesApi } from '../api/dishesApi'
 import { getCategoryImage } from '../constants/categoryImages'
+import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRatingColor } from '../utils/ranking'
-
-const MIN_VOTES_FOR_RANKING = 5
 const MIN_SEARCH_LENGTH = 2
 const MAX_DISH_RESULTS = 5
 const MAX_CATEGORY_RESULTS = 2

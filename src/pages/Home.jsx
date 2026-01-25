@@ -7,9 +7,8 @@ import { useProfile } from '../hooks/useProfile'
 import { LocationPicker } from '../components/LocationPicker'
 import { DishSearch } from '../components/DishSearch'
 import { getCategoryImage } from '../constants/categoryImages'
+import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRatingColor } from '../utils/ranking'
-
-const MIN_VOTES_FOR_RANKING = 5
 
 // Featured categories for homepage - these are the "hero" categories
 const FEATURED_CATEGORIES = [
@@ -51,7 +50,7 @@ export function Home() {
       )
 
       // Sort by avg_rating (ranked dishes first, then by score)
-      const sorted = categoryDishes.toSorted((a, b) => {
+      const sorted = categoryDishes.slice().sort((a, b) => {
         const aRanked = (a.total_votes || 0) >= MIN_VOTES_FOR_RANKING
         const bRanked = (b.total_votes || 0) >= MIN_VOTES_FOR_RANKING
         if (aRanked && !bRanked) return -1
@@ -74,7 +73,7 @@ export function Home() {
   const top10Dishes = useMemo(() => {
     if (!dishes?.length) return []
 
-    return dishes.toSorted((a, b) => {
+    return dishes.slice().sort((a, b) => {
       const aRanked = (a.total_votes || 0) >= MIN_VOTES_FOR_RANKING
       const bRanked = (b.total_votes || 0) >= MIN_VOTES_FOR_RANKING
       if (aRanked && !bRanked) return -1
@@ -91,7 +90,8 @@ export function Home() {
 
     return dishes
       .filter(dish => preferredCats.includes(dish.category?.toLowerCase()))
-      .toSorted((a, b) => {
+      .slice()
+      .sort((a, b) => {
         const aRanked = (a.total_votes || 0) >= MIN_VOTES_FOR_RANKING
         const bRanked = (b.total_votes || 0) >= MIN_VOTES_FOR_RANKING
         if (aRanked && !bRanked) return -1

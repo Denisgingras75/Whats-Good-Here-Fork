@@ -2,8 +2,7 @@ import { supabase } from '../lib/supabase'
 import posthog from 'posthog-js'
 import { checkVoteRateLimit } from '../lib/rateLimiter'
 import { containsBlockedContent } from '../lib/reviewBlocklist'
-
-const MAX_REVIEW_LENGTH = 200
+import { MAX_REVIEW_LENGTH } from '../constants/app'
 
 /**
  * Votes API - Centralized data fetching and mutation for votes

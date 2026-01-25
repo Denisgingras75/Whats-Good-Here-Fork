@@ -1,7 +1,6 @@
 import { getCategoryImage } from '../constants/categoryImages'
+import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRatingColor } from '../utils/ranking'
-
-const MIN_VOTES_FOR_RANKING = 5
 
 export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
   const {

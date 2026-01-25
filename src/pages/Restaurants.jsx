@@ -10,9 +10,8 @@ import { DishCard } from '../components/DishCard'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { VariantPicker, VariantBadge } from '../components/VariantPicker'
 import { getCategoryImage } from '../constants/categoryImages'
+import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRatingColor } from '../utils/ranking'
-
-const MIN_VOTES_FOR_RANKING = 5
 const TOP_DISHES_COUNT = 5
 
 export function Restaurants() {
@@ -440,7 +439,7 @@ function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequired, isS
   if (error) {
     return (
       <div className="px-4 py-12 text-center">
-        <p className="text-sm" style={{ color: 'var(--color-danger)' }}>{error}</p>
+        <p className="text-sm" style={{ color: 'var(--color-danger)' }}>{error?.message || error}</p>
       </div>
     )
   }

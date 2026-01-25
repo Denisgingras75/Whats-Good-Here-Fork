@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { dishesApi } from '../api/dishesApi'
+import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRatingColor } from '../utils/ranking'
-
-const MIN_VOTES_FOR_RANKING = 5
 
 /**
  * VariantPicker - Shows expandable list of dish variants

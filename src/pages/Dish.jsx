@@ -13,6 +13,7 @@ import { PhotoUploadConfirmation } from '../components/PhotoUploadConfirmation'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { VariantSelector } from '../components/VariantPicker'
 import { getCategoryImage } from '../constants/categoryImages'
+import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRatingColor, formatScore10 } from '../utils/ranking'
 import { formatRelativeTime } from '../utils/formatters'
 import { ThumbsUpIcon } from '../components/ThumbsUpIcon'
@@ -313,7 +314,6 @@ export function Dish() {
     )
   }
 
-  const MIN_VOTES_FOR_RANKING = 5
   const isRanked = dish.total_votes >= MIN_VOTES_FOR_RANKING
 
   return (
