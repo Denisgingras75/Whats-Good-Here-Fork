@@ -29,11 +29,11 @@ import { HearingIcon } from '../components/HearingIcon'
 import { getRatingColor } from '../utils/ranking'
 
 const TABS = [
-  { id: 'unrated', label: 'Unrated', emoji: '📷' },
   { id: 'worth-it', label: "Good Here", emoji: null, icon: 'thumbsUp' },
   { id: 'avoid', label: "Not Good Here", emoji: null, icon: 'thumbsDown' },
   { id: 'saved', label: 'Heard it was Good Here', emoji: null, icon: 'hearing' },
   { id: 'reviews', label: 'Reviews', emoji: '📝' },
+  { id: 'unrated', label: 'Unrated', emoji: '📷' },
 ]
 
 const REMEMBERED_EMAIL_KEY = 'whats-good-here-email'
