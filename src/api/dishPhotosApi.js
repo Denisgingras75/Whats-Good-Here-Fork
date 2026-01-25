@@ -126,6 +126,7 @@ export const dishPhotosApi = {
 
   /**
    * Get dishes that a user has photographed but not voted on
+   * Limited to 100 most recent photos for performance
    * @param {string} userId - User ID
    * @returns {Promise<Array>} Array of dishes with photos but no votes
    */
@@ -135,7 +136,7 @@ export const dishPhotosApi = {
         return []
       }
 
-      // Get photos by user
+      // Get recent photos by user (limit 100 for performance)
       const { data: photos, error: photosError } = await supabase
         .from('dish_photos')
         .select(`
@@ -156,6 +157,7 @@ export const dishPhotosApi = {
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
+        .limit(100)
 
       if (photosError) {
         throw photosError
@@ -165,11 +167,12 @@ export const dishPhotosApi = {
         return []
       }
 
-      // Get user's votes to filter out rated dishes
+      // Get user's votes to filter out rated dishes (limit 500)
       const { data: votes, error: votesError } = await supabase
         .from('votes')
         .select('dish_id')
         .eq('user_id', userId)
+        .limit(500)
 
       if (votesError) {
         throw votesError
@@ -381,7 +384,7 @@ export const dishPhotosApi = {
    * @returns {Promise<Array>} Array of photos ordered by status and quality
    * @throws {Error} On API failure
    */
-  async getAllVisiblePhotos(dishId) {
+  async getAllVisiblePhotos(dishId, limit = 50) {
     try {
       const { data, error } = await supabase
         .from('dish_photos')
@@ -389,6 +392,7 @@ export const dishPhotosApi = {
         .eq('dish_id', dishId)
         .in('status', ['featured', 'community', 'hidden'])
         .order('quality_score', { ascending: false })
+        .limit(limit)
 
       if (error) {
         throw error

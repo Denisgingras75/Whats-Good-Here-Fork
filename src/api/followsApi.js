@@ -290,19 +290,29 @@ export const followsApi = {
 
       if (!data || data.length === 0) return []
 
-      // Get live follower counts for each user
-      const usersWithCounts = await Promise.all(
-        data.map(async (user) => {
-          const { count } = await supabase
-            .from('follows')
-            .select('*', { count: 'exact', head: true })
-            .eq('followed_id', user.id)
-          return {
-            ...user,
-            follower_count: count || 0,
-          }
-        })
-      )
+      // Get follower counts in a single query (avoid N+1)
+      const userIds = data.map(u => u.id)
+      const { data: followCounts, error: followError } = await supabase
+        .from('follows')
+        .select('followed_id')
+        .in('followed_id', userIds)
+
+      if (followError) {
+        logger.error('Error fetching follower counts:', followError)
+        // Graceful degradation - return users without counts
+        return data.map(user => ({ ...user, follower_count: 0 }))
+      }
+
+      // Count followers per user in memory (small dataset - max 10 users)
+      const countMap = {}
+      followCounts?.forEach(f => {
+        countMap[f.followed_id] = (countMap[f.followed_id] || 0) + 1
+      })
+
+      const usersWithCounts = data.map(user => ({
+        ...user,
+        follower_count: countMap[user.id] || 0,
+      }))
 
       // Sort by follower count descending
       return usersWithCounts.sort((a, b) => b.follower_count - a.follower_count)

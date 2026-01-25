@@ -299,7 +299,9 @@ describe('votesApi', () => {
       supabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockResolvedValue({ data: mockVotes, error: null }),
+            order: vi.fn().mockReturnValue({
+              limit: vi.fn().mockResolvedValue({ data: mockVotes, error: null }),
+            }),
           }),
         }),
       })
@@ -313,7 +315,9 @@ describe('votesApi', () => {
       supabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockResolvedValue({ data: null, error: { message: 'Error' } }),
+            order: vi.fn().mockReturnValue({
+              limit: vi.fn().mockResolvedValue({ data: null, error: { message: 'Error' } }),
+            }),
           }),
         }),
       })
@@ -377,38 +381,17 @@ describe('votesApi', () => {
     })
 
     it('should count dishes with 5+ total votes', async () => {
-      // User voted on 3 dishes
-      const userVotes = [
-        { dish_id: 'dish-1' },
-        { dish_id: 'dish-2' },
-        { dish_id: 'dish-3' },
+      // User voted on 3 dishes - now uses single query with JOIN to dishes.total_votes
+      const votesWithDishCounts = [
+        { dish_id: 'dish-1', dishes: { total_votes: 5 } },  // 5 votes - ranked
+        { dish_id: 'dish-2', dishes: { total_votes: 7 } },  // 7 votes - ranked
+        { dish_id: 'dish-3', dishes: { total_votes: 3 } },  // 3 votes - not ranked
       ]
 
-      // dish-1 has 5 votes (ranked), dish-2 has 7 votes (ranked), dish-3 has 3 votes (not ranked)
-      const allVotesOnUserDishes = [
-        { dish_id: 'dish-1' }, { dish_id: 'dish-1' }, { dish_id: 'dish-1' },
-        { dish_id: 'dish-1' }, { dish_id: 'dish-1' }, // 5 votes
-        { dish_id: 'dish-2' }, { dish_id: 'dish-2' }, { dish_id: 'dish-2' },
-        { dish_id: 'dish-2' }, { dish_id: 'dish-2' }, { dish_id: 'dish-2' },
-        { dish_id: 'dish-2' }, // 7 votes
-        { dish_id: 'dish-3' }, { dish_id: 'dish-3' }, { dish_id: 'dish-3' }, // 3 votes
-      ]
-
-      let callCount = 0
-      supabase.from.mockImplementation(() => {
-        callCount++
-        if (callCount === 1) {
-          return {
-            select: vi.fn().mockReturnValue({
-              eq: vi.fn().mockResolvedValue({ data: userVotes, error: null }),
-            }),
-          }
-        }
-        return {
-          select: vi.fn().mockReturnValue({
-            in: vi.fn().mockResolvedValue({ data: allVotesOnUserDishes, error: null }),
-          }),
-        }
+      supabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({ data: votesWithDishCounts, error: null }),
+        }),
       })
 
       const result = await votesApi.getDishesHelpedRank('user-1')

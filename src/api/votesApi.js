@@ -139,10 +139,12 @@ export const votesApi = {
 
   /**
    * Get detailed votes for a user with dish and restaurant info
+   * Limited to most recent 500 votes for performance
    * @param {string} userId - User ID
+   * @param {number} limit - Max votes to fetch (default 500)
    * @returns {Promise<Array>} Array of votes with dish details
    */
-  async getDetailedVotesForUser(userId) {
+  async getDetailedVotesForUser(userId, limit = 500) {
     try {
       if (!userId) {
         return []
@@ -168,6 +170,7 @@ export const votesApi = {
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
+        .limit(limit)
 
       if (error) {
         throw createClassifiedError(error)
@@ -212,6 +215,7 @@ export const votesApi = {
 
   /**
    * Get count of ranked dishes (5+ votes) that a user has voted on
+   * Uses dishes.total_votes instead of counting votes table (O(1) vs O(n))
    * @param {string} userId - User ID
    * @returns {Promise<number>} Count of dishes helped rank
    */
@@ -221,33 +225,17 @@ export const votesApi = {
         return 0
       }
 
-      // Get all dish IDs the user voted on
-      const { data: userVotes, error: votesError } = await supabase
+      // Single query: get user's votes with dish total_votes via JOIN
+      const { data, error } = await supabase
         .from('votes')
-        .select('dish_id')
+        .select('dish_id, dishes(total_votes)')
         .eq('user_id', userId)
 
-      if (votesError) throw createClassifiedError(votesError)
-      if (!userVotes?.length) return 0
+      if (error) throw createClassifiedError(error)
+      if (!data?.length) return 0
 
-      const dishIds = userVotes.map(v => v.dish_id)
-
-      // Count votes for each of those dishes
-      const { data: voteCounts, error: countError } = await supabase
-        .from('votes')
-        .select('dish_id')
-        .in('dish_id', dishIds)
-
-      if (countError) throw createClassifiedError(countError)
-
-      // Group by dish_id and count those with 5+
-      const counts = {}
-      voteCounts?.forEach(v => {
-        counts[v.dish_id] = (counts[v.dish_id] || 0) + 1
-      })
-
-      // Count dishes with 5+ votes
-      const rankedCount = Object.values(counts).filter(c => c >= 5).length
+      // Count dishes with 5+ votes (using pre-computed total_votes)
+      const rankedCount = data.filter(v => (v.dishes?.total_votes || 0) >= 5).length
       return rankedCount
     } catch (error) {
       logger.error('Error getting dishes helped rank:', error)
