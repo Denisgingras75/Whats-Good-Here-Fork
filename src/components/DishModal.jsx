@@ -17,6 +17,9 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
   const [lightboxPhoto, setLightboxPhoto] = useState(null)
   const [photoLoadError, setPhotoLoadError] = useState(false)
 
+  // Focus trap hook must be called BEFORE any early returns to satisfy React hooks rules
+  const modalRef = useFocusTrap(!!dish, onClose)
+
   // Fetch photos when modal opens
   useEffect(() => {
     if (!dish?.dish_id) return
@@ -73,8 +76,6 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
   // Photos to display in the grid (first 4 of community, or all if showing all)
   const displayPhotos = showAllPhotos ? allPhotos : communityPhotos.slice(0, 4)
   const hasMorePhotos = allPhotos.length > 4 && !showAllPhotos
-
-  const modalRef = useFocusTrap(!!dish, onClose)
 
   return createPortal(
     <div

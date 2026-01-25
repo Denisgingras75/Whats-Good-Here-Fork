@@ -18,20 +18,18 @@ export function VirtualizedDishList({
 }) {
   const listRef = useRef(null)
 
-  // Defensive: ensure dishes is an array before any operations
-  if (!Array.isArray(dishes)) {
-    console.error('VirtualizedDishList received non-array dishes:', dishes)
-    return null
-  }
+  // Ensure dishes is always an array for hooks consistency
+  const safeDishes = Array.isArray(dishes) ? dishes : []
 
   // Calculate items per row based on columns
   const itemsPerRow = columns
-  const rowCount = Math.ceil(dishes.length / itemsPerRow)
+  const rowCount = Math.ceil(safeDishes.length / itemsPerRow)
 
   // Row renderer - renders 1 or 2 cards per row
+  // Must be called unconditionally to satisfy React hooks rules
   const Row = useCallback(({ index, style }) => {
     const startIndex = index * itemsPerRow
-    const rowDishes = dishes.slice(startIndex, startIndex + itemsPerRow)
+    const rowDishes = safeDishes.slice(startIndex, startIndex + itemsPerRow)
 
     return (
       <div style={style} className="px-1">
@@ -48,14 +46,19 @@ export function VirtualizedDishList({
         </div>
       </div>
     )
-  }, [dishes, itemsPerRow, columns, onDishClick, isFavorite, onToggleFavorite])
+  }, [safeDishes, itemsPerRow, columns, onDishClick, isFavorite, onToggleFavorite])
+
+  // Early return AFTER all hooks to satisfy React hooks rules
+  if (safeDishes.length === 0) {
+    return null
+  }
 
   // Don't virtualize lists under 100 items - virtualization creates a fixed-height
   // scroll container that conflicts with normal page scrolling for search results
-  if (dishes.length <= 100) {
+  if (safeDishes.length <= 100) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {dishes.map((dish) => (
+        {safeDishes.map((dish) => (
           <BrowseCard
             key={dish?.dish_id || Math.random()}
             dish={dish}
