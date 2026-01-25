@@ -69,7 +69,7 @@ export const dishesApi = {
   },
 
   /**
-   * Search dishes by name (for autocomplete)
+   * Search dishes by name, category, tags, or cuisine
    * Searches ALL dishes regardless of category - categories are shortcuts, not containers
    * Results sorted by avg_rating (highest first) so best matches rise to top
    * @param {string} query - Search query
@@ -84,42 +84,82 @@ export const dishesApi = {
     const sanitized = sanitizeSearchQuery(query, 50)
     if (!sanitized) return []
 
-    const { data, error } = await supabase
-      .from('dishes')
-      .select(`
+    const selectFields = `
+      id,
+      name,
+      category,
+      tags,
+      photo_url,
+      total_votes,
+      yes_votes,
+      avg_rating,
+      restaurants!inner (
         id,
         name,
-        category,
-        photo_url,
-        total_votes,
-        yes_votes,
-        avg_rating,
-        restaurants!inner (
-          id,
-          name,
-          is_open
-        )
-      `)
+        is_open,
+        cuisine
+      )
+    `
+
+    // Query 1: Search by dish name and category
+    const { data: nameData, error: nameError } = await supabase
+      .from('dishes')
+      .select(selectFields)
       .eq('restaurants.is_open', true)
       .or(`name.ilike.%${sanitized}%,category.ilike.%${sanitized}%`)
       .order('avg_rating', { ascending: false, nullsFirst: false })
       .limit(limit)
 
-    if (error) {
-      console.error('Error searching dishes:', error)
-      throw error
+    if (nameError) {
+      console.error('Error searching dishes by name:', nameError)
+      throw nameError
     }
 
+    // Query 2: Search by restaurant cuisine
+    const { data: cuisineData } = await supabase
+      .from('dishes')
+      .select(selectFields)
+      .eq('restaurants.is_open', true)
+      .ilike('restaurants.cuisine', `%${sanitized}%`)
+      .order('avg_rating', { ascending: false, nullsFirst: false })
+      .limit(limit)
+
+    // Query 3: Search by dish tags
+    const { data: tagData } = await supabase
+      .from('dishes')
+      .select(selectFields)
+      .eq('restaurants.is_open', true)
+      .contains('tags', [sanitized.toLowerCase()])
+      .order('avg_rating', { ascending: false, nullsFirst: false })
+      .limit(limit)
+
+    // Merge all results, removing duplicates
+    const allResults = [...(nameData || [])]
+    const existingIds = new Set(allResults.map(d => d.id))
+
+    for (const dish of [...(cuisineData || []), ...(tagData || [])]) {
+      if (!existingIds.has(dish.id)) {
+        allResults.push(dish)
+        existingIds.add(dish.id)
+      }
+    }
+
+    // Sort merged results by rating and limit
+    allResults.sort((a, b) => (b.avg_rating || 0) - (a.avg_rating || 0))
+    const limited = allResults.slice(0, limit)
+
     // Transform to match expected format
-    return (data || []).map(dish => ({
+    return limited.map(dish => ({
       dish_id: dish.id,
       dish_name: dish.name,
       category: dish.category,
+      tags: dish.tags || [],
       photo_url: dish.photo_url,
       total_votes: dish.total_votes || 0,
       avg_rating: dish.avg_rating,
       restaurant_id: dish.restaurants.id,
       restaurant_name: dish.restaurants.name,
+      restaurant_cuisine: dish.restaurants.cuisine,
     }))
   },
 
@@ -131,7 +171,7 @@ export const dishesApi = {
    */
   async getDishById(dishId) {
     try {
-      // Fetch dish with restaurant info
+      // Fetch dish with restaurant info (including cuisine)
       const { data: dish, error: dishError } = await supabase
         .from('dishes')
         .select(`
@@ -141,7 +181,8 @@ export const dishesApi = {
             name,
             address,
             lat,
-            lng
+            lng,
+            cuisine
           )
         `)
         .eq('id', dishId)
