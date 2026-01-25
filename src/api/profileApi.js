@@ -35,17 +35,22 @@ export const profileApi = {
   },
 
   /**
-   * Create a new profile for a user
-   * @param {string} userId - User ID
+   * Create a new profile for current authenticated user
    * @param {string} displayName - Display name (optional)
    * @returns {Promise<Object>} Created profile object
    */
-  async createProfile(userId, displayName = null) {
+  async createProfile(displayName = null) {
     try {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        throw new Error('You must be logged in to create a profile')
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .insert({
-          id: userId,
+          id: user.id,
           display_name: displayName,
           has_onboarded: false,
         })
@@ -64,21 +69,22 @@ export const profileApi = {
   },
 
   /**
-   * Update a user's profile
-   * @param {string} userId - User ID
+   * Update current authenticated user's profile
    * @param {Object} updates - Fields to update
    * @returns {Promise<Object>} Updated profile object
    */
-  async updateProfile(userId, updates) {
+  async updateProfile(updates) {
     try {
-      if (!userId) {
-        throw new Error('Not logged in')
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        throw new Error('You must be logged in to update your profile')
       }
 
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('id', userId)
+        .eq('id', user.id)
         .select()
         .single()
 
@@ -94,24 +100,25 @@ export const profileApi = {
   },
 
   /**
-   * Get or create a profile for a user
-   * @param {string} userId - User ID
+   * Get or create a profile for current authenticated user
    * @returns {Promise<Object>} Profile object
    */
-  async getOrCreateProfile(userId) {
+  async getOrCreateProfile() {
     try {
-      if (!userId) {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
         return null
       }
 
       // Try to get existing profile
-      const existing = await this.getProfile(userId)
+      const existing = await this.getProfile(user.id)
       if (existing) {
         return existing
       }
 
       // Create new profile without display name - they'll set it in onboarding
-      return await this.createProfile(userId)
+      return await this.createProfile()
     } catch (error) {
       logger.error('Error getting or creating profile:', error)
       throw error

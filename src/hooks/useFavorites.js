@@ -50,7 +50,7 @@ export function useFavorites(userId) {
     })
 
     try {
-      await favoritesApi.addFavorite(userId, dishId)
+      await favoritesApi.addFavorite(dishId)
       // Background refetch for full dish data (non-blocking)
       favoritesApi.getFavorites().then(({ favorites: dishes }) => {
         setFavorites(dishes)
@@ -84,7 +84,7 @@ export function useFavorites(userId) {
     })
 
     try {
-      await favoritesApi.removeFavorite(userId, dishId)
+      await favoritesApi.removeFavorite(dishId)
       return { error: null }
     } catch (err) {
       // Revert on failure

@@ -33,17 +33,17 @@ describe('favoritesApi', () => {
   })
 
   describe('getFavoriteIds', () => {
-    it('should return empty array if no userId', async () => {
-      const result = await favoritesApi.getFavoriteIds(null)
+    it('should return empty array if user not authenticated', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: null } })
+
+      const result = await favoritesApi.getFavoriteIds()
+
       expect(result).toEqual([])
     })
 
-    it('should return empty array for undefined userId', async () => {
-      const result = await favoritesApi.getFavoriteIds(undefined)
-      expect(result).toEqual([])
-    })
+    it('should return array of dish IDs for authenticated user', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
 
-    it('should return array of dish IDs', async () => {
       const mockFavorites = [
         { dish_id: 'dish-1' },
         { dish_id: 'dish-2' },
@@ -56,107 +56,122 @@ describe('favoritesApi', () => {
         }),
       })
 
-      const result = await favoritesApi.getFavoriteIds('user-1')
+      const result = await favoritesApi.getFavoriteIds()
 
       expect(result).toEqual(['dish-1', 'dish-2', 'dish-3'])
     })
 
     it('should return empty array when no favorites', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
+
       supabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ data: [], error: null }),
         }),
       })
 
-      const result = await favoritesApi.getFavoriteIds('user-1')
+      const result = await favoritesApi.getFavoriteIds()
 
       expect(result).toEqual([])
     })
 
     it('should return empty array when data is null', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
+
       supabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ data: null, error: null }),
         }),
       })
 
-      const result = await favoritesApi.getFavoriteIds('user-1')
+      const result = await favoritesApi.getFavoriteIds()
 
       expect(result).toEqual([])
     })
 
     it('should throw error on database failure', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
+
       supabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'Query failed' } }),
         }),
       })
 
-      await expect(favoritesApi.getFavoriteIds('user-1')).rejects.toThrow('Query failed')
+      await expect(favoritesApi.getFavoriteIds()).rejects.toThrow('Query failed')
     })
   })
 
   describe('addFavorite', () => {
-    it('should throw if not logged in', async () => {
-      await expect(favoritesApi.addFavorite(null, 'dish-1')).rejects.toThrow('Not logged in')
-    })
+    it('should throw if not authenticated', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: null } })
 
-    it('should throw for undefined userId', async () => {
-      await expect(favoritesApi.addFavorite(undefined, 'dish-1')).rejects.toThrow('Not logged in')
+      await expect(favoritesApi.addFavorite('dish-1')).rejects.toThrow('You must be logged in')
     })
 
     it('should add favorite successfully', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
+
       supabase.from.mockReturnValue({
         insert: vi.fn().mockResolvedValue({ error: null }),
       })
 
-      const result = await favoritesApi.addFavorite('user-1', 'dish-1')
+      const result = await favoritesApi.addFavorite('dish-1')
 
       expect(supabase.from).toHaveBeenCalledWith('favorites')
       expect(result).toEqual({ success: true })
     })
 
-    it('should insert correct data', async () => {
+    it('should insert with authenticated user ID', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'auth-user-123' } } })
+
       const insertMock = vi.fn().mockResolvedValue({ error: null })
       supabase.from.mockReturnValue({ insert: insertMock })
 
-      await favoritesApi.addFavorite('user-1', 'dish-1')
+      await favoritesApi.addFavorite('dish-1')
 
+      // Verify it uses the authenticated user's ID, not a passed parameter
       expect(insertMock).toHaveBeenCalledWith({
-        user_id: 'user-1',
+        user_id: 'auth-user-123',
         dish_id: 'dish-1',
       })
     })
 
-    it('should throw error on database failure', async () => {
-      supabase.from.mockReturnValue({
-        insert: vi.fn().mockResolvedValue({ error: { message: 'Insert failed' } }),
-      })
+    it('should handle duplicate gracefully', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
 
-      await expect(favoritesApi.addFavorite('user-1', 'dish-1')).rejects.toThrow('Insert failed')
-    })
-
-    it('should throw error on duplicate favorite', async () => {
       supabase.from.mockReturnValue({
         insert: vi.fn().mockResolvedValue({
           error: { message: 'duplicate key value violates unique constraint', code: '23505' },
         }),
       })
 
-      await expect(favoritesApi.addFavorite('user-1', 'dish-1')).rejects.toThrow()
+      // Should NOT throw for duplicates - returns success
+      const result = await favoritesApi.addFavorite('dish-1')
+      expect(result).toEqual({ success: true })
+    })
+
+    it('should throw error on database failure', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
+
+      supabase.from.mockReturnValue({
+        insert: vi.fn().mockResolvedValue({ error: { message: 'Insert failed', code: '50000' } }),
+      })
+
+      await expect(favoritesApi.addFavorite('dish-1')).rejects.toThrow('Insert failed')
     })
   })
 
   describe('removeFavorite', () => {
-    it('should throw if not logged in', async () => {
-      await expect(favoritesApi.removeFavorite(null, 'dish-1')).rejects.toThrow('Not logged in')
-    })
+    it('should throw if not authenticated', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: null } })
 
-    it('should throw for undefined userId', async () => {
-      await expect(favoritesApi.removeFavorite(undefined, 'dish-1')).rejects.toThrow('Not logged in')
+      await expect(favoritesApi.removeFavorite('dish-1')).rejects.toThrow('You must be logged in')
     })
 
     it('should remove favorite successfully', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
+
       supabase.from.mockReturnValue({
         delete: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
@@ -165,13 +180,15 @@ describe('favoritesApi', () => {
         }),
       })
 
-      const result = await favoritesApi.removeFavorite('user-1', 'dish-1')
+      const result = await favoritesApi.removeFavorite('dish-1')
 
       expect(supabase.from).toHaveBeenCalledWith('favorites')
       expect(result).toEqual({ success: true })
     })
 
     it('should throw error on database failure', async () => {
+      supabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
+
       supabase.from.mockReturnValue({
         delete: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
@@ -180,7 +197,7 @@ describe('favoritesApi', () => {
         }),
       })
 
-      await expect(favoritesApi.removeFavorite('user-1', 'dish-1')).rejects.toThrow('Delete failed')
+      await expect(favoritesApi.removeFavorite('dish-1')).rejects.toThrow('Delete failed')
     })
   })
 

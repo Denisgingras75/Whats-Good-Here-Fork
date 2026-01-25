@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { capture, identify, reset } from '../lib/analytics'
+import { clearPendingVoteStorage } from '../lib/storage'
 import { logger } from '../utils/logger'
 
 const AuthContext = createContext(null)
@@ -68,6 +69,8 @@ export function AuthProvider({ children }) {
   }, [])
 
   const signOut = useCallback(async () => {
+    // Clear all sensitive localStorage data before signing out
+    clearPendingVoteStorage()
     await supabase.auth.signOut()
     setUser(null)
   }, [])

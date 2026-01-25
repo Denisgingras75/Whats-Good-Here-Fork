@@ -16,7 +16,8 @@ export function useProfile(userId) {
     async function fetchProfile() {
       setLoading(true)
       try {
-        const data = await profileApi.getOrCreateProfile(userId)
+        // API uses auth.getUser() internally for security
+        const data = await profileApi.getOrCreateProfile()
         setProfile(data)
       } catch (error) {
         logger.error('Error fetching profile:', error)
@@ -32,7 +33,8 @@ export function useProfile(userId) {
     if (!userId) return { error: 'Not logged in' }
 
     try {
-      const data = await profileApi.updateProfile(userId, updates)
+      // API uses auth.getUser() internally for security
+      const data = await profileApi.updateProfile(updates)
       setProfile(data)
       return { data, error: null }
     } catch (error) {

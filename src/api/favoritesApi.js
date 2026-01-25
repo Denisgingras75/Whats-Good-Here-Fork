@@ -3,24 +3,26 @@ import { logger } from '../utils/logger'
 
 /**
  * Favorites API - Centralized data fetching and mutation for saved dishes
+ * SECURITY: All methods use auth.getUser() internally - never trust userId from caller
  */
 
 export const favoritesApi = {
   /**
-   * Get favorite dish IDs for a user
-   * @param {string} userId - User ID
+   * Get favorite dish IDs for current authenticated user
    * @returns {Promise<Array>} Array of dish IDs
    */
-  async getFavoriteIds(userId) {
+  async getFavoriteIds() {
     try {
-      if (!userId) {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
         return []
       }
 
       const { data, error } = await supabase
         .from('favorites')
         .select('dish_id')
-        .eq('user_id', userId)
+        .eq('user_id', user.id)
 
       if (error) {
         throw error
@@ -34,22 +36,27 @@ export const favoritesApi = {
   },
 
   /**
-   * Add a dish to favorites
-   * @param {string} userId - User ID
+   * Add a dish to favorites for current authenticated user
    * @param {string} dishId - Dish ID
    * @returns {Promise<Object>} Success status
    */
-  async addFavorite(userId, dishId) {
+  async addFavorite(dishId) {
     try {
-      if (!userId) {
-        throw new Error('Not logged in')
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        throw new Error('You must be logged in to save favorites')
       }
 
       const { error } = await supabase
         .from('favorites')
-        .insert({ user_id: userId, dish_id: dishId })
+        .insert({ user_id: user.id, dish_id: dishId })
 
       if (error) {
+        // Handle duplicate gracefully
+        if (error.code === '23505') {
+          return { success: true } // Already favorited
+        }
         throw error
       }
 
@@ -61,21 +68,22 @@ export const favoritesApi = {
   },
 
   /**
-   * Remove a dish from favorites
-   * @param {string} userId - User ID
+   * Remove a dish from favorites for current authenticated user
    * @param {string} dishId - Dish ID
    * @returns {Promise<Object>} Success status
    */
-  async removeFavorite(userId, dishId) {
+  async removeFavorite(dishId) {
     try {
-      if (!userId) {
-        throw new Error('Not logged in')
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        throw new Error('You must be logged in to remove favorites')
       }
 
       const { error } = await supabase
         .from('favorites')
         .delete()
-        .eq('user_id', userId)
+        .eq('user_id', user.id)
         .eq('dish_id', dishId)
 
       if (error) {
