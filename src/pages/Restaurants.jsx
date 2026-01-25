@@ -579,6 +579,9 @@ function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, onToggle
   const isRanked = (total_votes || 0) >= MIN_VOTES_FOR_RANKING
   const votes = total_votes || 0
 
+  // For parent dishes with variants, show best variant's rating instead of aggregate
+  const displayRating = (has_variants && best_variant_rating) ? best_variant_rating : avg_rating
+
   const handleClick = () => {
     // If has variants and they're not shown, expand to show variants first
     if (has_variants && !showVariants) {
@@ -699,11 +702,11 @@ function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, onToggle
               <div className="flex items-center gap-3">
                 {/* Rating block - stacked vertically */}
                 <div className="flex flex-col items-center px-3 py-1.5 rounded-lg" style={{ background: 'var(--color-surface)' }}>
-                  <span className="text-lg font-bold leading-none" style={{ color: getRatingColor(avg_rating) }}>
-                    {avg_rating || '—'}
+                  <span className="text-lg font-bold leading-none" style={{ color: getRatingColor(displayRating) }}>
+                    {displayRating || '—'}
                   </span>
                   <span className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
-                    {votes} votes
+                    {has_variants && best_variant_name ? `Best: ${best_variant_name}` : `${votes} votes`}
                   </span>
                 </div>
                 {/* Order again badge */}

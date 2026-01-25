@@ -22,6 +22,9 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
 
   const imgSrc = photo_url || getCategoryImage(category)
   const isRanked = total_votes >= MIN_VOTES_FOR_RANKING
+
+  // For parent dishes with variants, show best variant's rating instead of aggregate
+  const displayRating = (has_variants && best_variant_rating) ? best_variant_rating : avg_rating
   const votesNeeded = MIN_VOTES_FOR_RANKING - (total_votes || 0)
 
   const handleKeyDown = (e) => {
@@ -55,11 +58,11 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
         {/* Rating badge - bottom left */}
         {isRanked ? (
           <div className="absolute bottom-3 left-3 px-2.5 py-1.5 rounded-lg bg-black/60 backdrop-blur-sm flex flex-col items-center">
-            <span className="text-base font-bold leading-tight" style={{ color: getRatingColor(avg_rating) }}>
-              {avg_rating || '—'}
+            <span className="text-base font-bold leading-tight" style={{ color: getRatingColor(displayRating) }}>
+              {displayRating || '—'}
             </span>
             <span className="text-[10px] text-white/70">
-              {total_votes} votes
+              {has_variants && best_variant_name ? `Best: ${best_variant_name}` : `${total_votes} votes`}
             </span>
           </div>
         ) : (
@@ -148,18 +151,7 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
                     color: 'var(--color-primary)'
                   }}
                 >
-                  {variant_count} flavor{variant_count === 1 ? '' : 's'}
-                  {best_variant_name && (
-                    <>
-                      <span style={{ opacity: 0.5 }}>·</span>
-                      <span>Best: {best_variant_name}</span>
-                      {best_variant_rating && (
-                        <span className="font-bold" style={{ color: getRatingColor(best_variant_rating) }}>
-                          {best_variant_rating}
-                        </span>
-                      )}
-                    </>
-                  )}
+                  {variant_count} flavor{variant_count === 1 ? '' : 's'} available
                 </span>
               </div>
             )}

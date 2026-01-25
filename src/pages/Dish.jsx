@@ -94,6 +94,8 @@ export function Dish() {
             ? Math.round((data.yes_votes / data.total_votes) * 100)
             : 0,
           avg_rating: data.avg_rating,
+          parent_dish_id: data.parent_dish_id,
+          has_variants: data.has_variants,
         }
 
         setDish(transformedDish)
@@ -270,6 +272,8 @@ export function Dish() {
           ? Math.round((data.yes_votes / data.total_votes) * 100)
           : 0,
         avg_rating: data.avg_rating,
+        parent_dish_id: data.parent_dish_id,
+        has_variants: data.has_variants,
       }
       setDish(transformedDish)
       setReviews(reviewsData)
