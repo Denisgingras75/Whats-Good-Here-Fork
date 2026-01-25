@@ -3,6 +3,7 @@ import { authApi } from '../../api/authApi'
 import { getPendingVoteFromStorage } from '../../lib/storage'
 import { ThumbsUpIcon } from '../ThumbsUpIcon'
 import { ThumbsDownIcon } from '../ThumbsDownIcon'
+import { logger } from '../../utils/logger'
 
 const REMEMBERED_EMAIL_KEY = 'whats-good-here-email'
 
@@ -28,7 +29,7 @@ export function LoginModal({ isOpen, onClose, pendingAction = null }) {
           setEmail(savedEmail)
         }
       } catch (error) {
-        console.warn('LoginModal: unable to read remembered email', error)
+        logger.warn('LoginModal: unable to read remembered email', error)
       }
     }
   }, [isOpen])
@@ -57,7 +58,7 @@ export function LoginModal({ isOpen, onClose, pendingAction = null }) {
         const available = await authApi.isUsernameAvailable(username)
         setUsernameStatus(available ? 'available' : 'taken')
       } catch (error) {
-        console.error('LoginModal: username check failed', error)
+        logger.error('LoginModal: username check failed', error)
         setUsernameStatus(null)
       }
     }, 500)
@@ -92,7 +93,7 @@ export function LoginModal({ isOpen, onClose, pendingAction = null }) {
       try {
         sessionStorage.setItem(REMEMBERED_EMAIL_KEY, email)
       } catch (error) {
-        console.warn('LoginModal: unable to persist remembered email', error)
+        logger.warn('LoginModal: unable to persist remembered email', error)
       }
 
       await authApi.signInWithPassword(email, password)
@@ -130,7 +131,7 @@ export function LoginModal({ isOpen, onClose, pendingAction = null }) {
       try {
         localStorage.setItem(REMEMBERED_EMAIL_KEY, email)
       } catch (error) {
-        console.warn('LoginModal: unable to persist remembered email', error)
+        logger.warn('LoginModal: unable to persist remembered email', error)
       }
 
       const result = await authApi.signUpWithPassword(email, password, username)

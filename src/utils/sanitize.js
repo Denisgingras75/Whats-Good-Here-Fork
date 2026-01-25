@@ -1,3 +1,5 @@
+import { logger } from './logger'
+
 /**
  * Security utilities for input sanitization
  */
@@ -45,26 +47,26 @@ export function extractSafeFilename(url, expectedUserId) {
     // Typical format: {dishId}.{extension} or {uuid}.{extension}
     const safeFilenamePattern = /^[a-zA-Z0-9\-_.]+$/
     if (!safeFilenamePattern.test(filename)) {
-      console.warn('Invalid filename format detected:', filename)
+      logger.warn('Invalid filename format detected:', filename)
       return null
     }
 
     // Check for path traversal attempts
     if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
-      console.warn('Path traversal attempt detected in filename:', filename)
+      logger.warn('Path traversal attempt detected in filename:', filename)
       return null
     }
 
     // Decode and re-validate (in case of URL encoding tricks)
     const decodedFilename = decodeURIComponent(filename)
     if (!safeFilenamePattern.test(decodedFilename)) {
-      console.warn('Invalid decoded filename:', decodedFilename)
+      logger.warn('Invalid decoded filename:', decodedFilename)
       return null
     }
 
     return decodedFilename
   } catch (error) {
-    console.error('Error parsing URL for filename extraction:', error)
+    logger.error('Error parsing URL for filename extraction:', error)
     return null
   }
 }

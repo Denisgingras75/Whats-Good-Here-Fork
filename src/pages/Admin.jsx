@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { logger } from '../utils/logger'
 import { restaurantsApi } from '../api/restaurantsApi'
 import { adminApi } from '../api/adminApi'
 import { CATEGORY_IMAGES } from '../constants/categoryImages'
@@ -62,7 +63,7 @@ export function Admin() {
       const data = await restaurantsApi.getOpen()
       setRestaurants(data)
     } catch (error) {
-      console.error('Error fetching restaurants:', error)
+      logger.error('Error fetching restaurants:', error)
       setMessage({ type: 'error', text: 'Failed to load restaurants' })
     } finally {
       setLoading(false)
@@ -74,7 +75,7 @@ export function Admin() {
       const data = await adminApi.getRecentDishes(10)
       setRecentDishes(data)
     } catch (error) {
-      console.error('Error fetching recent dishes:', error)
+      logger.error('Error fetching recent dishes:', error)
     }
   }
 
@@ -90,7 +91,7 @@ export function Admin() {
       const results = await adminApi.searchDishes(searchQuery)
       setSearchResults(results)
     } catch (error) {
-      console.error('Error searching dishes:', error)
+      logger.error('Error searching dishes:', error)
       setMessage({ type: 'error', text: 'Search failed' })
     } finally {
       setSearching(false)
@@ -184,7 +185,7 @@ export function Admin() {
         setSearchResults(results)
       }
     } catch (error) {
-      console.error('Error saving dish:', error)
+      logger.error('Error saving dish:', error)
       setMessage({ type: 'error', text: `Failed to save dish: ${error.message}` })
     } finally {
       setSubmitting(false)
@@ -208,7 +209,7 @@ export function Admin() {
         handleCancelEdit()
       }
     } catch (error) {
-      console.error('Error deleting dish:', error)
+      logger.error('Error deleting dish:', error)
       setMessage({ type: 'error', text: `Failed to delete: ${error.message}` })
     }
   }

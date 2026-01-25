@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase'
 import posthog from 'posthog-js'
+import { logger } from '../utils/logger'
 
 /**
  * Auth API - Centralized authentication operations
@@ -27,7 +28,7 @@ export const authApi = {
       }
       return { success: true }
     } catch (error) {
-      console.error('Error signing in with Google:', error)
+      logger.error('Error signing in with Google:', error)
       throw error
     }
   },
@@ -55,7 +56,7 @@ export const authApi = {
       posthog.capture('magic_link_sent')
       return { success: true }
     } catch (error) {
-      console.error('Error sending magic link:', error)
+      logger.error('Error sending magic link:', error)
       throw error
     }
   },
@@ -116,7 +117,7 @@ export const authApi = {
       posthog.capture('signup_completed', { method: 'password' })
       return { success: true, user: data.user }
     } catch (error) {
-      console.error('Error signing up:', error)
+      logger.error('Error signing up:', error)
       throw error
     }
   },
@@ -144,7 +145,7 @@ export const authApi = {
       posthog.capture('login_completed', { method: 'password' })
       return { success: true, user: data.user }
     } catch (error) {
-      console.error('Error signing in:', error)
+      logger.error('Error signing in:', error)
       throw error
     }
   },
@@ -166,7 +167,7 @@ export const authApi = {
 
       return { success: true }
     } catch (error) {
-      console.error('Error sending password reset:', error)
+      logger.error('Error sending password reset:', error)
       throw error
     }
   },
@@ -188,7 +189,7 @@ export const authApi = {
 
       return { success: true }
     } catch (error) {
-      console.error('Error updating password:', error)
+      logger.error('Error updating password:', error)
       throw error
     }
   },
@@ -214,7 +215,7 @@ export const authApi = {
     } catch (error) {
       // PGRST116 means no rows found, which means username is available
       if (error.code === 'PGRST116') return true
-      console.error('Error checking username:', error)
+      logger.error('Error checking username:', error)
       throw new Error('Unable to check username availability')
     }
   },
@@ -245,7 +246,7 @@ export const authApi = {
 
       return data || null
     } catch (error) {
-      console.error('Error fetching user vote:', error)
+      logger.error('Error fetching user vote:', error)
       throw error
     }
   },

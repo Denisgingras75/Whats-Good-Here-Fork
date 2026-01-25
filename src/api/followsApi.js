@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase'
 import { sanitizeSearchQuery } from '../utils/sanitize'
+import { logger } from '../utils/logger'
 
 /**
  * Follows API - Social connections
@@ -78,7 +79,7 @@ export const followsApi = {
       .single()
 
     if (error && error.code !== 'PGRST116') {
-      console.error('Error checking follow status:', error)
+      logger.error('Error checking follow status:', error)
       throw error
     }
 
@@ -224,7 +225,7 @@ export const followsApi = {
       .eq('follower_id', userId)
 
     if (followerError || followingError) {
-      console.error('Error fetching follow counts:', followerError || followingError)
+      logger.error('Error fetching follow counts:', followerError || followingError)
       throw (followerError || followingError)
     }
 
@@ -251,13 +252,13 @@ export const followsApi = {
         })
 
       if (error) {
-        console.error('Error fetching friends votes:', error)
+        logger.error('Error fetching friends votes:', error)
         throw new Error('Failed to fetch friends votes')
       }
 
       return data || []
     } catch (err) {
-      console.error('Unexpected error in getFriendsVotesForDish:', err)
+      logger.error('Unexpected error in getFriendsVotesForDish:', err)
       throw err
     }
   },
@@ -283,7 +284,7 @@ export const followsApi = {
         .limit(limit)
 
       if (error) {
-        console.error('Error searching users:', error)
+        logger.error('Error searching users:', error)
         throw new Error('Failed to search users')
       }
 
@@ -306,7 +307,7 @@ export const followsApi = {
       // Sort by follower count descending
       return usersWithCounts.sort((a, b) => b.follower_count - a.follower_count)
     } catch (err) {
-      console.error('Unexpected error in searchUsers:', err)
+      logger.error('Unexpected error in searchUsers:', err)
       throw err
     }
   },

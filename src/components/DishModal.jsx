@@ -4,6 +4,7 @@ import { ReviewFlow } from './ReviewFlow'
 import { PhotoUploadButton } from './PhotoUploadButton'
 import { PhotoUploadConfirmation } from './PhotoUploadConfirmation'
 import { dishPhotosApi } from '../api/dishPhotosApi'
+import { logger } from '../utils/logger'
 
 export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
   const [photoUploaded, setPhotoUploaded] = useState(null)
@@ -30,7 +31,7 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
         setCommunityPhotos(community)
         setAllPhotos(all)
       } catch (error) {
-        console.error('Failed to fetch photos:', error)
+        logger.error('Failed to fetch photos:', error)
         setPhotoLoadError(true)
       }
     }
@@ -53,7 +54,7 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
       setCommunityPhotos(community)
       setAllPhotos(all)
     } catch (error) {
-      console.error('Failed to refresh photos after upload:', error)
+      logger.error('Failed to refresh photos after upload:', error)
     }
   }
 

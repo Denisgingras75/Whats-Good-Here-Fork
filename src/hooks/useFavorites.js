@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import posthog from 'posthog-js'
 import { favoritesApi } from '../api/favoritesApi'
+import { logger } from '../utils/logger'
 
 export function useFavorites(userId) {
   const [favoriteIds, setFavoriteIds] = useState([])
@@ -23,7 +24,7 @@ export function useFavorites(userId) {
         setFavoriteIds(ids)
         setFavorites(dishes)
       } catch (err) {
-        console.error('Error fetching favorites:', err)
+        logger.error('Error fetching favorites:', err)
       } finally {
         setLoading(false)
       }
@@ -101,7 +102,7 @@ export function useFavorites(userId) {
       setFavoriteIds(ids)
       setFavorites(dishes)
     } catch (err) {
-      console.error('Error refetching favorites:', err)
+      logger.error('Error refetching favorites:', err)
     }
   }
 

@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import posthog from 'posthog-js'
+import { logger } from '../utils/logger'
 
 // Default location: Martha's Vineyard center (between Vineyard Haven, Oak Bluffs, Edgartown)
 const DEFAULT_LOCATION = {
@@ -75,7 +76,7 @@ export function LocationProvider({ children }) {
         setError(null)
       },
       (err) => {
-        console.warn('Geolocation error:', err.message)
+        logger.warn('Geolocation error:', err.message)
         setPermissionState('denied')
         setError('denied')
         setLocation(DEFAULT_LOCATION)

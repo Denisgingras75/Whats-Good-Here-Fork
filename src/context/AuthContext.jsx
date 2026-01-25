@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import posthog from 'posthog-js'
+import { logger } from '../utils/logger'
 
 const AuthContext = createContext(null)
 
@@ -15,7 +16,7 @@ export function AuthProvider({ children }) {
     // This is faster than getUser() which makes a network request
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error) {
-        console.error('Error restoring session:', error)
+        logger.error('Error restoring session:', error)
       }
       const sessionUser = session?.user ?? null
       setUser(sessionUser)

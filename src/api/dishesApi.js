@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase'
 import { classifyError } from '../utils/errorHandler'
 import { sanitizeSearchQuery } from '../utils/sanitize'
+import { logger } from '../utils/logger'
 
 /**
  * Create a classified error with type information
@@ -42,7 +43,7 @@ export const dishesApi = {
 
       return data || []
     } catch (error) {
-      console.error('Error fetching ranked dishes:', error)
+      logger.error('Error fetching ranked dishes:', error)
       throw error.type ? error : createClassifiedError(error)
     }
   },
@@ -67,7 +68,7 @@ export const dishesApi = {
 
       return data || []
     } catch (error) {
-      console.error('Error fetching restaurant dishes:', error)
+      logger.error('Error fetching restaurant dishes:', error)
       throw error.type ? error : createClassifiedError(error)
     }
   },
@@ -115,7 +116,7 @@ export const dishesApi = {
       .limit(limit)
 
     if (nameError) {
-      console.error('Error searching dishes by name:', nameError)
+      logger.error('Error searching dishes by name:', nameError)
       throw createClassifiedError(nameError)
     }
 
@@ -129,7 +130,7 @@ export const dishesApi = {
       .limit(limit)
 
     if (cuisineError) {
-      console.error('Error searching dishes by cuisine:', cuisineError)
+      logger.error('Error searching dishes by cuisine:', cuisineError)
       throw createClassifiedError(cuisineError)
     }
 
@@ -143,7 +144,7 @@ export const dishesApi = {
       .limit(limit)
 
     if (tagError) {
-      console.error('Error searching dishes by tags:', tagError)
+      logger.error('Error searching dishes by tags:', tagError)
       throw createClassifiedError(tagError)
     }
 
@@ -195,7 +196,7 @@ export const dishesApi = {
 
       return data || []
     } catch (error) {
-      console.error('Error fetching dish variants:', error)
+      logger.error('Error fetching dish variants:', error)
       throw error.type ? error : createClassifiedError(error)
     }
   },
@@ -213,13 +214,13 @@ export const dishesApi = {
         .eq('parent_dish_id', dishId)
 
       if (error) {
-        console.error('Error checking for variants:', error)
+        logger.error('Error checking for variants:', error)
         return false
       }
 
       return count > 0
     } catch (error) {
-      console.error('Error checking for variants:', error)
+      logger.error('Error checking for variants:', error)
       return false
     }
   },
@@ -259,13 +260,13 @@ export const dishesApi = {
         .single()
 
       if (parentError) {
-        console.error('Error fetching parent dish:', parentError)
+        logger.error('Error fetching parent dish:', parentError)
         return null
       }
 
       return parent
     } catch (error) {
-      console.error('Error getting parent dish:', error)
+      logger.error('Error getting parent dish:', error)
       return null
     }
   },
@@ -291,7 +292,7 @@ export const dishesApi = {
       // Get all variants of this parent (including the current dish)
       return this.getVariants(dish.parent_dish_id)
     } catch (error) {
-      console.error('Error getting sibling variants:', error)
+      logger.error('Error getting sibling variants:', error)
       return []
     }
   },
@@ -334,7 +335,7 @@ export const dishesApi = {
         .eq('dish_id', dishId)
 
       if (votesError) {
-        console.error('Error fetching votes for dish:', votesError)
+        logger.error('Error fetching votes for dish:', votesError)
         // Continue with dish data even if votes fail
         return dish
       }
@@ -357,7 +358,7 @@ export const dishesApi = {
         has_variants: hasVariantsResult,
       }
     } catch (error) {
-      console.error('Error fetching dish:', error)
+      logger.error('Error fetching dish:', error)
       throw error
     }
   },

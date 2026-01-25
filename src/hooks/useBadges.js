@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { badgesApi } from '../api/badgesApi'
+import { logger } from '../utils/logger'
 
 export function useBadges(userId) {
   const [badges, setBadges] = useState([])
@@ -28,7 +29,7 @@ export function useBadges(userId) {
         setAllBadges(badgeDefs)
         setStats(userStats)
       } catch (error) {
-        console.error('Error fetching badges:', error)
+        logger.error('Error fetching badges:', error)
         setBadges([])
         setAllBadges([])
       }
@@ -50,7 +51,7 @@ export function useBadges(userId) {
       setBadges(userBadges)
       setStats(userStats)
     } catch (error) {
-      console.error('Error refreshing badges:', error)
+      logger.error('Error refreshing badges:', error)
     }
   }, [userId])
 
@@ -68,7 +69,7 @@ export function useBadges(userId) {
 
       return newlyUnlocked
     } catch (error) {
-      console.error('Error evaluating badges:', error)
+      logger.error('Error evaluating badges:', error)
       return []
     }
   }, [userId, refreshBadges])

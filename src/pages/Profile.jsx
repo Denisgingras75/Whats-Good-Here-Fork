@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { logger } from '../utils/logger'
 import { authApi } from '../api/authApi'
 import { adminApi } from '../api/adminApi'
 import { followsApi } from '../api/followsApi'
@@ -87,7 +88,7 @@ export function Profile() {
     followsApi.getFollowCounts(user.id)
       .then(setFollowCounts)
       .catch((error) => {
-        console.error('Failed to fetch follow counts:', error)
+        logger.error('Failed to fetch follow counts:', error)
       })
   }, [user])
 
@@ -100,7 +101,7 @@ export function Profile() {
           setEmail(savedEmail)
         }
       } catch (e) {
-          console.warn('Profile: unable to read remembered email', e)
+          logger.warn('Profile: unable to read remembered email', e)
       }
     }
   }, [user])
@@ -131,7 +132,7 @@ export function Profile() {
         const available = await authApi.isUsernameAvailable(newName.trim())
         setNameStatus(available ? 'available' : 'taken')
       } catch (error) {
-        console.error('Profile: username check failed', error)
+        logger.error('Profile: username check failed', error)
         setNameStatus(null)
       }
     }, 500)
@@ -151,7 +152,7 @@ export function Profile() {
         const reviews = await votesApi.getReviewsForUser(user.id)
         setUserReviews(reviews)
       } catch (error) {
-        console.error('Failed to fetch reviews:', error)
+        logger.error('Failed to fetch reviews:', error)
       } finally {
         setReviewsLoading(false)
       }
@@ -187,7 +188,7 @@ export function Profile() {
       try {
         sessionStorage.setItem(REMEMBERED_EMAIL_KEY, email)
       } catch (e) {
-          console.warn('Profile: unable to persist remembered email', e)
+          logger.warn('Profile: unable to persist remembered email', e)
       }
       // Use current page URL so user returns to the same place after login
       await authApi.signInWithMagicLink(email, window.location.href)
@@ -272,7 +273,7 @@ export function Profile() {
       await dishPhotosApi.deletePhoto(photoId)
       await refetchUnrated()
     } catch (error) {
-      console.error('Failed to delete photo:', error)
+      logger.error('Failed to delete photo:', error)
       alert('Failed to delete photo. Please try again.')
     }
   }

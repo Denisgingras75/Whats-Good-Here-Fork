@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { dishesApi } from '../api/dishesApi'
 import { withRetry, getUserMessage } from '../utils/errorHandler'
+import { logger } from '../utils/logger'
 
 export function useDishes(location, radius, category = null, restaurantId = null) {
   const [dishes, setDishes] = useState([])
@@ -50,7 +51,7 @@ export function useDishes(location, radius, category = null, restaurantId = null
               originalError: apiError,
               type: apiError.type,
             })
-            console.error('Error fetching dishes:', apiError)
+            logger.error('Error fetching dishes:', apiError)
           }
         }
       } finally {
@@ -98,7 +99,7 @@ export function useDishes(location, radius, category = null, restaurantId = null
         originalError: err,
         type: err.type,
       })
-      console.error('Error refetching dishes:', err)
+      logger.error('Error refetching dishes:', err)
     } finally {
       setLoading(false)
     }

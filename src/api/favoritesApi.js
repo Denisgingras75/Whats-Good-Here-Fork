@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { logger } from '../utils/logger'
 
 /**
  * Favorites API - Centralized data fetching and mutation for saved dishes
@@ -27,7 +28,7 @@ export const favoritesApi = {
 
       return (data || []).map(f => f.dish_id)
     } catch (error) {
-      console.error('Error fetching favorite IDs:', error)
+      logger.error('Error fetching favorite IDs:', error)
       throw error
     }
   },
@@ -54,7 +55,7 @@ export const favoritesApi = {
 
       return { success: true }
     } catch (error) {
-      console.error('Error adding favorite:', error)
+      logger.error('Error adding favorite:', error)
       throw error
     }
   },
@@ -83,7 +84,7 @@ export const favoritesApi = {
 
       return { success: true }
     } catch (error) {
-      console.error('Error removing favorite:', error)
+      logger.error('Error removing favorite:', error)
       throw error
     }
   },
@@ -134,7 +135,7 @@ export const favoritesApi = {
 
       return { favoriteIds, favorites }
     } catch (error) {
-      console.error('Error fetching favorites:', error)
+      logger.error('Error fetching favorites:', error)
       throw error
     }
   },

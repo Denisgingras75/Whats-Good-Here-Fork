@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import posthog from 'posthog-js'
 import { dishPhotosApi } from '../api/dishPhotosApi'
 import { analyzeImage } from '../utils/imageAnalysis'
+import { logger } from '../utils/logger'
 
 /**
  * Hook for managing photo uploads for dishes
@@ -98,7 +99,7 @@ export function useDishPhotos() {
     try {
       return await dishPhotosApi.getUserPhotoForDish(dishId)
     } catch (err) {
-      console.error('Error getting user photo:', err)
+      logger.error('Error getting user photo:', err)
       return null
     }
   }, [])

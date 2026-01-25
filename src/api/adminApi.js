@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase'
 import { sanitizeSearchQuery } from '../utils/sanitize'
+import { logger } from '../utils/logger'
 
 /**
  * Admin API - Centralized data mutations for admin operations
@@ -27,13 +28,13 @@ export const adminApi = {
         .single()
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error checking admin status:', error)
+        logger.error('Error checking admin status:', error)
         return false
       }
 
       return !!data
     } catch (error) {
-      console.error('Error checking admin status:', error)
+      logger.error('Error checking admin status:', error)
       return false
     }
   },
@@ -64,7 +65,7 @@ export const adminApi = {
 
       return data || []
     } catch (error) {
-      console.error('Error fetching recent dishes:', error)
+      logger.error('Error fetching recent dishes:', error)
       throw error
     }
   },
@@ -98,7 +99,7 @@ export const adminApi = {
 
       return data?.[0] || null
     } catch (error) {
-      console.error('Error adding dish:', error)
+      logger.error('Error adding dish:', error)
       throw error
     }
   },
@@ -121,7 +122,7 @@ export const adminApi = {
 
       return { success: true }
     } catch (error) {
-      console.error('Error deleting dish:', error)
+      logger.error('Error deleting dish:', error)
       throw error
     }
   },
@@ -157,7 +158,7 @@ export const adminApi = {
 
       return data?.[0] || null
     } catch (error) {
-      console.error('Error updating dish:', error)
+      logger.error('Error updating dish:', error)
       throw error
     }
   },
@@ -197,7 +198,7 @@ export const adminApi = {
 
       return data || []
     } catch (error) {
-      console.error('Error searching dishes:', error)
+      logger.error('Error searching dishes:', error)
       throw error
     }
   },

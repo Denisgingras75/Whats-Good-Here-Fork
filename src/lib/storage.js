@@ -1,3 +1,5 @@
+import { logger } from '../utils/logger'
+
 /**
  * Cached localStorage wrapper
  * Avoids repeated synchronous reads from localStorage
@@ -76,7 +78,7 @@ export function getPendingVoteFromStorage() {
       localStorage.removeItem(PENDING_VOTE_KEY)
     }
   } catch (error) {
-    console.warn('Unable to read pending vote from storage', error)
+    logger.warn('Unable to read pending vote from storage', error)
   }
   return null
 }
@@ -92,7 +94,7 @@ export function setPendingVoteToStorage(dishId, vote) {
       timestamp: Date.now()
     }))
   } catch (error) {
-    console.warn('Unable to persist pending vote to storage', error)
+    logger.warn('Unable to persist pending vote to storage', error)
   }
 }
 
@@ -103,6 +105,6 @@ export function clearPendingVoteStorage() {
   try {
     localStorage.removeItem(PENDING_VOTE_KEY)
   } catch (error) {
-    console.warn('Unable to clear pending vote from storage', error)
+    logger.warn('Unable to clear pending vote from storage', error)
   }
 }

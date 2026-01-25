@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { logger } from '../utils/logger'
 
 /**
  * Profile API - Centralized data fetching and mutation for user profiles
@@ -28,7 +29,7 @@ export const profileApi = {
 
       return data || null
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      logger.error('Error fetching profile:', error)
       throw error
     }
   },
@@ -57,7 +58,7 @@ export const profileApi = {
 
       return data
     } catch (error) {
-      console.error('Error creating profile:', error)
+      logger.error('Error creating profile:', error)
       throw error
     }
   },
@@ -87,7 +88,7 @@ export const profileApi = {
 
       return data
     } catch (error) {
-      console.error('Error updating profile:', error)
+      logger.error('Error updating profile:', error)
       throw error
     }
   },
@@ -112,7 +113,7 @@ export const profileApi = {
       // Create new profile without display name - they'll set it in onboarding
       return await this.createProfile(userId)
     } catch (error) {
-      console.error('Error getting or creating profile:', error)
+      logger.error('Error getting or creating profile:', error)
       throw error
     }
   },

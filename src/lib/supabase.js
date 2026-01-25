@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { logger } from '../utils/logger'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -12,7 +13,7 @@ if (!isSupabaseConfigured) {
   if (import.meta.env.PROD) {
     throw new Error(`[CRITICAL] ${message}`)
   } else {
-    console.error(`[DEV] ${message} - App will not function correctly!`)
+    logger.error(`[DEV] ${message} - App will not function correctly!`)
   }
 }
 

@@ -14,6 +14,7 @@ import {
   setPendingVoteToStorage,
   clearPendingVoteStorage,
 } from '../lib/storage'
+import { logger } from '../utils/logger'
 
 export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, category, price, totalVotes = 0, yesVotes = 0, onVote, onLoginRequired }) {
   const { user } = useAuth()
@@ -71,7 +72,7 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
           if (vote.review_text) setReviewText(vote.review_text)
         }
       } catch (error) {
-        console.error('Error fetching user vote:', error)
+        logger.error('Error fetching user vote:', error)
       }
     }
     fetchUserVote()
@@ -174,7 +175,7 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
 
     // Validate rating is within acceptable range
     if (sliderValue < 0 || sliderValue > 10) {
-      console.error('Invalid rating value:', sliderValue)
+      logger.error('Invalid rating value:', sliderValue)
       return
     }
 
@@ -228,7 +229,7 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
           showBadgeUnlockToasts(newlyUnlocked)
         }
       } catch (badgeError) {
-        console.error('Error evaluating badges:', badgeError)
+        logger.error('Error evaluating badges:', badgeError)
         // Don't block the vote flow on badge errors
       }
     } else {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { logger } from '../utils/logger'
 import { useLocationContext } from '../context/LocationContext'
 import { useDishes } from '../hooks/useDishes'
 import { useFavorites } from '../hooks/useFavorites'
@@ -101,7 +102,7 @@ export function Browse() {
         setRestaurantSuggestions(restaurantResults)
       } catch (error) {
         // Gracefully degrade - show no suggestions on error
-        console.error('Search suggestions failed:', error)
+        logger.error('Search suggestions failed:', error)
         setDishSuggestions([])
         setRestaurantSuggestions([])
       }

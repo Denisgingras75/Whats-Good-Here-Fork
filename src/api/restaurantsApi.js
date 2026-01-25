@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { logger } from '../utils/logger'
 
 /**
  * Restaurants API - Centralized data fetching for restaurants
@@ -35,7 +36,7 @@ export const restaurantsApi = {
         dishes: undefined, // Remove the dishes array, keep only count
       }))
     } catch (error) {
-      console.error('Error fetching restaurants:', error)
+      logger.error('Error fetching restaurants:', error)
       throw error
     }
   },
@@ -58,7 +59,7 @@ export const restaurantsApi = {
 
       return data || []
     } catch (error) {
-      console.error('Error fetching open restaurants:', error)
+      logger.error('Error fetching open restaurants:', error)
       throw error
     }
   },
@@ -81,7 +82,7 @@ export const restaurantsApi = {
       .limit(limit)
 
     if (error) {
-      console.error('Error searching restaurants:', error)
+      logger.error('Error searching restaurants:', error)
       throw error
     }
 
@@ -107,7 +108,7 @@ export const restaurantsApi = {
 
       return data
     } catch (error) {
-      console.error('Error fetching restaurant:', error)
+      logger.error('Error fetching restaurant:', error)
       throw error
     }
   },

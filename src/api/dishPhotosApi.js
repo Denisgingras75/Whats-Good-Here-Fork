@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase'
 import { checkPhotoUploadRateLimit } from '../lib/rateLimiter'
 import { extractSafeFilename } from '../utils/sanitize'
+import { logger } from '../utils/logger'
 
 /**
  * Dish Photos API - Centralized data fetching and mutation for dish photos
@@ -94,7 +95,7 @@ export const dishPhotosApi = {
 
       return data
     } catch (error) {
-      console.error('Error uploading photo:', error)
+      logger.error('Error uploading photo:', error)
       throw error
     }
   },
@@ -118,7 +119,7 @@ export const dishPhotosApi = {
 
       return data || []
     } catch (error) {
-      console.error('Error fetching dish photos:', error)
+      logger.error('Error fetching dish photos:', error)
       throw error
     }
   },
@@ -192,7 +193,7 @@ export const dishPhotosApi = {
           restaurant_name: photo.dishes.restaurants.name,
         }))
     } catch (error) {
-      console.error('Error fetching unrated dishes:', error)
+      logger.error('Error fetching unrated dishes:', error)
       throw error
     }
   },
@@ -223,7 +224,7 @@ export const dishPhotosApi = {
 
       return data
     } catch (error) {
-      console.error('Error fetching user photo:', error)
+      logger.error('Error fetching user photo:', error)
       throw error
     }
   },
@@ -284,7 +285,7 @@ export const dishPhotosApi = {
 
       return { success: true }
     } catch (error) {
-      console.error('Error deleting photo:', error)
+      logger.error('Error deleting photo:', error)
       throw error
     }
   },
@@ -303,7 +304,7 @@ export const dishPhotosApi = {
       const unrated = await this.getUnratedDishesWithPhotos(userId)
       return unrated.length
     } catch (error) {
-      console.error('Error getting unrated count:', error)
+      logger.error('Error getting unrated count:', error)
       throw error
     }
   },
@@ -343,7 +344,7 @@ export const dishPhotosApi = {
 
       return data
     } catch (error) {
-      console.error('Error fetching featured photo:', error)
+      logger.error('Error fetching featured photo:', error)
       throw error
     }
   },
@@ -369,7 +370,7 @@ export const dishPhotosApi = {
 
       return data || []
     } catch (error) {
-      console.error('Error fetching community photos:', error)
+      logger.error('Error fetching community photos:', error)
       throw error
     }
   },
@@ -401,7 +402,7 @@ export const dishPhotosApi = {
         return (b.quality_score || 0) - (a.quality_score || 0)
       })
     } catch (error) {
-      console.error('Error fetching all photos:', error)
+      logger.error('Error fetching all photos:', error)
       throw error
     }
   },
@@ -430,7 +431,7 @@ export const dishPhotosApi = {
       }
       return counts
     } catch (error) {
-      console.error('Error fetching photo counts:', error)
+      logger.error('Error fetching photo counts:', error)
       throw error
     }
   },

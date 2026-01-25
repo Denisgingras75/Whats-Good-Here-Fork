@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { logger } from '../utils/logger'
 
 /**
  * Leaderboard API - Streaks and friends competition
@@ -25,7 +26,7 @@ export const leaderboardApi = {
       .rpc('get_user_streak_info', { p_user_id: user.id })
 
     if (error) {
-      console.error('Error fetching streak:', error)
+      logger.error('Error fetching streak:', error)
       throw error
     }
 
@@ -59,7 +60,7 @@ export const leaderboardApi = {
       .rpc('get_user_streak_info', { p_user_id: userId })
 
     if (error) {
-      console.error('Error fetching user streak:', error)
+      logger.error('Error fetching user streak:', error)
       throw error
     }
 
@@ -91,7 +92,7 @@ export const leaderboardApi = {
       })
 
     if (error) {
-      console.error('Error fetching leaderboard:', error)
+      logger.error('Error fetching leaderboard:', error)
       throw error
     }
 
@@ -120,7 +121,7 @@ export const leaderboardApi = {
       .rpc('get_weekly_reset_countdown')
 
     if (error) {
-      console.error('Error fetching reset countdown:', error)
+      logger.error('Error fetching reset countdown:', error)
       // Fall back to calculating it client-side
       const now = new Date()
       const nextMonday = new Date(now)

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { followsApi } from '../api/followsApi'
+import { logger } from '../utils/logger'
 
 /**
  * UserSearch - Search for users by name
@@ -30,7 +31,7 @@ export function UserSearch({ onClose }) {
         const users = await followsApi.searchUsers(query, 10)
         setResults(users)
       } catch (err) {
-        console.error('Failed to search users:', err)
+        logger.error('Failed to search users:', err)
         setResults([]) // Graceful degradation
       } finally {
         setLoading(false)

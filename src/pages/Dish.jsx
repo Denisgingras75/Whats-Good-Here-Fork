@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import posthog from 'posthog-js'
 import { useAuth } from '../context/AuthContext'
+import { logger } from '../utils/logger'
 import { dishesApi } from '../api/dishesApi'
 import { followsApi } from '../api/followsApi'
 import { dishPhotosApi } from '../api/dishPhotosApi'
@@ -96,7 +97,7 @@ export function Dish() {
           percent_worth_it: transformedDish.percent_worth_it,
         })
       } catch (err) {
-        console.error('Error fetching dish:', err)
+        logger.error('Error fetching dish:', err)
         setError('Dish not found')
       } finally {
         setLoading(false)
@@ -124,7 +125,7 @@ export function Dish() {
           setIsVariant(false)
           setParentDish(null)
         } catch (err) {
-          console.error('Failed to fetch variants:', err)
+          logger.error('Failed to fetch variants:', err)
           setVariants([])
         }
       }
@@ -139,7 +140,7 @@ export function Dish() {
           setParentDish(parent)
           setIsVariant(true)
         } catch (err) {
-          console.error('Failed to fetch sibling variants:', err)
+          logger.error('Failed to fetch sibling variants:', err)
           setVariants([])
           setParentDish(null)
         }
@@ -165,7 +166,7 @@ export function Dish() {
         const votes = await followsApi.getFriendsVotesForDish(dishId)
         setFriendsVotes(votes)
       } catch (err) {
-        console.error('Failed to fetch friends votes:', err)
+        logger.error('Failed to fetch friends votes:', err)
         setFriendsVotes([]) // Graceful degradation
       }
     }
@@ -183,7 +184,7 @@ export function Dish() {
         const data = await votesApi.getReviewsForDish(dishId, { limit: 20 })
         setReviews(data)
       } catch (error) {
-        console.error('Failed to fetch reviews:', error)
+        logger.error('Failed to fetch reviews:', error)
         setReviews([])
       } finally {
         setReviewsLoading(false)
@@ -208,7 +209,7 @@ export function Dish() {
         setCommunityPhotos(community)
         setAllPhotos(all)
       } catch (error) {
-        console.error('Failed to fetch photos:', error)
+        logger.error('Failed to fetch photos:', error)
         // Gracefully degrade - show no photos
       }
     }
@@ -229,7 +230,7 @@ export function Dish() {
       setCommunityPhotos(community)
       setAllPhotos(all)
     } catch (error) {
-      console.error('Failed to refresh photos after upload:', error)
+      logger.error('Failed to refresh photos after upload:', error)
     }
   }
 
@@ -244,7 +245,7 @@ export function Dish() {
       setDish(transformedDish)
       setReviews(reviewsData)
     } catch (err) {
-      console.error('Failed to refresh dish data after vote:', err)
+      logger.error('Failed to refresh dish data after vote:', err)
       // UI continues with stale data - vote was still recorded
     }
   }

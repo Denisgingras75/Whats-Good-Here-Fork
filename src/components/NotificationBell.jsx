@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { notificationsApi } from '../api/notificationsApi'
+import { logger } from '../utils/logger'
 
 /**
  * Notification bell icon with dropdown
@@ -27,7 +28,7 @@ export function NotificationBell() {
         const count = await notificationsApi.getUnreadCount()
         setUnreadCount(count)
       } catch (err) {
-        console.error('Failed to fetch unread count:', err)
+        logger.error('Failed to fetch unread count:', err)
       }
     }
 
@@ -67,7 +68,7 @@ export function NotificationBell() {
           setUnreadCount(0)
         }
       } catch (err) {
-        console.error('Failed to fetch notifications:', err)
+        logger.error('Failed to fetch notifications:', err)
       } finally {
         setLoading(false)
       }
@@ -82,7 +83,7 @@ export function NotificationBell() {
         try {
           await notificationsApi.deleteAll()
         } catch (err) {
-          console.error('Failed to delete notifications:', err)
+          logger.error('Failed to delete notifications:', err)
         }
       }
       deleteNotifications()

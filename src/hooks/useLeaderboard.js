@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { leaderboardApi } from '../api/leaderboardApi'
+import { logger } from '../utils/logger'
 
 /**
  * Hook for managing friends leaderboard data
@@ -25,7 +26,7 @@ export function useLeaderboard(limit = 10) {
       setMyRank(leaderboardData.myRank)
       setResetCountdown(countdown)
     } catch (err) {
-      console.error('Error fetching leaderboard:', err)
+      logger.error('Error fetching leaderboard:', err)
       setError(err)
     } finally {
       setLoading(false)

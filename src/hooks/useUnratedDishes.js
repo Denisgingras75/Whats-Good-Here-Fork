@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { dishPhotosApi } from '../api/dishPhotosApi'
+import { logger } from '../utils/logger'
 
 /**
  * Hook for fetching dishes that a user has photographed but not rated
@@ -26,7 +27,7 @@ export function useUnratedDishes(userId) {
       setDishes(data)
       setCount(data.length)
     } catch (err) {
-      console.error('Error fetching unrated dishes:', err)
+      logger.error('Error fetching unrated dishes:', err)
       setError(err.message || 'Failed to fetch unrated dishes')
       setDishes([])
       setCount(0)

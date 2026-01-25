@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { votesApi } from '../api/votesApi'
+import { logger } from '../utils/logger'
 
 export function useVote() {
   const [submitting, setSubmitting] = useState(false)
@@ -28,7 +29,7 @@ export function useVote() {
 
       return { success: true }
     } catch (err) {
-      console.error('Error submitting vote:', err)
+      logger.error('Error submitting vote:', err)
       setError(err.message)
       return { success: false, error: err.message }
     } finally {
@@ -41,7 +42,7 @@ export function useVote() {
     try {
       return await votesApi.getUserVotes()
     } catch (err) {
-      console.error('Error fetching user votes:', err)
+      logger.error('Error fetching user votes:', err)
       return {}
     }
   }

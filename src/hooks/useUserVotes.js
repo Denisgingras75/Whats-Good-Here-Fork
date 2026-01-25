@@ -5,6 +5,7 @@ import {
   TIER_THRESHOLDS,
   MAJOR_CATEGORIES,
 } from '../constants/categories'
+import { logger } from '../utils/logger'
 
 // Re-export for backwards compatibility
 export { CATEGORY_INFO, TIER_THRESHOLDS, MAJOR_CATEGORIES }
@@ -285,7 +286,7 @@ export function useUserVotes(userId) {
         ])
         processVotes(data, helpedCount)
       } catch (error) {
-        console.error('Error fetching votes:', error)
+        logger.error('Error fetching votes:', error)
       }
       setLoading(false)
     }
@@ -303,7 +304,7 @@ export function useUserVotes(userId) {
       ])
       processVotes(data, helpedCount)
     } catch (error) {
-      console.error('Error refetching votes:', error)
+      logger.error('Error refetching votes:', error)
     }
     setLoading(false)
   }, [userId, processVotes])

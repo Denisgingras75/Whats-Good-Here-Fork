@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { profileApi } from '../api/profileApi'
+import { logger } from '../utils/logger'
 
 export function useProfile(userId) {
   const [profile, setProfile] = useState(null)
@@ -18,7 +19,7 @@ export function useProfile(userId) {
         const data = await profileApi.getOrCreateProfile(userId)
         setProfile(data)
       } catch (error) {
-        console.error('Error fetching profile:', error)
+        logger.error('Error fetching profile:', error)
         setProfile(null)
       }
       setLoading(false)

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { leaderboardApi } from '../api/leaderboardApi'
+import { logger } from '../utils/logger'
 
 /**
  * Hook for managing user streak data
@@ -26,7 +27,7 @@ export function useStreak(userId = null) {
         : await leaderboardApi.getMyStreak()
       setStreak(data)
     } catch (err) {
-      console.error('Error fetching streak:', err)
+      logger.error('Error fetching streak:', err)
       setError(err)
     } finally {
       setLoading(false)

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
+import { logger } from '../utils/logger'
 import { WelcomeSplash } from '../components/WelcomeSplash'
 import { ThumbsUpIcon } from '../components/ThumbsUpIcon'
 import { ThumbsDownIcon } from '../components/ThumbsDownIcon'
@@ -29,7 +30,7 @@ export function Login() {
         setEmail(savedEmail)
       }
     } catch (error) {
-      console.warn('Login: unable to read remembered email', error)
+      logger.warn('Login: unable to read remembered email', error)
     }
   }, [])
 
@@ -57,7 +58,7 @@ export function Login() {
         const available = await authApi.isUsernameAvailable(username)
         setUsernameStatus(available ? 'available' : 'taken')
       } catch (error) {
-        console.error('Failed to check username availability:', error)
+        logger.error('Failed to check username availability:', error)
         setUsernameStatus(null)
       }
     }, 500)
@@ -85,7 +86,7 @@ export function Login() {
       try {
         sessionStorage.setItem(REMEMBERED_EMAIL_KEY, email)
       } catch (error) {
-        console.warn('Login: unable to persist remembered email', error)
+        logger.warn('Login: unable to persist remembered email', error)
       }
 
       await authApi.signInWithPassword(email, password)
@@ -123,7 +124,7 @@ export function Login() {
       try {
         sessionStorage.setItem(REMEMBERED_EMAIL_KEY, email)
       } catch (error) {
-        console.warn('Login: unable to persist remembered email', error)
+        logger.warn('Login: unable to persist remembered email', error)
       }
 
       const result = await authApi.signUpWithPassword(email, password, username)

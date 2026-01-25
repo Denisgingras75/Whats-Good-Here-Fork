@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { logger } from '../utils/logger'
 
 /**
  * Badges API - Centralized data fetching for badges/achievements
@@ -16,7 +17,7 @@ export const badgesApi = {
       .order('sort_order', { ascending: true })
 
     if (error) {
-      console.error('Error fetching badges:', error)
+      logger.error('Error fetching badges:', error)
       throw error
     }
 
@@ -36,7 +37,7 @@ export const badgesApi = {
     })
 
     if (error) {
-      console.error('Error fetching user badges:', error)
+      logger.error('Error fetching user badges:', error)
       throw error
     }
 
@@ -54,7 +55,7 @@ export const badgesApi = {
     })
 
     if (error) {
-      console.error('Error fetching public badges:', error)
+      logger.error('Error fetching public badges:', error)
       throw error
     }
 
@@ -72,7 +73,7 @@ export const badgesApi = {
     })
 
     if (error) {
-      console.error('Error fetching badge stats:', error)
+      logger.error('Error fetching badge stats:', error)
       throw error
     }
 
@@ -92,7 +93,7 @@ export const badgesApi = {
     })
 
     if (error) {
-      console.error('Error evaluating badges:', error)
+      logger.error('Error evaluating badges:', error)
       throw error
     }
 
@@ -107,7 +108,7 @@ export const badgesApi = {
         .in('key', newlyUnlocked.map(b => b.badge_key))
 
       if (detailsError) {
-        console.error('Error fetching badge details:', detailsError)
+        logger.error('Error fetching badge details:', detailsError)
         return newlyUnlocked
       }
 

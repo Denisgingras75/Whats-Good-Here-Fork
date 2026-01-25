@@ -5,6 +5,7 @@ import { dishesApi } from '../api/dishesApi'
 import { getCategoryImage } from '../constants/categoryImages'
 import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRatingColor } from '../utils/ranking'
+import { logger } from '../utils/logger'
 const MIN_SEARCH_LENGTH = 2
 const MAX_DISH_RESULTS = 5
 const MAX_CATEGORY_RESULTS = 2
@@ -77,7 +78,7 @@ export function DishSearch({ loading = false }) {
           setSearchResults(results)
         }
       } catch (error) {
-        console.error('Search error:', error)
+        logger.error('Search error:', error)
         if (mountedRef.current) {
           setSearchResults([])
         }

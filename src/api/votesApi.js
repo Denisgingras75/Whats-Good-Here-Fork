@@ -4,6 +4,7 @@ import { checkVoteRateLimit } from '../lib/rateLimiter'
 import { containsBlockedContent } from '../lib/reviewBlocklist'
 import { MAX_REVIEW_LENGTH } from '../constants/app'
 import { classifyError } from '../utils/errorHandler'
+import { logger } from '../utils/logger'
 
 /**
  * Create a classified error with type information
@@ -131,7 +132,7 @@ export const votesApi = {
         return acc
       }, {})
     } catch (error) {
-      console.error('Error fetching user votes:', error)
+      logger.error('Error fetching user votes:', error)
       throw error.type ? error : createClassifiedError(error)
     }
   },
@@ -174,7 +175,7 @@ export const votesApi = {
 
       return data || []
     } catch (error) {
-      console.error('Error fetching detailed votes:', error)
+      logger.error('Error fetching detailed votes:', error)
       throw error.type ? error : createClassifiedError(error)
     }
   },
@@ -204,7 +205,7 @@ export const votesApi = {
 
       return { success: true }
     } catch (error) {
-      console.error('Error deleting vote:', error)
+      logger.error('Error deleting vote:', error)
       throw error.type ? error : createClassifiedError(error)
     }
   },
@@ -249,7 +250,7 @@ export const votesApi = {
       const rankedCount = Object.values(counts).filter(c => c >= 5).length
       return rankedCount
     } catch (error) {
-      console.error('Error getting dishes helped rank:', error)
+      logger.error('Error getting dishes helped rank:', error)
       throw error.type ? error : createClassifiedError(error)
     }
   },
@@ -283,13 +284,13 @@ export const votesApi = {
         .range(offset, offset + limit - 1)
 
       if (error) {
-        console.error('Error fetching reviews for dish:', error)
+        logger.error('Error fetching reviews for dish:', error)
         return [] // Graceful degradation
       }
 
       return data || []
     } catch (error) {
-      console.error('Error fetching reviews for dish:', error)
+      logger.error('Error fetching reviews for dish:', error)
       return [] // Graceful degradation - don't break the UI
     }
   },
@@ -322,14 +323,14 @@ export const votesApi = {
         .limit(1)
 
       if (error) {
-        console.error('Error fetching smart snippet:', error)
+        logger.error('Error fetching smart snippet:', error)
         return null // Graceful degradation
       }
 
       // Return the best review or null
       return data?.[0] || null
     } catch (error) {
-      console.error('Error fetching smart snippet:', error)
+      logger.error('Error fetching smart snippet:', error)
       return null // Graceful degradation - don't break the UI
     }
   },
@@ -371,13 +372,13 @@ export const votesApi = {
         .range(offset, offset + limit - 1)
 
       if (error) {
-        console.error('Error fetching reviews for user:', error)
+        logger.error('Error fetching reviews for user:', error)
         return []
       }
 
       return data || []
     } catch (error) {
-      console.error('Error fetching reviews for user:', error)
+      logger.error('Error fetching reviews for user:', error)
       return []
     }
   },

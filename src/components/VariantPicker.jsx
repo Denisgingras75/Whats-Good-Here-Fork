@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { dishesApi } from '../api/dishesApi'
 import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRatingColor } from '../utils/ranking'
+import { logger } from '../utils/logger'
 
 /**
  * VariantPicker - Shows expandable list of dish variants
@@ -25,7 +26,7 @@ export function VariantPicker({ parentDishId, parentDishName, onVariantSelect, i
         const data = await dishesApi.getVariants(parentDishId)
         setVariants(data)
       } catch (err) {
-        console.error('Error fetching variants:', err)
+        logger.error('Error fetching variants:', err)
         setError('Unable to load variants')
       } finally {
         setLoading(false)

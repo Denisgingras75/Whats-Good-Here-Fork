@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import posthog from 'posthog-js'
 import { useAuth } from '../context/AuthContext'
+import { logger } from '../utils/logger'
 import { restaurantsApi } from '../api/restaurantsApi'
 import { useLocationContext } from '../context/LocationContext'
 import { useDishes } from '../hooks/useDishes'
@@ -40,7 +41,7 @@ export function Restaurants() {
         const data = await restaurantsApi.getAll()
         setRestaurants(data)
       } catch (error) {
-        console.error('Error fetching restaurants:', error)
+        logger.error('Error fetching restaurants:', error)
         setFetchError('Unable to load restaurants. Please try again.')
       } finally {
         setLoading(false)

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { logger } from '../utils/logger'
 import { followsApi } from '../api/followsApi'
 import { votesApi } from '../api/votesApi'
 import { getRatingColor } from '../utils/ranking'
@@ -54,7 +55,7 @@ export function UserProfile() {
           setProfile(data)
         }
       } catch (err) {
-        console.error('Failed to fetch profile:', err)
+        logger.error('Failed to fetch profile:', err)
         setError('Failed to load profile')
       } finally {
         setLoading(false)
@@ -74,7 +75,7 @@ export function UserProfile() {
           const following = await followsApi.isFollowing(userId)
           setIsFollowing(following)
         } catch (err) {
-          console.error('Failed to check follow status:', err)
+          logger.error('Failed to check follow status:', err)
         }
       }
     }
@@ -107,7 +108,7 @@ export function UserProfile() {
           setMyRatings(ratingsMap)
         }
       } catch (err) {
-        console.error('Failed to fetch my ratings:', err)
+        logger.error('Failed to fetch my ratings:', err)
       }
     }
     fetchMyRatings()
@@ -122,7 +123,7 @@ export function UserProfile() {
         const reviews = await votesApi.getReviewsForUser(userId)
         setUserReviews(reviews)
       } catch (error) {
-        console.error('Failed to fetch reviews:', error)
+        logger.error('Failed to fetch reviews:', error)
       } finally {
         setReviewsLoading(false)
       }

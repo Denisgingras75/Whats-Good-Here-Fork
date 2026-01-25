@@ -5,6 +5,7 @@ import { getWorthItBadge, formatScore10, calculateWorthItScore10, getRatingColor
 import { getCategoryImage } from '../constants/categoryImages'
 import { votesApi } from '../api/votesApi'
 import { ThumbsUpIcon } from './ThumbsUpIcon'
+import { logger } from '../utils/logger'
 
 export const DishCard = memo(function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFavorite, showOrderAgainPercent = false }) {
   const {
@@ -42,7 +43,7 @@ export const DishCard = memo(function DishCard({ dish, onVote, onLoginRequired, 
         const result = await votesApi.getSmartSnippetForDish(dish_id)
         setSnippet(result)
       } catch (error) {
-        console.error('Error fetching snippet:', error)
+        logger.error('Error fetching snippet:', error)
       } finally {
         setSnippetLoading(false)
       }
