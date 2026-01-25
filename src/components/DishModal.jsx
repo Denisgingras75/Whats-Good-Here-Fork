@@ -190,6 +190,10 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
                   alt={dish.dish_name}
                   loading="lazy"
                   sizes="(max-width: 640px) 100vw, 600px"
+                  onError={(e) => {
+                    // Hide broken images
+                    e.target.style.display = 'none'
+                  }}
                 />
                 {featuredPhoto.source_type === 'restaurant' && (
                   <span className="photo-badge restaurant">Official</span>
@@ -216,6 +220,10 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
                         alt={dish.dish_name}
                         loading="lazy"
                         sizes="150px"
+                        onError={(e) => {
+                          // Hide broken images
+                          e.target.parentElement.style.display = 'none'
+                        }}
                       />
                     </button>
                   ))}
@@ -268,6 +276,10 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
             {...getResponsiveImageProps(lightboxPhoto, [800, 1200, 1600])}
             alt={dish.dish_name}
             sizes="100vw"
+            onError={() => {
+              // Close lightbox if image fails to load
+              setLightboxPhoto(null)
+            }}
           />
         </div>
       )}

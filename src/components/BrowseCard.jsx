@@ -54,6 +54,13 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
           loading="lazy"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          onError={(e) => {
+            // Fall back to category image if photo_url fails to load
+            const fallback = getCategoryImage(category)
+            if (e.target.src !== fallback) {
+              e.target.src = fallback
+            }
+          }}
         />
 
         {/* Gradient overlay */}

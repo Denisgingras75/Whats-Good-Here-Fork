@@ -375,6 +375,13 @@ export function Dish() {
               alt={dish.dish_name}
               loading="lazy"
               className="w-full h-full object-cover"
+              onError={(e) => {
+                // Fall back to category image if photo_url fails to load
+                const fallback = getCategoryImage(dish?.category)
+                if (e.target.src !== fallback) {
+                  e.target.src = fallback
+                }
+              }}
             />
 
             {/* Gradient overlay */}
@@ -524,6 +531,10 @@ export function Dish() {
                         alt={dish.dish_name}
                         loading="lazy"
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Hide broken images
+                          e.target.parentElement.style.display = 'none'
+                        }}
                       />
                     </button>
                   ))}
@@ -655,6 +666,10 @@ export function Dish() {
             src={lightboxPhoto}
             alt={dish.dish_name}
             className="max-w-full max-h-full object-contain"
+            onError={() => {
+              // Close lightbox if image fails to load
+              setLightboxPhoto(null)
+            }}
           />
         </div>
       )}

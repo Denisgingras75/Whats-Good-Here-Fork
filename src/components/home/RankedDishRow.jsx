@@ -68,6 +68,13 @@ export const RankedDishRow = memo(function RankedDishRow({ dish, rank }) {
           alt={dish_name}
           loading="lazy"
           className="w-full h-full object-cover"
+          onError={(e) => {
+            // Fall back to category image if photo_url fails to load
+            const fallback = getCategoryImage(category)
+            if (e.target.src !== fallback) {
+              e.target.src = fallback
+            }
+          }}
         />
       </div>
 
