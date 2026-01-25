@@ -168,6 +168,8 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
   }
 
   const doSubmit = async (reviewTextToSubmit) => {
+    // Prevent double submission
+    if (submitting) return
     if (pendingVote === null) return
 
     if (!user) {

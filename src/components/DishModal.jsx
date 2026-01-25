@@ -22,6 +22,34 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
   // Focus trap hook must be called BEFORE any early returns to satisfy React hooks rules
   const modalRef = useFocusTrap(!!dish && !isClosing, onClose)
 
+  // Handle escape key for lightbox (separate from modal's escape handler)
+  useEffect(() => {
+    if (!lightboxPhoto) return
+
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        e.stopPropagation() // Prevent modal from also closing
+        setLightboxPhoto(null)
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [lightboxPhoto])
+
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    if (!dish) return
+
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = originalOverflow
+    }
+  }, [dish])
+
   // Animated close handler
   const handleClose = () => {
     setIsClosing(true)
