@@ -10,46 +10,14 @@ import { showBadgeUnlockToasts } from './BadgeUnlockToast'
 import { ThumbsUpIcon } from './ThumbsUpIcon'
 import { ThumbsDownIcon } from './ThumbsDownIcon'
 import { MAX_REVIEW_LENGTH } from '../constants/app'
+import {
+  getPendingVoteFromStorage,
+  setPendingVoteToStorage,
+  clearPendingVoteStorage,
+} from '../lib/storage'
 
-// Helper to get/set pending vote from localStorage (survives OAuth redirect)
-const PENDING_VOTE_KEY = 'whats_good_here_pending_vote'
-
-export function getPendingVoteFromStorage() {
-  try {
-    const stored = localStorage.getItem(PENDING_VOTE_KEY)
-    if (stored) {
-      const parsed = JSON.parse(stored)
-      // Check if it's recent (within 5 minutes) to avoid stale data
-      if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
-        return parsed
-      }
-      localStorage.removeItem(PENDING_VOTE_KEY)
-    }
-  } catch (error) {
-    console.warn('Unable to read pending vote from storage', error)
-  }
-  return null
-}
-
-export function setPendingVoteToStorage(dishId, vote) {
-  try {
-    localStorage.setItem(PENDING_VOTE_KEY, JSON.stringify({
-      dishId,
-      vote,
-      timestamp: Date.now()
-    }))
-  } catch (error) {
-    console.warn('Unable to persist pending vote to storage', error)
-  }
-}
-
-export function clearPendingVoteStorage() {
-  try {
-    localStorage.removeItem(PENDING_VOTE_KEY)
-  } catch (error) {
-    console.warn('Unable to clear pending vote from storage', error)
-  }
-}
+// Re-export for backward compatibility
+export { getPendingVoteFromStorage, setPendingVoteToStorage, clearPendingVoteStorage }
 
 export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, category, price, totalVotes = 0, yesVotes = 0, onVote, onLoginRequired }) {
   const { user } = useAuth()

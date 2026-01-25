@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { authApi } from '../../api'
-import { getPendingVoteFromStorage } from '../ReviewFlow'
+import { authApi } from '../../api/authApi'
+import { getPendingVoteFromStorage } from '../../lib/storage'
 import { ThumbsUpIcon } from '../ThumbsUpIcon'
 import { ThumbsDownIcon } from '../ThumbsDownIcon'
 

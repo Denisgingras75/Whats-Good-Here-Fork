@@ -57,3 +57,52 @@ export function removeStorageItem(key) {
 export function clearCacheKeys(keys) {
   keys.forEach(key => cache.delete(key))
 }
+
+// Pending vote storage helpers (survives OAuth redirect)
+const PENDING_VOTE_KEY = 'whats_good_here_pending_vote'
+
+/**
+ * Get pending vote from storage if recent (within 5 minutes)
+ */
+export function getPendingVoteFromStorage() {
+  try {
+    const stored = localStorage.getItem(PENDING_VOTE_KEY)
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      // Check if it's recent (within 5 minutes) to avoid stale data
+      if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
+        return parsed
+      }
+      localStorage.removeItem(PENDING_VOTE_KEY)
+    }
+  } catch (error) {
+    console.warn('Unable to read pending vote from storage', error)
+  }
+  return null
+}
+
+/**
+ * Save pending vote to storage
+ */
+export function setPendingVoteToStorage(dishId, vote) {
+  try {
+    localStorage.setItem(PENDING_VOTE_KEY, JSON.stringify({
+      dishId,
+      vote,
+      timestamp: Date.now()
+    }))
+  } catch (error) {
+    console.warn('Unable to persist pending vote to storage', error)
+  }
+}
+
+/**
+ * Clear pending vote from storage
+ */
+export function clearPendingVoteStorage() {
+  try {
+    localStorage.removeItem(PENDING_VOTE_KEY)
+  } catch (error) {
+    console.warn('Unable to clear pending vote from storage', error)
+  }
+}
