@@ -88,12 +88,21 @@ function initAnalytics() {
   }
 }
 
-// Load analytics after initial render
+// Load analytics during browser idle time for minimal impact on interactivity
+// Uses requestIdleCallback with setTimeout fallback for Safari
+function scheduleAnalytics() {
+  if (typeof requestIdleCallback === 'function') {
+    requestIdleCallback(initAnalytics, { timeout: 3000 })
+  } else {
+    setTimeout(initAnalytics, 1000)
+  }
+}
+
 if (typeof window !== 'undefined') {
   if (document.readyState === 'complete') {
-    initAnalytics()
+    scheduleAnalytics()
   } else {
-    window.addEventListener('load', initAnalytics, { once: true })
+    window.addEventListener('load', scheduleAnalytics, { once: true })
   }
 }
 
