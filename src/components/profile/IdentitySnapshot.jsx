@@ -62,7 +62,7 @@ export function IdentitySnapshot({ categoryTiers, categoryProgress }) {
             <div className="flex items-center gap-3">
               <CategoryIcon category={row.categoryId} size={24} />
               <span className="font-medium text-[color:var(--color-text-primary)]">{row.categoryLabel}</span>
-              <span className="text-[color:var(--color-text-tertiary)]">\u00B7</span>
+              <span className="text-[color:var(--color-text-tertiary)]">·</span>
               <span
                 className={`font-semibold ${row.isNear ? 'text-[color:var(--color-text-secondary)]' : ''}`}
                 style={!row.isNear ? { color: 'var(--color-primary)' } : undefined}
