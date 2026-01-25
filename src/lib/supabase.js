@@ -18,6 +18,10 @@ if (!isSupabaseConfigured) {
 }
 
 // Create client - require real config (no silent placeholders)
+// SECURITY NOTE: Session tokens are stored in localStorage for persistence across page reloads.
+// This is a Supabase SDK limitation - tokens are accessible to JavaScript and could be stolen via XSS.
+// Mitigations: Strict CSP headers, input sanitization, short token expiry with auto-refresh.
+// Alternative (in-memory storage) would break session persistence and require re-login on every page load.
 export const supabase = createClient(
   supabaseUrl || '',
   supabaseAnonKey || '',

@@ -7,10 +7,35 @@ import { sanitizeSearchQuery } from '../utils/sanitize'
  * Auth API - Centralized authentication operations
  */
 
+/**
+ * Validate redirect URL against allowlist to prevent open redirect attacks
+ * Only allows same-origin URLs
+ * @param {string|null} redirectUrl - URL to validate
+ * @returns {string} Safe redirect URL (defaults to origin if invalid)
+ */
+function getSafeRedirectUrl(redirectUrl) {
+  if (!redirectUrl) {
+    return window.location.origin
+  }
+
+  try {
+    const url = new URL(redirectUrl, window.location.origin)
+    // Only allow same-origin redirects
+    if (url.origin === window.location.origin) {
+      return url.toString()
+    }
+    logger.warn('Blocked redirect to external origin:', url.origin)
+    return window.location.origin
+  } catch {
+    // Invalid URL, fall back to origin
+    return window.location.origin
+  }
+}
+
 export const authApi = {
   /**
    * Sign in with Google OAuth
-   * @param {string|null} redirectUrl - Optional custom redirect URL
+   * @param {string|null} redirectUrl - Optional custom redirect URL (must be same-origin)
    * @returns {Promise<Object>} Auth response
    */
   async signInWithGoogle(redirectUrl = null) {
@@ -20,7 +45,7 @@ export const authApi = {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl || window.location.origin,
+          redirectTo: getSafeRedirectUrl(redirectUrl),
         },
       })
       if (error) {
@@ -37,7 +62,7 @@ export const authApi = {
   /**
    * Sign in with magic link via email
    * @param {string} email - User email
-   * @param {string|null} redirectUrl - Optional custom redirect URL
+   * @param {string|null} redirectUrl - Optional custom redirect URL (must be same-origin)
    * @returns {Promise<Object>} Auth response
    */
   async signInWithMagicLink(email, redirectUrl = null) {
@@ -47,7 +72,7 @@ export const authApi = {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: redirectUrl || window.location.origin,
+          emailRedirectTo: getSafeRedirectUrl(redirectUrl),
         },
       })
       if (error) {

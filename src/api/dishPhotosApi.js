@@ -3,6 +3,10 @@ import { checkPhotoUploadRateLimit } from '../lib/rateLimiter'
 import { extractSafeFilename } from '../utils/sanitize'
 import { logger } from '../utils/logger'
 
+// Upload constraints - enforced client-side and in Supabase Storage policies
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 // 10MB
+
 /**
  * Dish Photos API - Centralized data fetching and mutation for dish photos
  */
@@ -18,6 +22,19 @@ export const dishPhotosApi = {
    */
   async uploadPhoto({ dishId, file, analysisResults }) {
     try {
+      // SECURITY: Explicit file validation before upload
+      if (!file || !(file instanceof File)) {
+        throw new Error('Invalid file provided')
+      }
+
+      if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+        throw new Error('Invalid file type. Please upload a JPEG, PNG, or WebP image.')
+      }
+
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        throw new Error('File too large. Maximum size is 10MB.')
+      }
+
       // Quick client-side check first (better UX)
       const clientRateLimit = checkPhotoUploadRateLimit()
       if (!clientRateLimit.allowed) {
@@ -35,13 +52,16 @@ export const dishPhotosApi = {
         .rpc('check_photo_upload_rate_limit')
 
       if (rateLimitError) {
-        // If server rate limit check fails, allow the upload (graceful degradation)
+        // SECURITY: Fail closed - if rate limit check fails, block the upload
+        logger.error('Rate limit check failed:', rateLimitError)
+        throw new Error('Unable to verify upload limit. Please try again.')
       } else if (serverRateLimit && !serverRateLimit.allowed) {
         throw new Error(serverRateLimit.message || 'Too many uploads. Please wait.')
       }
 
-      // Generate unique filename
-      const fileExt = file.name.split('.').pop()
+      // Generate unique filename with validated extension from MIME type (not user-provided filename)
+      const mimeToExt = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }
+      const fileExt = mimeToExt[file.type] || 'jpg'
       const fileName = `${user.id}/${dishId}.${fileExt}`
 
       // Upload to Supabase Storage

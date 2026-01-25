@@ -42,15 +42,28 @@ describe('Auth API', () => {
       })
     })
 
-    it('should use custom redirect URL if provided', async () => {
+    it('should use same-origin redirect URL if provided', async () => {
       supabase.auth.signInWithOAuth.mockResolvedValueOnce({ error: null })
 
-      await authApi.signInWithGoogle('https://custom-url.com')
+      await authApi.signInWithGoogle(`${window.location.origin}/callback`)
 
       expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
         provider: 'google',
         options: {
-          redirectTo: 'https://custom-url.com',
+          redirectTo: `${window.location.origin}/callback`,
+        },
+      })
+    })
+
+    it('should block external redirect URLs', async () => {
+      supabase.auth.signInWithOAuth.mockResolvedValueOnce({ error: null })
+
+      await authApi.signInWithGoogle('https://evil-site.com')
+
+      expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin, // Falls back to origin
         },
       })
     })
@@ -77,15 +90,30 @@ describe('Auth API', () => {
       })
     })
 
-    it('should use custom redirect URL if provided', async () => {
+    it('should use same-origin redirect URL if provided', async () => {
       supabase.auth.signInWithOtp.mockResolvedValueOnce({ error: null })
 
-      await authApi.signInWithMagicLink('user@example.com', 'https://custom-url.com')
+      // Only same-origin URLs are allowed (security: prevents open redirect)
+      await authApi.signInWithMagicLink('user@example.com', `${window.location.origin}/callback`)
 
       expect(supabase.auth.signInWithOtp).toHaveBeenCalledWith({
         email: 'user@example.com',
         options: {
-          emailRedirectTo: 'https://custom-url.com',
+          emailRedirectTo: `${window.location.origin}/callback`,
+        },
+      })
+    })
+
+    it('should block external redirect URLs', async () => {
+      supabase.auth.signInWithOtp.mockResolvedValueOnce({ error: null })
+
+      // External URLs should be blocked and fall back to origin
+      await authApi.signInWithMagicLink('user@example.com', 'https://evil-site.com')
+
+      expect(supabase.auth.signInWithOtp).toHaveBeenCalledWith({
+        email: 'user@example.com',
+        options: {
+          emailRedirectTo: window.location.origin,
         },
       })
     })

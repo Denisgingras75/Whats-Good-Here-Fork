@@ -244,13 +244,40 @@ describe('Dish Photos API', () => {
   })
 
   describe('uploadPhoto', () => {
-    it('should throw if user is not logged in', async () => {
-      supabase.auth.getUser.mockResolvedValueOnce({ data: { user: null } })
+    it('should throw for invalid file type', async () => {
+      const invalidFile = new File(['test'], 'test.txt', { type: 'text/plain' })
 
       await expect(
         dishPhotosApi.uploadPhoto({
           dishId: 'dish-1',
-          file: new File([''], 'test.jpg'),
+          file: invalidFile,
+          analysisResults: {},
+        })
+      ).rejects.toThrow('Invalid file type')
+    })
+
+    it('should throw for file too large', async () => {
+      // Create a mock file that reports being > 10MB
+      const largeFile = new File(['x'.repeat(100)], 'large.jpg', { type: 'image/jpeg' })
+      Object.defineProperty(largeFile, 'size', { value: 11 * 1024 * 1024 })
+
+      await expect(
+        dishPhotosApi.uploadPhoto({
+          dishId: 'dish-1',
+          file: largeFile,
+          analysisResults: {},
+        })
+      ).rejects.toThrow('File too large')
+    })
+
+    it('should throw if user is not logged in', async () => {
+      supabase.auth.getUser.mockResolvedValueOnce({ data: { user: null } })
+      const validFile = new File(['test'], 'test.jpg', { type: 'image/jpeg' })
+
+      await expect(
+        dishPhotosApi.uploadPhoto({
+          dishId: 'dish-1',
+          file: validFile,
           analysisResults: {},
         })
       ).rejects.toThrow('You must be logged in to upload photos')
