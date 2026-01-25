@@ -180,19 +180,21 @@ export const dishesApi = {
     allResults.sort((a, b) => (b.avg_rating || 0) - (a.avg_rating || 0))
     const limited = allResults.slice(0, limit)
 
-    // Transform to match expected format
-    return limited.map(dish => ({
-      dish_id: dish.id,
-      dish_name: dish.name,
-      category: dish.category,
-      tags: dish.tags || [],
-      photo_url: dish.photo_url,
-      total_votes: dish.total_votes || 0,
-      avg_rating: dish.avg_rating,
-      restaurant_id: dish.restaurants.id,
-      restaurant_name: dish.restaurants.name,
-      restaurant_cuisine: dish.restaurants.cuisine,
-    }))
+    // Transform to match expected format, filtering out any without valid restaurant data
+    return limited
+      .filter(dish => dish.restaurants) // Defensive: skip dishes without restaurant data
+      .map(dish => ({
+        dish_id: dish.id,
+        dish_name: dish.name,
+        category: dish.category,
+        tags: dish.tags || [],
+        photo_url: dish.photo_url,
+        total_votes: dish.total_votes || 0,
+        avg_rating: dish.avg_rating,
+        restaurant_id: dish.restaurants?.id,
+        restaurant_name: dish.restaurants?.name,
+        restaurant_cuisine: dish.restaurants?.cuisine,
+      }))
   },
 
   /**
