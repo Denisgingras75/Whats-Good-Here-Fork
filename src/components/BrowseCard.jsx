@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { getCategoryImage } from '../constants/categoryImages'
 import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRatingColor } from '../utils/ranking'
 import { getResponsiveImageProps } from '../utils/images'
 
 export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
+  const [imageLoaded, setImageLoaded] = useState(false)
   if (!dish) return null
 
   const {
@@ -47,19 +49,23 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
       style={{ background: 'var(--color-card)', borderColor: 'var(--color-divider)' }}
     >
       {/* Image with rating badge */}
-      <div className="relative aspect-[16/10] overflow-hidden">
+      <div className="relative aspect-[16/10] overflow-hidden image-placeholder">
         <img
           {...imageProps}
           alt={dish_name}
           loading="lazy"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setImageLoaded(true)}
           onError={(e) => {
             // Fall back to category image if photo_url fails to load
             const fallback = getCategoryImage(category)
             if (e.target.src !== fallback) {
               e.target.src = fallback
             }
+            setImageLoaded(true)
           }}
         />
 
@@ -101,7 +107,7 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
               onToggleFavorite(dish_id)
             }}
             aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-all ${
+            className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-150 active:scale-90 ${
               isFavorite
                 ? 'bg-red-500 text-white'
                 : 'bg-black/50 backdrop-blur-sm text-white/70 hover:text-red-400'

@@ -16,9 +16,20 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
   const [showAllPhotos, setShowAllPhotos] = useState(false)
   const [lightboxPhoto, setLightboxPhoto] = useState(null)
   const [photoLoadError, setPhotoLoadError] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
+  const [featuredImageLoaded, setFeaturedImageLoaded] = useState(false)
 
   // Focus trap hook must be called BEFORE any early returns to satisfy React hooks rules
-  const modalRef = useFocusTrap(!!dish, onClose)
+  const modalRef = useFocusTrap(!!dish && !isClosing, onClose)
+
+  // Animated close handler
+  const handleClose = () => {
+    setIsClosing(true)
+    setTimeout(() => {
+      setIsClosing(false)
+      onClose?.()
+    }, 200) // Match animation duration
+  }
 
   // Fetch photos when modal opens
   useEffect(() => {
@@ -80,6 +91,7 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
   return createPortal(
     <div
       key={`modal-${dish.dish_id}`}
+      className={isClosing ? 'animate-backdrop-fade-out' : 'animate-backdrop-fade-in'}
       style={{
         position: 'fixed',
         top: 0,
@@ -93,7 +105,7 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
         backgroundColor: 'rgba(0,0,0,0.7)',
         padding: '16px',
       }}
-      onClick={onClose}
+      onClick={handleClose}
       role="presentation"
     >
       {/* Modal card */}
@@ -107,6 +119,7 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
         aria-modal="true"
         aria-labelledby="dish-modal-title"
         onClick={(e) => e.stopPropagation()}
+        className={isClosing ? 'animate-modal-slide-down' : 'animate-modal-slide-up'}
         style={{
           position: 'relative',
           width: '100%',
@@ -121,19 +134,20 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
       >
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           aria-label="Close modal"
+          className="tap-target"
           style={{
             position: 'absolute',
-            top: '12px',
-            right: '12px',
-            width: '28px',
-            height: '28px',
+            top: '8px',
+            right: '8px',
+            width: '44px',
+            height: '44px',
             borderRadius: '50%',
             backgroundColor: 'var(--color-divider)',
             color: 'var(--color-text-secondary)',
             border: 'none',
-            fontSize: '18px',
+            fontSize: '20px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -181,7 +195,7 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
             {/* Featured photo (hero) */}
             {featuredPhoto && (
               <button
-                className="dish-hero-photo"
+                className="dish-hero-photo tap-target image-placeholder"
                 onClick={() => setLightboxPhoto(featuredPhoto.photo_url)}
                 aria-label={`View featured photo of ${dish.dish_name}`}
               >
@@ -190,6 +204,8 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
                   alt={dish.dish_name}
                   loading="lazy"
                   sizes="(max-width: 640px) 100vw, 600px"
+                  className={`transition-opacity duration-300 ${featuredImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  onLoad={() => setFeaturedImageLoaded(true)}
                   onError={(e) => {
                     // Hide broken images
                     e.target.style.display = 'none'
@@ -211,7 +227,7 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
                   {displayPhotos.map((photo) => (
                     <button
                       key={photo.id}
-                      className="photo-grid-item"
+                      className="photo-grid-item tap-target"
                       onClick={() => setLightboxPhoto(photo.photo_url)}
                       aria-label={`View photo of ${dish.dish_name}`}
                     >
@@ -266,12 +282,12 @@ export function DishModal({ dish, onClose, onVote, onLoginRequired }) {
       {/* Photo lightbox */}
       {lightboxPhoto && (
         <div
-          className="photo-lightbox"
+          className="photo-lightbox animate-backdrop-fade-in"
           onClick={() => setLightboxPhoto(null)}
           role="dialog"
           aria-label="Photo lightbox"
         >
-          <button className="lightbox-close" aria-label="Close lightbox">×</button>
+          <button className="lightbox-close tap-target" aria-label="Close lightbox">×</button>
           <img
             {...getResponsiveImageProps(lightboxPhoto, [800, 1200, 1600])}
             alt={dish.dish_name}

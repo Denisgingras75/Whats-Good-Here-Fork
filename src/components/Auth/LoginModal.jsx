@@ -4,6 +4,7 @@ import { getPendingVoteFromStorage } from '../../lib/storage'
 import { ThumbsUpIcon } from '../ThumbsUpIcon'
 import { ThumbsDownIcon } from '../ThumbsDownIcon'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
+import { logger } from '../../utils/logger'
 
 // SECURITY: Email is NOT persisted to storage to prevent XSS exposure of PII
 
@@ -175,7 +176,7 @@ export function LoginModal({ isOpen, onClose, pendingAction = null }) {
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 w-[38px] h-[38px] rounded-full flex items-center justify-center transition-colors"
+            className="absolute top-6 right-6 w-[44px] h-[44px] rounded-full flex items-center justify-center transition-colors tap-target"
             style={{ background: 'var(--color-divider)', color: 'var(--color-text-secondary)' }}
             aria-label="Close"
           >

@@ -59,7 +59,7 @@ export function PhotoUploadButton({
         <button
           onClick={handleClick}
           disabled={isProcessing}
-          className="photo-upload-btn-compact"
+          className="photo-upload-btn-compact tap-target"
           title="Add photo"
           aria-label="Add photo"
         >
@@ -92,7 +92,7 @@ export function PhotoUploadButton({
       <button
         onClick={handleClick}
         disabled={isProcessing}
-        className="photo-upload-btn"
+        className="photo-upload-btn tap-target"
       >
         {isProcessing ? (
           <>
@@ -112,7 +112,7 @@ export function PhotoUploadButton({
           <p className="photo-upload-error">{error}</p>
           <button
             onClick={handleClick}
-            className="photo-upload-retry-btn"
+            className="photo-upload-retry-btn tap-target"
           >
             Try again
           </button>

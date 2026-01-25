@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCategoryImage } from '../../constants/categoryImages'
 import { MIN_VOTES_FOR_RANKING } from '../../constants/app'
@@ -7,6 +7,7 @@ import { getRatingColor } from '../../utils/ranking'
 // Compact dish row for homepage rankings
 export const RankedDishRow = memo(function RankedDishRow({ dish, rank }) {
   const navigate = useNavigate()
+  const [imageLoaded, setImageLoaded] = useState(false)
   const {
     dish_id,
     dish_name,
@@ -28,7 +29,7 @@ export const RankedDishRow = memo(function RankedDishRow({ dish, rank }) {
   return (
     <button
       onClick={handleClick}
-      className="w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 hover:shadow-md active:scale-[0.99] group"
+      className="w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 hover:shadow-md active:scale-[0.99] group stagger-item"
       style={{
         background: 'var(--color-bg)',
         border: '1px solid var(--color-divider)'
@@ -60,20 +61,24 @@ export const RankedDishRow = memo(function RankedDishRow({ dish, rank }) {
 
       {/* Photo */}
       <div
-        className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0"
+        className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 image-placeholder"
         style={{ background: 'var(--color-surface)' }}
       >
         <img
           src={imgSrc}
           alt={dish_name}
           loading="lazy"
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover transition-opacity duration-300 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setImageLoaded(true)}
           onError={(e) => {
             // Fall back to category image if photo_url fails to load
             const fallback = getCategoryImage(category)
             if (e.target.src !== fallback) {
               e.target.src = fallback
             }
+            setImageLoaded(true)
           }}
         />
       </div>

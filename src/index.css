@@ -342,6 +342,29 @@
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
+  /* Tap target - pressed state for buttons */
+  .tap-target {
+    @apply transition-all duration-150;
+  }
+  .tap-target:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+
+  /* Image placeholder background while loading */
+  .image-placeholder {
+    background: var(--color-divider);
+  }
+
+  /* Image fade-in on load */
+  .image-fade-in {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+  }
+  .image-fade-in.loaded {
+    opacity: 1;
+  }
+
   /* Dynamic viewport height - accounts for mobile browser chrome (address bar) */
   .min-h-dvh {
     min-height: 100vh; /* Fallback for older browsers */
@@ -369,17 +392,21 @@
 
   .stagger-item {
     opacity: 0;
-    animation: fadeInUp 0.5s ease-out forwards;
+    animation: fadeInUp 0.4s ease-out forwards;
   }
 
-  .stagger-item:nth-child(1) { animation-delay: 0.05s; }
-  .stagger-item:nth-child(2) { animation-delay: 0.1s; }
-  .stagger-item:nth-child(3) { animation-delay: 0.15s; }
-  .stagger-item:nth-child(4) { animation-delay: 0.2s; }
-  .stagger-item:nth-child(5) { animation-delay: 0.25s; }
-  .stagger-item:nth-child(6) { animation-delay: 0.3s; }
-  .stagger-item:nth-child(7) { animation-delay: 0.35s; }
-  .stagger-item:nth-child(8) { animation-delay: 0.4s; }
+  .stagger-item:nth-child(1) { animation-delay: 0ms; }
+  .stagger-item:nth-child(2) { animation-delay: 50ms; }
+  .stagger-item:nth-child(3) { animation-delay: 100ms; }
+  .stagger-item:nth-child(4) { animation-delay: 150ms; }
+  .stagger-item:nth-child(5) { animation-delay: 200ms; }
+  .stagger-item:nth-child(6) { animation-delay: 250ms; }
+  .stagger-item:nth-child(7) { animation-delay: 300ms; }
+  .stagger-item:nth-child(8) { animation-delay: 350ms; }
+  .stagger-item:nth-child(9) { animation-delay: 400ms; }
+  .stagger-item:nth-child(10) { animation-delay: 450ms; }
+  .stagger-item:nth-child(11) { animation-delay: 500ms; }
+  .stagger-item:nth-child(12) { animation-delay: 550ms; }
 
   .animate-shimmer {
     background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
@@ -412,6 +439,80 @@
   to {
     opacity: 1;
   }
+}
+
+/* Modal animations */
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modalSlideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdropFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-modal-slide-up {
+  animation: modalSlideUp 0.25s ease-out forwards;
+}
+
+.animate-modal-slide-down {
+  animation: modalSlideDown 0.2s ease-in forwards;
+}
+
+.animate-backdrop-fade-in {
+  animation: backdropFadeIn 0.2s ease-out forwards;
+}
+
+.animate-backdrop-fade-out {
+  animation: backdropFadeOut 0.15s ease-in forwards;
+}
+
+/* Vote success animation */
+@keyframes voteSuccess {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-vote-success {
+  animation: voteSuccess 0.3s ease-out;
 }
 
 @keyframes slideUp {
@@ -503,12 +604,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   background: var(--color-surface);
   border: 1px solid var(--color-divider);
   border-radius: 50%;
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -866,8 +967,8 @@
   position: absolute;
   top: 16px;
   right: 16px;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
   border: none;

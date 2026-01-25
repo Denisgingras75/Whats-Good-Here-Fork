@@ -62,7 +62,7 @@ export function BottomNav() {
             onMouseEnter={() => tab.prefetch?.()}
             onFocus={() => tab.prefetch?.()}
             className={({ isActive }) =>
-              `flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+              `flex flex-col items-center justify-center flex-1 h-full transition-all duration-150 active:scale-95 active:opacity-80 ${
                 isActive
                   ? ''
                   : 'hover:opacity-80'

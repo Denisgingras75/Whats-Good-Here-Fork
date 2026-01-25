@@ -15,6 +15,7 @@ import {
   clearPendingVoteStorage,
 } from '../lib/storage'
 import { logger } from '../utils/logger'
+import { hapticLight, hapticSuccess } from '../utils/haptics'
 
 export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, category, price, totalVotes = 0, yesVotes = 0, onVote, onLoginRequired }) {
   const { user } = useAuth()
@@ -121,6 +122,7 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
 
   const handleVoteClick = (wouldOrderAgain) => {
     setPendingVote(wouldOrderAgain)
+    hapticLight() // Tactile feedback on selection
 
     // Auth gate: check if user is logged in BEFORE showing confirmation
     if (!user) {
@@ -218,6 +220,9 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
     setPendingVote(null)
     setReviewText('')
     setReviewError(null)
+
+    // Haptic success feedback
+    hapticSuccess()
 
     // Fire onVote callback immediately - closes modal, shows success
     onVote?.()
