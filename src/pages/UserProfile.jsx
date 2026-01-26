@@ -43,6 +43,13 @@ export function UserProfile() {
   // Check if viewing own profile
   const isOwnProfile = currentUser?.id === userId
 
+  // Redirect to /profile if viewing own profile
+  useEffect(() => {
+    if (isOwnProfile) {
+      navigate('/profile', { replace: true })
+    }
+  }, [isOwnProfile, navigate])
+
   // Fetch rating identity for this user (behind feature flag)
   const ratingIdentity = useRatingIdentity(FEATURES.RATING_IDENTITY_ENABLED ? userId : null)
 
