@@ -76,8 +76,8 @@ export function UserSearch({ onClose }) {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder="Find Friends"
-          className="flex-1 bg-transparent outline-none text-sm"
-          style={{ color: 'var(--color-text-primary)', outline: 'none' }}
+          className="flex-1 bg-transparent outline-none border-none text-sm"
+          style={{ color: 'var(--color-text-primary)', outline: 'none', border: 'none', boxShadow: 'none' }}
         />
         {query && (
           <button

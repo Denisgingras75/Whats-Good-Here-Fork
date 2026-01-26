@@ -194,8 +194,8 @@ export function DishSearch({ loading = false }) {
           aria-autocomplete="list"
           aria-expanded={showDropdown}
           aria-controls="dish-search-dropdown"
-          className="flex-1 bg-transparent outline-none text-sm"
-          style={{ color: 'var(--color-text-primary)' }}
+          className="flex-1 bg-transparent outline-none border-none text-sm"
+          style={{ color: 'var(--color-text-primary)', outline: 'none', border: 'none', boxShadow: 'none' }}
         />
 
         {query && (
