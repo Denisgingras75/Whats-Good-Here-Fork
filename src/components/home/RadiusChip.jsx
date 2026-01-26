@@ -1,25 +1,24 @@
 /**
  * Compact radius filter chip for the hero section
  * Triggers the RadiusSheet bottom sheet when clicked
- * Styled to match the search bar height (48px)
  */
 export function RadiusChip({ radius, onClick }) {
   return (
     <button
       onClick={onClick}
       aria-label={`Search radius: ${radius} miles. Tap to change`}
-      className="flex items-center gap-1 px-3 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all"
+      className="flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium transition-all active:scale-[0.97]"
       style={{
-        background: 'var(--color-bg)',
-        border: '1.5px solid var(--color-divider)',
+        background: 'var(--color-surface)',
+        border: '1px solid var(--color-divider)',
         color: 'var(--color-text-primary)',
-        minHeight: '48px',
+        minHeight: '36px',
       }}
     >
       <span>{radius} mi</span>
       <svg
         aria-hidden="true"
-        className="w-4 h-4"
+        className="w-3.5 h-3.5"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

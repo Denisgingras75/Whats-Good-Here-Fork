@@ -194,7 +194,7 @@ export function DishSearch({ loading = false }) {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onKeyDown={handleKeyDown}
-          placeholder="Find the best ___ near you"
+          placeholder="Find What's Good near you"
           aria-label="Search dishes by name"
           aria-autocomplete="list"
           aria-expanded={showDropdown}

@@ -107,14 +107,14 @@ export function BrowseCard({ dish, onClick, isFavorite, onToggleFavorite }) {
               e.stopPropagation()
               onToggleFavorite(dish_id)
             }}
-            aria-label={isFavorite ? 'Remove from heard it was good here' : 'Add to heard it was good here'}
-            className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-150 active:scale-90 ${
+            aria-label={isFavorite ? 'Remove from heard list' : 'Mark as heard it was good'}
+            className={`absolute top-3 right-3 w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-150 active:scale-90 ${
               isFavorite
-                ? 'bg-black/70 backdrop-blur-sm'
-                : 'bg-black/50 backdrop-blur-sm opacity-70 hover:opacity-100'
+                ? 'bg-black/90 backdrop-blur-sm ring-2 ring-[var(--color-primary)]/50'
+                : 'bg-black/60 backdrop-blur-sm hover:bg-black/80'
             }`}
           >
-            <HearingIcon size={24} active={isFavorite} />
+            <HearingIcon size={26} className="md:w-7 md:h-7" active={isFavorite} />
           </button>
         )}
       </div>

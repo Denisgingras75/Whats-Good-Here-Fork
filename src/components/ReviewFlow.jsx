@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { toast } from 'sonner'
 import { capture } from '../lib/analytics'
 import { useAuth } from '../context/AuthContext'
 import { useVote } from '../hooks/useVote'
@@ -226,6 +227,15 @@ export function ReviewFlow({ dishId, dishName, restaurantId, restaurantName, cat
 
     // Haptic success feedback
     hapticSuccess()
+
+    // Show success toast
+    toast.success(
+      <div className="flex items-center gap-2">
+        <span>{pendingVote ? '👍' : '👎'}</span>
+        <span>Vote saved!</span>
+      </div>,
+      { duration: 2000 }
+    )
 
     // Announce for screen readers
     setAnnouncement('Vote submitted successfully')

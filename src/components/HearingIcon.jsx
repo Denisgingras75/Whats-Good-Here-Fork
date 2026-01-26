@@ -7,11 +7,13 @@ export function HearingIcon({ size = 20, className = '', active = false }) {
     <img
       src="/hearing.png"
       alt="heard good here"
-      className={`inline-block object-contain ${className}`}
+      className={`inline-block object-contain transition-all duration-200 ${className}`}
       style={{
         width: size,
         height: size,
-        filter: active ? 'brightness(1.3) drop-shadow(0 0 3px white)' : 'none',
+        filter: active
+          ? 'brightness(1.4) drop-shadow(0 0 6px rgba(244, 162, 97, 0.8)) drop-shadow(0 0 12px rgba(244, 162, 97, 0.4))'
+          : 'brightness(0.9) opacity(0.85)',
       }}
     />
   )

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
 import { capture } from '../lib/analytics'
 import { favoritesApi } from '../api/favoritesApi'
 import { logger } from '../utils/logger'
@@ -41,6 +42,9 @@ export function useFavorites(userId) {
     // Optimistic update FIRST - instant UI feedback
     setFavoriteIds(prev => [...prev, dishId])
 
+    // Show success toast
+    toast.success('Moved to Heard it was Good Here', { duration: 2000 })
+
     // Track immediately for snappy feel
     capture('dish_saved', {
       dish_id: dishId,
@@ -74,6 +78,9 @@ export function useFavorites(userId) {
     // Optimistic update FIRST - instant UI feedback
     setFavoriteIds(prev => prev.filter(id => id !== dishId))
     setFavorites(prev => prev.filter(d => d.dish_id !== dishId))
+
+    // Show removal toast
+    toast('Removed from Heard it was Good Here', { duration: 2000 })
 
     // Track immediately
     capture('dish_unsaved', {
