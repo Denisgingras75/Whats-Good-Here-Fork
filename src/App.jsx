@@ -55,10 +55,16 @@ export const prefetchRoutes = {
 
 // Loading fallback
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-surface)' }}>
+  <div
+    role="status"
+    aria-label="Loading page"
+    className="min-h-screen flex items-center justify-center"
+    style={{ background: 'var(--color-surface)' }}
+  >
     <div className="animate-pulse text-center">
       <div className="w-12 h-12 mx-auto mb-3 rounded-full" style={{ background: 'var(--color-divider)' }} />
       <div className="h-4 w-24 mx-auto rounded" style={{ background: 'var(--color-divider)' }} />
+      <span className="sr-only">Loading...</span>
     </div>
   </div>
 )
