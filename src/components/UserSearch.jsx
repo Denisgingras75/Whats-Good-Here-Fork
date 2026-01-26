@@ -11,6 +11,7 @@ export function UserSearch({ onClose }) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef(null)
 
   // Focus input on mount
@@ -51,10 +52,10 @@ export function UserSearch({ onClose }) {
     <div className="w-full">
       {/* Search Input */}
       <div
-        className="flex items-center gap-3 px-4 py-3 rounded-xl"
+        className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
         style={{
           background: 'var(--color-surface-elevated)',
-          border: '1px solid var(--color-divider)',
+          border: `2px solid ${isFocused ? 'var(--color-primary)' : 'var(--color-divider)'}`,
         }}
       >
         <svg
@@ -72,6 +73,8 @@ export function UserSearch({ onClose }) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           placeholder="Find Friends"
           className="flex-1 bg-transparent outline-none text-sm"
           style={{ color: 'var(--color-text-primary)' }}
