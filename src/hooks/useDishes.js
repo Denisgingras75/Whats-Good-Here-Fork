@@ -8,13 +8,9 @@ import { logger } from '../utils/logger'
  * Supports both location-based ranked dishes and restaurant-specific dishes
  */
 export function useDishes(location, radius, category = null, restaurantId = null) {
-  console.log('[useDishes] called with radius:', radius, 'location:', location?.lat, location?.lng)
-
   const queryKey = restaurantId
     ? ['dishes', 'restaurant', restaurantId, category]
     : ['dishes', 'ranked', location?.lat, location?.lng, radius, category]
-
-  console.log('[useDishes] queryKey:', queryKey)
 
   const enabled = restaurantId ? !!restaurantId : !!location
 

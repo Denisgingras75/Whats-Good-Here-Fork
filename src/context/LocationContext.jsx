@@ -14,52 +14,27 @@ const RADIUS_STORAGE_KEY = 'wgh_radius'
 
 const LocationContext = createContext(null)
 
-// Get saved radius from localStorage, default to 5 miles
-function getSavedRadius() {
-  try {
-    const saved = localStorage.getItem(RADIUS_STORAGE_KEY)
-    console.log('[getSavedRadius] localStorage value:', saved, 'type:', typeof saved)
-    if (saved) {
-      const parsed = parseInt(saved, 10)
-      console.log('[getSavedRadius] parsed:', parsed)
-      if (!isNaN(parsed) && parsed >= 1 && parsed <= 50) {
-        console.log('[getSavedRadius] returning:', parsed)
-        return parsed
-      }
-    }
-  } catch (e) {
-    console.log('[getSavedRadius] error:', e)
-    // localStorage may be unavailable
-  }
-  console.log('[getSavedRadius] returning default: 5')
-  return 5
-}
-
 export function LocationProvider({ children }) {
   // Start with default location immediately - don't block on geolocation
   const [location, setLocation] = useState(DEFAULT_LOCATION)
   const [radius, setRadiusState] = useState(() => {
-    const saved = localStorage.getItem(RADIUS_STORAGE_KEY)
-    console.log('[LocationProvider init] localStorage wgh_radius:', saved)
-    if (saved) {
-      const parsed = parseInt(saved, 10)
-      if (!isNaN(parsed) && parsed >= 1 && parsed <= 50) {
-        console.log('[LocationProvider init] using saved radius:', parsed)
-        return parsed
+    try {
+      const saved = localStorage.getItem(RADIUS_STORAGE_KEY)
+      if (saved) {
+        const parsed = parseInt(saved, 10)
+        if (!isNaN(parsed) && parsed >= 1 && parsed <= 50) {
+          return parsed
+        }
       }
+    } catch {
+      // localStorage may be unavailable
     }
-    console.log('[LocationProvider init] using default: 5')
     return 5
   })
 
-  // Log whenever radius state changes
-  console.log('[LocationProvider] current radius state:', radius)
-
   // Wrap setRadius to track filter changes and persist to localStorage
   const setRadius = useCallback((newRadius) => {
-    console.log('[setRadius] called with:', newRadius)
     setRadiusState(prevRadius => {
-      console.log('[setRadius] prevRadius:', prevRadius, '-> newRadius:', newRadius)
       if (newRadius !== prevRadius) {
         capture('filter_applied', {
           filter_type: 'radius',
