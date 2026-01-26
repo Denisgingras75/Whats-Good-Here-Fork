@@ -37,7 +37,6 @@ import {
   PhotosInfoSection,
   MissionSection,
   RatingIdentityCard,
-  CategoryBiasBreakdown,
   RevealNotification,
 } from '../components/profile'
 
@@ -310,14 +309,6 @@ export function Profile() {
                 dishesHelpedEstablish={ratingIdentity.dishesHelpedEstablish}
                 loading={ratingIdentity.loading}
               />
-              {/* Category breakdown if user has category-specific biases */}
-              {Object.keys(ratingIdentity.categoryBiases || {}).length > 0 && (
-                <CategoryBiasBreakdown
-                  categoryBiases={ratingIdentity.categoryBiases}
-                  className="mt-4 p-4 rounded-2xl border"
-                  style={{ background: 'var(--color-surface-elevated)', borderColor: 'var(--color-divider)' }}
-                />
-              )}
             </div>
           )}
 

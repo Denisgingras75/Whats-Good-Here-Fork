@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 /**
  * RatingIdentityCard - Shows user's rating bias and personality
  *
@@ -44,19 +46,25 @@ export function RatingIdentityCard({
   const hasNoVotes = votesWithConsensus === 0
 
   return (
-    <div
-      className="p-4 rounded-2xl border"
+    <Link
+      to="/rating-style"
+      className="block p-4 rounded-2xl border transition-colors hover:bg-white/5"
       style={{
         background: 'var(--color-surface-elevated)',
         borderColor: 'var(--color-divider)',
       }}
     >
-      <p
-        className="text-xs font-semibold uppercase tracking-wide"
-        style={{ color: 'var(--color-text-tertiary)' }}
-      >
-        Your Rating Style
-      </p>
+      <div className="flex items-center justify-between">
+        <p
+          className="text-xs font-semibold uppercase tracking-wide"
+          style={{ color: 'var(--color-text-tertiary)' }}
+        >
+          Your Rating Style
+        </p>
+        <svg className="w-4 h-4" style={{ color: 'var(--color-text-tertiary)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
 
       {hasNoVotes ? (
         <div className="mt-3">
@@ -110,7 +118,7 @@ export function RatingIdentityCard({
           </div>
         </>
       )}
-    </div>
+    </Link>
   )
 }
 

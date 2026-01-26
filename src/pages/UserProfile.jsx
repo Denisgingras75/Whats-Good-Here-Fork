@@ -14,6 +14,8 @@ import {
   calculateCategoryTiers,
   calculateCategoryProgress,
 } from '../hooks/useUserVotes'
+import { useRatingIdentity } from '../hooks/useRatingIdentity'
+import { FEATURES } from '../constants/features'
 
 /**
  * Public User Profile Page
@@ -40,6 +42,9 @@ export function UserProfile() {
 
   // Check if viewing own profile
   const isOwnProfile = currentUser?.id === userId
+
+  // Fetch rating identity for this user (behind feature flag)
+  const ratingIdentity = useRatingIdentity(FEATURES.RATING_IDENTITY_ENABLED ? userId : null)
 
   // Fetch profile data
   useEffect(() => {
@@ -262,8 +267,27 @@ export function UserProfile() {
               {profile.display_name || 'Anonymous'}
             </h1>
 
-            {/* Rating Personality */}
-            {personality && (
+            {/* Rating Style - from Rating Identity system */}
+            {FEATURES.RATING_IDENTITY_ENABLED && ratingIdentity && !ratingIdentity.loading && ratingIdentity.votesWithConsensus > 0 ? (
+              <Link
+                to="/rating-style"
+                className="inline-flex items-center gap-2 mt-1.5 px-3 py-1.5 rounded-full border transition-colors hover:bg-white/5"
+                style={{ borderColor: 'var(--color-divider)', background: 'var(--color-surface-elevated)' }}
+              >
+                <span
+                  className="text-base font-bold tabular-nums"
+                  style={{ color: ratingIdentity.ratingBias < 0 ? '#f97316' : ratingIdentity.ratingBias > 0 ? '#22c55e' : 'var(--color-text-secondary)' }}
+                >
+                  {ratingIdentity.ratingBias > 0 ? '+' : ''}{ratingIdentity.ratingBias?.toFixed(1) || '0.0'}
+                </span>
+                <span className="text-base font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                  {ratingIdentity.biasLabel}
+                </span>
+                <svg className="w-4 h-4" style={{ color: 'var(--color-text-tertiary)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </Link>
+            ) : personality && (
               <div className="flex items-center gap-1.5 mt-1">
                 <span>{personality.emoji}</span>
                 <span className="text-sm font-medium" style={{ color: 'var(--color-primary)' }}>
