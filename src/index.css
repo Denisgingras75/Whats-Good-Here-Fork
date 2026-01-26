@@ -1082,3 +1082,9 @@ textarea:focus-visible,
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(244, 162, 97, 0.25);
 }
+
+/* Override focus styles for inputs inside styled containers (they handle their own focus) */
+input.outline-none:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
