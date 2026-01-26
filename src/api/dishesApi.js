@@ -30,6 +30,7 @@ export const dishesApi = {
    * @throws {Error} With classified error type
    */
   async getRankedDishes({ lat, lng, radiusMiles, category = null, limit = 100 }) {
+    console.log('[dishesApi.getRankedDishes] SENDING TO DB:', { lat, lng, radiusMiles, category })
     try {
       const { data, error } = await supabase.rpc('get_ranked_dishes', {
         user_lat: lat,
@@ -37,6 +38,7 @@ export const dishesApi = {
         radius_miles: radiusMiles,
         filter_category: category,
       })
+      console.log('[dishesApi.getRankedDishes] GOT RESULTS:', data?.length, 'dishes')
 
       if (error) {
         throw createClassifiedError(error)
