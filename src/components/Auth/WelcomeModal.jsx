@@ -52,8 +52,8 @@ export function WelcomeModal() {
   // Show modal when user is logged in but hasn't completed onboarding
   useEffect(() => {
     if (user && !loading && profile) {
-      // Show if no display_name OR hasn't completed onboarding
-      if (!profile.display_name || !profile.has_onboarded) {
+      // Show only if user hasn't completed onboarding
+      if (!profile.has_onboarded) {
         setIsOpen(true)
         capture('onboarding_started')
       }
@@ -120,14 +120,14 @@ export function WelcomeModal() {
   const isFavoritesStep = currentStep.id === 'favorites'
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 animate-fade-in-up">
+    <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4">
       {/* Backdrop with blur */}
-      <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm pointer-events-none" />
 
       {/* Modal */}
       <div
-        className="relative rounded-3xl max-w-md w-full shadow-xl overflow-hidden"
-        style={{ animationDelay: '0.1s', background: 'var(--color-surface)' }}
+        className="relative z-10 rounded-3xl max-w-md w-full shadow-xl overflow-hidden"
+        style={{ animationDelay: '0.1s', background: '#1A1A1A' }}
       >
         {/* Decorative gradient header */}
         <div className="h-2" style={{ background: 'var(--color-primary)' }} />

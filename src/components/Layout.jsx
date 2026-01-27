@@ -1,5 +1,4 @@
 import { BottomNav } from './BottomNav'
-import { WelcomeModal } from './Auth/WelcomeModal'
 import { WelcomeSplash } from './WelcomeSplash'
 import { TopBar } from './TopBar'
 import { OfflineIndicator } from './OfflineIndicator'
@@ -29,7 +28,6 @@ export function Layout({ children }) {
         {children}
       </main>
       <BottomNav />
-      <WelcomeModal />
     </div>
   )
 }
