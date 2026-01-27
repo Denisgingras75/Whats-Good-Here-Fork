@@ -55,7 +55,7 @@ export function CategoryImageCard({
         ) : (
           <div
             className="w-full h-full rounded-full"
-            style={{ background: '#141414' }}
+            style={{ background: '#0d1b2a' }}
           />
         )}
       </PlateIcon>
