@@ -597,9 +597,9 @@ export function Profile() {
           <div className="rounded-2xl border p-6" style={{ background: 'var(--color-card)', borderColor: 'var(--color-divider)' }}>
             <div className="text-center mb-6">
               <img
-                src="/wgh-splash.jpg"
+                src="/logo.png"
                 alt="What's Good Here"
-                className="w-32 h-auto mx-auto mb-4"
+                className="w-40 h-auto mx-auto mb-4"
               />
               <h2 className="text-xl font-bold text-[color:var(--color-text-primary)]">Sign in to vote</h2>
               <p className="text-sm text-[color:var(--color-text-secondary)] mt-1">

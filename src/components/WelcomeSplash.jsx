@@ -72,9 +72,9 @@ export function WelcomeSplash({ onComplete }) {
         }}
       >
         <img
-          src="/wgh-splash.png?v=7"
+          src="/logo.png"
           alt="What's Good Here"
-          className="w-[320px] md:w-[420px] lg:w-[500px] h-auto"
+          className="w-[280px] md:w-[360px] lg:w-[420px] h-auto"
           draggable={false}
           onError={(e) => console.error('Splash image failed to load:', e)}
         />

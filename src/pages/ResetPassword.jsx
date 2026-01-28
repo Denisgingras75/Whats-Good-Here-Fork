@@ -74,9 +74,9 @@ export function ResetPassword() {
     >
       {/* Logo */}
       <img
-        src="/wgh-splash.jpg"
+        src="/logo.png"
         alt="What's Good Here"
-        className="w-40 h-auto mb-6"
+        className="w-48 h-auto mb-6"
       />
 
       {/* Heading */}
