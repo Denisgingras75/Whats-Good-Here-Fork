@@ -11,6 +11,7 @@ const DEFAULT_LOCATION = {
 
 const STORAGE_KEY = 'whats-good-here-location-permission'
 const RADIUS_STORAGE_KEY = 'wgh_radius'
+const TOWN_STORAGE_KEY = 'wgh_town'
 
 const LocationContext = createContext(null)
 
@@ -49,6 +50,38 @@ export function LocationProvider({ children }) {
         }
       }
       return newRadius
+    })
+  }, [])
+
+  // Town filter state (null = All Island)
+  const [town, setTownState] = useState(() => {
+    try {
+      const saved = localStorage.getItem(TOWN_STORAGE_KEY)
+      // Return null if empty string or not set (All Island)
+      return saved || null
+    } catch {
+      // localStorage may be unavailable
+      return null
+    }
+  })
+
+  // Wrap setTown to track filter changes and persist to localStorage
+  const setTown = useCallback((newTown) => {
+    setTownState(prevTown => {
+      if (newTown !== prevTown) {
+        capture('filter_applied', {
+          filter_type: 'town',
+          town: newTown || 'all',
+          previous_town: prevTown || 'all',
+        })
+        // Save to localStorage
+        try {
+          localStorage.setItem(TOWN_STORAGE_KEY, newTown || '')
+        } catch {
+          // localStorage may be unavailable
+        }
+      }
+      return newTown
     })
   }, [])
   const [loading, setLoading] = useState(false)
@@ -166,6 +199,8 @@ export function LocationProvider({ children }) {
       location,
       radius,
       setRadius,
+      town,
+      setTown,
       loading,
       error,
       permissionState,

@@ -7,10 +7,10 @@ import { logger } from '../utils/logger'
  * Fetch and cache dishes using React Query
  * Supports both location-based ranked dishes and restaurant-specific dishes
  */
-export function useDishes(location, radius, category = null, restaurantId = null) {
+export function useDishes(location, radius, category = null, restaurantId = null, town = null) {
   const queryKey = restaurantId
     ? ['dishes', 'restaurant', restaurantId, category]
-    : ['dishes', 'ranked', location?.lat, location?.lng, radius, category]
+    : ['dishes', 'ranked', location?.lat, location?.lng, radius, category, town]
 
   const enabled = restaurantId ? !!restaurantId : !!location
 
@@ -25,6 +25,7 @@ export function useDishes(location, radius, category = null, restaurantId = null
         lng: location.lng,
         radiusMiles: radius,
         category,
+        town,
       })
     },
     enabled,

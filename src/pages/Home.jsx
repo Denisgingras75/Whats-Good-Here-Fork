@@ -14,10 +14,10 @@ export function Home() {
   const { user } = useAuth()
   const { profile } = useProfile(user?.id)
 
-  const { location, radius, setRadius } = useLocationContext()
+  const { location, radius, town, setTown } = useLocationContext()
 
-  // Fetch ALL dishes once
-  const { dishes, loading, error } = useDishes(location, radius, null, null)
+  // Fetch dishes with town filter
+  const { dishes, loading, error } = useDishes(location, radius, null, null, town)
 
   // Top 10 dishes on the island (all categories)
   const top10Dishes = useMemo(() => {
@@ -60,8 +60,8 @@ export function Home() {
 
       {/* Section 1: Hero with search */}
       <SearchHero
-        radius={radius}
-        onRadiusChange={setRadius}
+        town={town}
+        onTownChange={setTown}
         loading={loading}
       />
 
@@ -170,10 +170,10 @@ function EmptyState({ onBrowse }) {
         <span className="text-2xl">🔍</span>
       </div>
       <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
-        No dishes found nearby
+        No dishes found
       </p>
       <p className="text-sm mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
-        Try increasing your search radius
+        Try selecting a different town
       </p>
       <button
         onClick={onBrowse}

@@ -132,7 +132,7 @@ export function Browse() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const { location, radius } = useLocationContext()
+  const { location, radius, town } = useLocationContext()
 
   // Only fetch from useDishes when browsing by category (NOT when text searching)
   // Text search uses useDishSearch hook instead
@@ -142,7 +142,8 @@ export function Browse() {
     shouldFetchFromUseDishes ? location : null, // Pass null location to skip fetch
     radius,
     selectedCategory,
-    null
+    null,
+    town
   )
   const { isFavorite, toggleFavorite } = useFavorites(user?.id)
 

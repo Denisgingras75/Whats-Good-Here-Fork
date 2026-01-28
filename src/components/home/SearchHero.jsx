@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import { DishSearch } from '../DishSearch'
-import { RadiusSheet } from '../LocationPicker'
+import { TownPicker } from '../TownPicker'
 
 /**
  * SearchHero - Hero section with value proposition and prominent search
@@ -8,11 +7,9 @@ import { RadiusSheet } from '../LocationPicker'
  * Design Philosophy:
  * - Clear value proposition headline
  * - Prominent search bar as primary CTA
- * - Radius selector tucked away as subtle link
+ * - Town dropdown for filtering by MV town
  */
-export function SearchHero({ radius, onRadiusChange, loading }) {
-  const [showRadiusSheet, setShowRadiusSheet] = useState(false)
-
+export function SearchHero({ town, onTownChange, loading }) {
   return (
     <section className="px-4 pt-6 pb-6" style={{ background: 'var(--color-bg)' }}>
       {/* Value proposition */}
@@ -28,26 +25,10 @@ export function SearchHero({ radius, onRadiusChange, loading }) {
       {/* Search - hero element */}
       <DishSearch loading={loading} placeholder="Search dishes or categories" />
 
-      {/* Subtle radius link */}
+      {/* Town filter dropdown */}
       <div className="mt-3 text-center">
-        <button
-          onClick={() => setShowRadiusSheet(true)}
-          className="text-xs font-medium transition-colors"
-          style={{ color: 'var(--color-text-tertiary)' }}
-          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-primary)'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-tertiary)'}
-        >
-          Showing dishes within {radius} mi
-        </button>
+        <TownPicker town={town} onTownChange={onTownChange} />
       </div>
-
-      {/* Radius selection sheet */}
-      <RadiusSheet
-        isOpen={showRadiusSheet}
-        onClose={() => setShowRadiusSheet(false)}
-        radius={radius}
-        onRadiusChange={onRadiusChange}
-      />
     </section>
   )
 }

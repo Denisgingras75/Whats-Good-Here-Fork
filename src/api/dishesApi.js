@@ -25,16 +25,18 @@ export const dishesApi = {
    * @param {number} params.lng - User longitude
    * @param {number} params.radiusMiles - Search radius in miles
    * @param {string|null} params.category - Optional category filter
+   * @param {string|null} params.town - Optional town filter (e.g., 'Oak Bluffs')
    * @returns {Promise<Array>} Array of ranked dishes
    * @throws {Error} With classified error type
    */
-  async getRankedDishes({ lat, lng, radiusMiles, category = null }) {
+  async getRankedDishes({ lat, lng, radiusMiles, category = null, town = null }) {
     try {
       const { data, error } = await supabase.rpc('get_ranked_dishes', {
         user_lat: lat,
         user_lng: lng,
         radius_miles: radiusMiles,
         filter_category: category,
+        filter_town: town,
       })
 
       if (error) {
