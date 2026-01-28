@@ -249,6 +249,8 @@ export function Browse() {
   // Go back to category grid
   const handleBackToCategories = () => {
     setSelectedCategory(null)
+    setSearchQuery('')
+    setDebouncedSearchQuery('')
     setSearchParams({})
   }
 
