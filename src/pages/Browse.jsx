@@ -12,8 +12,7 @@ import { getStorageItem, setStorageItem } from '../lib/storage'
 import { BROWSE_CATEGORIES } from '../constants/categories'
 import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRelatedSuggestions } from '../constants/searchSuggestions'
-import { BrowseCard } from '../components/BrowseCard'
-import { VirtualizedDishList } from '../components/VirtualizedDishList'
+import { RankedDishRow } from '../components/home/RankedDishRow'
 import { getPendingVoteFromStorage } from '../lib/storage'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { DishCardSkeleton } from '../components/Skeleton'
@@ -564,38 +563,53 @@ export function Browse() {
       ) : (
         /* Dish List View */
         <>
-          {/* Results count and sort */}
-          <div className="px-4 py-2 border-b flex items-center justify-between" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-divider)' }}>
-            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              {(loading || searchLoading) ? (
-                'Loading...'
-              ) : (
-                <>
-                  <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{filteredDishes.length}</span>
-                  {' '}
-                  {filteredDishes.length === 1 ? 'dish' : 'dishes'}
-                  {debouncedSearchQuery && (
-                    <span> matching "{debouncedSearchQuery}"</span>
+          {/* Category Header */}
+          <div className="px-4 py-4 border-b" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-divider)' }}>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                  {debouncedSearchQuery
+                    ? `Results for "${debouncedSearchQuery}"`
+                    : `The Best ${CATEGORIES.find(c => c.id === selectedCategory)?.label || 'Dishes'}`
+                  }
+                </h2>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
+                  {(loading || searchLoading) ? (
+                    'Loading rankings...'
+                  ) : (
+                    `${Math.min(filteredDishes.length, 10)} top ranked${filteredDishes.length > 10 ? ` · ${filteredDishes.length} total` : ''}`
                   )}
-                </>
-              )}
-            </p>
+                </p>
+              </div>
 
-            {/* Sort dropdown */}
-            <SortDropdown
-              sortBy={sortBy}
-              onSortChange={handleSortChange}
-              isOpen={sortDropdownOpen}
-              onToggle={setSortDropdownOpen}
-            />
+              {/* Sort dropdown */}
+              <SortDropdown
+                sortBy={sortBy}
+                onSortChange={handleSortChange}
+                isOpen={sortDropdownOpen}
+                onToggle={setSortDropdownOpen}
+              />
+            </div>
           </div>
 
           {/* Dish Grid */}
           <div className="px-4 py-4">
             {(loading || searchLoading) ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[...Array(6)].map((_, i) => (
-                  <DishCardSkeleton key={i} />
+              <div className="space-y-2">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 p-3 rounded-xl animate-pulse"
+                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+                  >
+                    <div className="w-7 h-7 rounded-full" style={{ background: 'var(--color-surface)' }} />
+                    <div className="w-12 h-12 rounded-lg" style={{ background: 'var(--color-surface)' }} />
+                    <div className="flex-1">
+                      <div className="h-4 w-32 rounded mb-1" style={{ background: 'var(--color-surface)' }} />
+                      <div className="h-3 w-24 rounded" style={{ background: 'var(--color-surface)' }} />
+                    </div>
+                    <div className="h-6 w-10 rounded" style={{ background: 'var(--color-surface)' }} />
+                  </div>
                 ))}
               </div>
             ) : error ? (
@@ -663,13 +677,41 @@ export function Browse() {
                 </button>
               </div>
             ) : (
-              <VirtualizedDishList
-                dishes={filteredDishes}
-                onDishClick={openDishPage}
-                isFavorite={isFavorite}
-                onToggleFavorite={handleToggleFavorite}
-                columns={2}
-              />
+              /* Ranked List View - Top 10 with medals for top 3 */
+              <div className="space-y-2">
+                {filteredDishes.slice(0, 10).map((dish, index) => (
+                  <RankedDishRow
+                    key={dish.dish_id}
+                    dish={dish}
+                    rank={index + 1}
+                  />
+                ))}
+
+                {/* Show more if there are more than 10 */}
+                {filteredDishes.length > 10 && (
+                  <details className="mt-4">
+                    <summary
+                      className="cursor-pointer py-3 text-center text-sm font-medium rounded-xl transition-colors"
+                      style={{
+                        background: 'var(--color-bg)',
+                        color: 'var(--color-text-secondary)',
+                        border: '1px solid var(--color-divider)'
+                      }}
+                    >
+                      Show {filteredDishes.length - 10} more dishes
+                    </summary>
+                    <div className="space-y-2 mt-3">
+                      {filteredDishes.slice(10).map((dish, index) => (
+                        <RankedDishRow
+                          key={dish.dish_id}
+                          dish={dish}
+                          rank={index + 11}
+                        />
+                      ))}
+                    </div>
+                  </details>
+                )}
+              </div>
             )}
 
             {/* Footer */}
