@@ -81,7 +81,7 @@ export function Home() {
             The Best By Category
           </h2>
           <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.35)' }}>
-            Want something more specific? Search above.
+            Got another craving? Search it above.
           </p>
         </div>
 
