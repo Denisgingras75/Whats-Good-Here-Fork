@@ -33,10 +33,10 @@ export function CategoryImageCard({
           <div
             className="w-full h-full rounded-full overflow-hidden"
             style={{
-              // Food glow - warm sand/gold glow for appetite appeal
+              // Food glow - warm gold glow for appetite appeal
               boxShadow: isActive
-                ? '0 0 14px rgba(212, 165, 116, 0.5), 0 0 6px rgba(212, 165, 116, 0.3)'
-                : '0 0 8px rgba(212, 165, 116, 0.15)',
+                ? '0 0 14px rgba(217, 167, 101, 0.5), 0 0 6px rgba(217, 167, 101, 0.3)'
+                : '0 0 8px rgba(217, 167, 101, 0.15)',
             }}
           >
             <img

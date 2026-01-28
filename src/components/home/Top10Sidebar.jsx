@@ -41,7 +41,7 @@ export function Top10Sidebar({ dishes, showToggle, activeTab, onTabChange }) {
                 activeTab === 'personal' ? 'shadow-md' : ''
               }`}
               style={{
-                background: activeTab === 'personal' ? '#FCD34D' : 'var(--color-surface-elevated)',
+                background: activeTab === 'personal' ? 'var(--color-accent-gold)' : 'var(--color-surface-elevated)',
                 color: activeTab === 'personal' ? '#1F1F1F' : 'var(--color-text-secondary)',
               }}
             >
@@ -49,7 +49,13 @@ export function Top10Sidebar({ dishes, showToggle, activeTab, onTabChange }) {
             </button>
           </div>
         ) : (
-          <h3 className="font-bold text-base mb-4" style={{ color: 'var(--color-text-primary)' }}>
+          <h3
+            className="font-bold text-base mb-4 pb-2"
+            style={{
+              color: 'var(--color-text-primary)',
+              borderBottom: '2px solid var(--color-accent-gold)',
+            }}
+          >
             Top 10 on the Island
           </h3>
         )}

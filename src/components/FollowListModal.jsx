@@ -100,8 +100,8 @@ export function FollowListModal({ userId, type, onClose }) {
         <div
           className="flex items-center justify-between px-4 py-4 border-b"
           style={{
-            borderColor: 'rgba(255, 255, 255, 0.08)',
-            background: 'rgba(212, 98, 74, 0.08)'
+            borderColor: 'rgba(217, 167, 101, 0.15)',
+            background: 'rgba(217, 167, 101, 0.08)'
           }}
         >
           <h2 id="follow-list-title" className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>

@@ -226,22 +226,22 @@ export function Restaurants() {
                     onClick={() => handleRestaurantSelect(restaurant)}
                     className="w-full rounded-xl p-4 text-left transition-all group"
                     style={{
-                      background: 'linear-gradient(135deg, var(--color-card) 0%, rgba(212, 98, 74, 0.03) 100%)',
-                      border: '1px solid rgba(255, 255, 255, 0.06)',
-                      borderLeft: '3px solid var(--color-primary)',
+                      background: 'linear-gradient(135deg, var(--color-card) 0%, rgba(217, 167, 101, 0.03) 100%)',
+                      border: '1px solid rgba(217, 167, 101, 0.1)',
+                      borderLeft: '3px solid var(--color-accent-gold)',
                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 20px rgba(212, 98, 74, 0.15)'
-                      e.currentTarget.style.borderTopColor = 'rgba(212, 98, 74, 0.15)'
-                      e.currentTarget.style.borderRightColor = 'rgba(212, 98, 74, 0.15)'
-                      e.currentTarget.style.borderBottomColor = 'rgba(212, 98, 74, 0.15)'
+                      e.currentTarget.style.boxShadow = '0 4px 20px rgba(217, 167, 101, 0.15)'
+                      e.currentTarget.style.borderTopColor = 'rgba(224, 120, 86, 0.2)'
+                      e.currentTarget.style.borderRightColor = 'rgba(224, 120, 86, 0.2)'
+                      e.currentTarget.style.borderBottomColor = 'rgba(224, 120, 86, 0.2)'
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)'
-                      e.currentTarget.style.borderTopColor = 'rgba(255, 255, 255, 0.06)'
-                      e.currentTarget.style.borderRightColor = 'rgba(255, 255, 255, 0.06)'
-                      e.currentTarget.style.borderBottomColor = 'rgba(255, 255, 255, 0.06)'
+                      e.currentTarget.style.borderTopColor = 'rgba(217, 167, 101, 0.1)'
+                      e.currentTarget.style.borderRightColor = 'rgba(217, 167, 101, 0.1)'
+                      e.currentTarget.style.borderBottomColor = 'rgba(217, 167, 101, 0.1)'
                     }}
                   >
                     <div className="flex items-center justify-between gap-3">
@@ -250,7 +250,7 @@ export function Restaurants() {
                         <h3 className="font-semibold transition-colors" style={{ color: 'var(--color-text-primary)' }}>
                           {restaurant.name}
                         </h3>
-                        <p className="text-xs mt-1" style={{ color: stats.totalVotes > 0 ? 'var(--color-accent-orange)' : 'var(--color-text-tertiary)' }}>
+                        <p className="text-xs mt-1" style={{ color: stats.totalVotes > 0 ? 'var(--color-accent-gold)' : 'var(--color-text-tertiary)' }}>
                           {stats.totalVotes > 0
                             ? `${stats.totalVotes} total dish votes`
                             : 'No votes yet'

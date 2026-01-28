@@ -52,7 +52,7 @@ export function CategoryGrid({
       <div
         className="absolute top-0 left-0 right-0 h-[2px]"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.04) 20%, rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0.04) 80%, transparent 100%)',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(217, 167, 101, 0.08) 20%, rgba(217, 167, 101, 0.12) 50%, rgba(217, 167, 101, 0.08) 80%, transparent 100%)',
         }}
       />
 
@@ -86,8 +86,8 @@ export function CategoryGrid({
             className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
             style={{
               background: 'var(--color-bg)',
-              border: `2px solid ${searchFocused ? 'var(--color-primary)' : 'var(--color-divider)'}`,
-              boxShadow: searchFocused ? '0 0 20px rgba(212, 98, 74, 0.1)' : 'none',
+              border: `2px solid ${searchFocused ? 'var(--color-accent-gold)' : 'var(--color-divider)'}`,
+              boxShadow: searchFocused ? '0 0 20px rgba(217, 167, 101, 0.15)' : 'none',
             }}
           >
             <svg

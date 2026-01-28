@@ -41,24 +41,24 @@
   /* Rating: Muted natural green - softer, less techy */
   --color-rating: #6BB384;
 
-  /* Secondary: Warm Sage - links, secondary buttons (warmer than teal) */
-  --color-accent-sage: #8FA887;
-  --color-accent-sage-muted: rgba(143, 168, 135, 0.12);
-  --color-link-secondary: #8FA887;
-
-  /* Accent: Warm Gold/Sand - badges, decorative borders, premium */
+  /* Secondary: Warm Gold - links, secondary buttons, accents */
   --color-accent-gold: #D9A765;
+  --color-accent-gold-muted: rgba(217, 167, 101, 0.15);
+  --color-link-secondary: #D9A765;
 
-  /* Text hierarchy - warm cream primary, not cool white */
+  /* Tertiary: Warm Orange - hover states, accent borders */
+  --color-accent-orange: #E07856;
+
+  /* Text hierarchy - warm cream primary, warm-tinted grays */
   --color-text-primary: #F5F1E8;      /* Soft cream */
-  --color-text-secondary: #A0A9B3;    /* Muted gray */
-  --color-text-tertiary: #6B7680;     /* Deeper gray */
+  --color-text-secondary: #B8A99A;    /* Warm taupe gray */
+  --color-text-tertiary: #7D7168;     /* Warm brown-gray */
 
   /* Surfaces - deep charcoal-navy, ocean depth feel */
   --color-bg: #0D1B22;                /* Deep charcoal-navy */
   --color-surface: #0F1F2B;           /* Slightly lighter */
   --color-surface-elevated: #162B35;
-  --color-divider: rgba(143, 168, 135, 0.1);  /* Subtle sage tint */
+  --color-divider: rgba(217, 167, 101, 0.12);  /* Warm gold tint */
 
   /* Cards - rich navy-teal, tropical water depth */
   --color-card: #1A3A42;
@@ -73,7 +73,7 @@
 
   /* Glow effects */
   --glow-primary: 0 0 20px rgba(200, 90, 84, 0.25), 0 0 40px rgba(200, 90, 84, 0.1);
-  --glow-sage: 0 0 15px rgba(143, 168, 135, 0.15);
+  --glow-gold: 0 0 15px rgba(217, 167, 101, 0.2);
 
   /* Focus ring */
   --focus-ring: 0 0 0 3px rgba(200, 90, 84, 0.25);
@@ -135,14 +135,14 @@
   .card-elevated {
     @apply rounded-2xl transition-all duration-300;
     background: var(--color-card);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(217, 167, 101, 0.1);
     box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
   }
 
   .card-elevated:hover {
     background: var(--color-card-hover);
-    border-color: rgba(212, 98, 74, 0.2);  /* Subtle coral on hover */
-    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 98, 74, 0.08);
+    border-color: rgba(224, 120, 86, 0.25);  /* Warm orange on hover */
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(217, 167, 101, 0.1);
     transform: translateY(-2px);
   }
 
@@ -160,7 +160,7 @@
     width: 100%;
     background: color-mix(in srgb, var(--color-primary) 6%, var(--color-bg));
     padding-top: env(safe-area-inset-top, 0px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(217, 167, 101, 0.12);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   }
 
@@ -984,19 +984,19 @@
   margin-top: 10px;
   padding: 8px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(217, 167, 101, 0.2);
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: var(--color-link-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .see-all-photos-btn:hover {
-  background: var(--color-primary-muted);
-  color: var(--color-primary);
-  border-color: rgba(212, 98, 74, 0.3);
+  background: var(--color-accent-gold-muted);
+  color: var(--color-accent-gold);
+  border-color: rgba(217, 167, 101, 0.4);
 }
 
 /* Photo Lightbox */
@@ -1121,9 +1121,9 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 [role="button"]:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-accent-gold);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(212, 98, 74, 0.15);
+  box-shadow: 0 0 0 4px rgba(217, 167, 101, 0.2);
 }
 
 /* Override focus styles for inputs inside styled containers (they handle their own focus) */

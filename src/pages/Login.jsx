@@ -172,7 +172,7 @@ export function Login() {
           <div className="flex-1 flex flex-col items-center justify-center px-6 pb-12">
             {/* Logo */}
             <img
-              src="/wgh-splash.jpg"
+              src="/wgh-splash.png"
               alt="What's Good Here"
               className="w-64 md:w-72 h-auto mb-8"
             />
@@ -264,7 +264,7 @@ export function Login() {
           <div className="flex-1 flex flex-col items-center justify-center px-6 pb-12">
             {/* Logo */}
             <img
-              src="/wgh-splash.jpg"
+              src="/wgh-splash.png"
               alt="What's Good Here"
               className="w-40 h-auto mb-6"
             />
@@ -480,7 +480,7 @@ export function Login() {
                       className="w-full px-4 py-3 rounded-xl focus:outline-none transition-colors pr-10"
                       style={{
                         background: 'var(--color-bg)',
-                        border: `2px solid ${usernameStatus === 'taken' ? '#ef4444' : usernameStatus === 'available' ? '#10b981' : 'var(--color-divider)'}`,
+                        border: `2px solid ${usernameStatus === 'taken' ? 'var(--color-danger)' : usernameStatus === 'available' ? 'var(--color-success)' : 'var(--color-divider)'}`,
                         color: 'var(--color-text-primary)'
                       }}
                     />
@@ -493,10 +493,10 @@ export function Login() {
                     )}
                   </div>
                   {usernameStatus === 'taken' && (
-                    <p className="text-xs mt-1" style={{ color: '#ef4444' }}>This username is taken</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>This username is taken</p>
                   )}
                   {usernameStatus === 'available' && (
-                    <p className="text-xs mt-1" style={{ color: '#10b981' }}>Username available!</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--color-success)' }}>Username available!</p>
                   )}
                 </div>
 

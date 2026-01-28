@@ -168,8 +168,8 @@ export function DishSearch({ loading = false }) {
         className="relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
         style={{
           background: 'var(--color-bg)',
-          border: `1.5px solid ${isFocused ? 'var(--color-primary)' : 'var(--color-divider)'}`,
-          boxShadow: isFocused ? '0 0 0 3px rgba(212, 98, 74, 0.15), 0 0 20px rgba(212, 98, 74, 0.1)' : 'none',
+          border: `1.5px solid ${isFocused ? 'var(--color-accent-gold)' : 'var(--color-divider)'}`,
+          boxShadow: isFocused ? '0 0 0 3px rgba(217, 167, 101, 0.15), 0 0 20px rgba(217, 167, 101, 0.1)' : 'none',
           minHeight: '48px',
         }}
       >
