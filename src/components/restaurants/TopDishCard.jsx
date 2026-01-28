@@ -55,6 +55,13 @@ export function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, o
     setShowVariants(!showVariants)
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleClick()
+    }
+  }
+
   return (
     <div
       className="rounded-xl transition-all"
@@ -63,9 +70,12 @@ export function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, o
         border: '1px solid var(--color-divider)'
       }}
     >
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={handleClick}
-        className="w-full flex gap-3 p-3 text-left transition-all hover:shadow-md"
+        onKeyDown={handleKeyDown}
+        className="w-full flex gap-3 p-3 text-left transition-all hover:shadow-md cursor-pointer"
       >
         {/* Rank Badge */}
         <div
@@ -161,7 +171,7 @@ export function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, o
             )}
           </div>
         </div>
-      </button>
+      </div>
 
       {/* Expandable Variant List */}
       {has_variants && showVariants && (
