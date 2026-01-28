@@ -11,6 +11,7 @@ import { dishesApi } from '../api/dishesApi'
 import { getStorageItem, setStorageItem } from '../lib/storage'
 import { BROWSE_CATEGORIES } from '../constants/categories'
 import { MIN_VOTES_FOR_RANKING } from '../constants/app'
+import { getRelatedSuggestions } from '../constants/searchSuggestions'
 import { BrowseCard } from '../components/BrowseCard'
 import { VirtualizedDishList } from '../components/VirtualizedDishList'
 import { DishModal } from '../components/DishModal'
@@ -639,25 +640,44 @@ export function Browse() {
                     : 'No dishes in this category yet'
                   }
                 </p>
-                <p className="text-sm mb-6" style={{ color: 'var(--color-text-tertiary)' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--color-text-tertiary)' }}>
                   {debouncedSearchQuery
-                    ? 'Try a different search or browse by category'
+                    ? 'Try something similar:'
                     : 'Be the first to add one!'
                   }
                 </p>
 
-                {/* Try different category */}
-                <p className="text-xs mb-4" style={{ color: 'var(--color-text-tertiary)' }}>
-                  Try a different category above
-                </p>
+                {/* Contextual suggestions */}
+                {debouncedSearchQuery && (
+                  <div className="flex flex-wrap justify-center gap-2 mb-6">
+                    {getRelatedSuggestions(debouncedSearchQuery).map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        onClick={() => {
+                          setSearchQuery(suggestion)
+                          setDebouncedSearchQuery(suggestion)
+                          setSearchParams({ q: suggestion })
+                        }}
+                        className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 active:scale-95"
+                        style={{
+                          background: 'var(--color-surface-elevated)',
+                          color: 'var(--color-text-primary)',
+                          border: '1px solid var(--color-divider)',
+                        }}
+                      >
+                        {suggestion.charAt(0).toUpperCase() + suggestion.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
-                {/* Clear filter button */}
+                {/* Browse categories button */}
                 <button
                   onClick={handleBackToCategories}
-                  className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 active:scale-[0.98] transition-all"
-                  style={{ background: 'var(--color-primary)' }}
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all"
+                  style={{ background: 'var(--color-primary)', color: '#1A1A1A' }}
                 >
-                  Clear Filter
+                  Browse Categories
                 </button>
               </div>
             ) : (
