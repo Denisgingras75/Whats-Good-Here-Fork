@@ -74,7 +74,7 @@ export function WelcomeSplash({ onComplete }) {
         <img
           src="/logo.png"
           alt="What's Good Here"
-          className="w-[280px] md:w-[360px] lg:w-[420px] h-auto"
+          className="w-[336px] md:w-[432px] lg:w-[504px] h-auto"
           draggable={false}
           onError={(e) => console.error('Splash image failed to load:', e)}
         />
