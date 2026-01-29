@@ -42,6 +42,7 @@ const Privacy = lazyWithRetry(() => import('./pages/Privacy'), 'Privacy')
 const Terms = lazyWithRetry(() => import('./pages/Terms'), 'Terms')
 const Badges = lazyWithRetry(() => import('./pages/Badges'), 'Badges')
 const UserProfile = lazyWithRetry(() => import('./pages/UserProfile'), 'UserProfile')
+const Discover = lazyWithRetry(() => import('./pages/Discover'), 'Discover')
 const ResetPassword = lazyWithRetry(() => import('./pages/ResetPassword'), 'ResetPassword')
 const RatingStyle = lazyWithRetry(() => import('./pages/RatingStyle'), 'RatingStyle')
 const NotFound = lazyWithRetry(() => import('./pages/NotFound'), 'NotFound')
@@ -52,6 +53,7 @@ export const prefetchRoutes = {
   browse: () => import('./pages/Browse'),
   dish: () => import('./pages/Dish'),
   restaurants: () => import('./pages/Restaurants'),
+  discover: () => import('./pages/Discover'),
   profile: () => import('./pages/Profile'),
 }
 
@@ -105,6 +107,7 @@ function App() {
               <Route path="/dish/:dishId" element={<Layout><Dish /></Layout>} />
               <Route path="/restaurants" element={<Layout><Restaurants /></Layout>} />
               <Route path="/restaurants/:restaurantId" element={<Layout><Restaurants /></Layout>} />
+              <Route path="/discover" element={<Layout><Discover /></Layout>} />
               <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
               <Route path="/user/:userId" element={<Layout><UserProfile /></Layout>} />
               <Route path="/login" element={<Login />} />
