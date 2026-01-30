@@ -16,6 +16,9 @@ export const BROWSE_CATEGORIES = [
   { id: 'steak', label: 'Steak', emoji: '🥩' },
   { id: 'sandwich', label: 'Sandwiches', emoji: '🥪' },
   { id: 'salad', label: 'Salads', emoji: '🥗' },
+  { id: 'seafood', label: 'Seafood', emoji: '🦐' },
+  { id: 'tendys', label: 'Tenders', emoji: '🍗' },
+  { id: 'dessert', label: 'Desserts', emoji: '🍰' },
 ]
 
 // Main categories shown in category picker (singular labels)
@@ -51,6 +54,7 @@ export const ALL_CATEGORIES = [
   { id: 'asian', label: 'Asian', emoji: '🥢' },
   { id: 'quesadilla', label: 'Quesadilla', emoji: '🫓' },
   { id: 'breakfast sandwich', label: 'Breakfast Sandwich', emoji: '🥯' },
+  { id: 'dessert', label: 'Dessert', emoji: '🍰' },
 ]
 
 // Fuzzy match a search term to existing categories
@@ -113,13 +117,14 @@ const CATEGORY_NEON_IMAGES = {
   sushi: '/categories/sushi.png',
   breakfast: '/categories/breakfast.png',
   'lobster roll': '/categories/lobster-rolls.png',
-  seafood: '/categories/seafood.webp',
+  seafood: '/categories/seafood.png',
   chowder: '/categories/chowder.png',
   pasta: '/categories/pasta.png',
   steak: '/categories/steak.png',
   sandwich: '/categories/sandwiches.png',
   salad: '/categories/salads.png',
-  tendys: '/categories/tendys.webp',
+  tendys: '/categories/tendys.png',
+  dessert: '/categories/desserts.png',
 }
 
 // Get neon image path for a category id
@@ -160,6 +165,7 @@ export const CATEGORY_INFO = {
   'apps': { emoji: '🧆', label: 'Apps' },
   'entree': { emoji: '🥩', label: 'Entrees' },
   'steak': { emoji: '🥩', label: 'Steak' },
+  'dessert': { emoji: '🍰', label: 'Desserts' },
 }
 
 // Get category info with fuzzy matching
