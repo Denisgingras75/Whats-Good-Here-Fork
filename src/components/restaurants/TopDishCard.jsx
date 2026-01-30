@@ -67,7 +67,8 @@ export function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, o
       className="rounded-xl transition-all"
       style={{
         background: 'var(--color-bg)',
-        border: '1px solid var(--color-divider)'
+        border: '1px solid var(--color-divider)',
+        boxShadow: '0 2px 8px -2px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(217, 167, 101, 0.04)',
       }}
     >
       <div
@@ -75,14 +76,17 @@ export function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, o
         tabIndex={0}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
-        className="w-full flex gap-3 p-3 text-left transition-all hover:shadow-md cursor-pointer"
+        className="w-full flex gap-3 p-3.5 text-left transition-all cursor-pointer hover:bg-[#0F2028]"
+        style={{ borderRadius: '0.75rem' }}
       >
         {/* Rank Badge */}
         <div
-          className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 mt-1"
+          className="w-7 h-7 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-1"
           style={{
             background: rank <= 3 && isRanked ? 'var(--color-primary)' : 'var(--color-surface)',
             color: rank <= 3 && isRanked ? 'white' : 'var(--color-text-tertiary)',
+            fontSize: '13px',
+            ...(rank <= 3 && isRanked ? { boxShadow: '0 2px 8px -2px rgba(200, 90, 84, 0.4)' } : { border: '1px solid rgba(217, 167, 101, 0.12)' }),
           }}
         >
           {rank}
@@ -91,7 +95,7 @@ export function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, o
         {/* Photo */}
         <div
           className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0"
-          style={{ background: 'var(--color-surface)' }}
+          style={{ background: 'var(--color-surface)', boxShadow: '0 1px 4px rgba(0, 0, 0, 0.2)' }}
         >
           <img
             src={imgSrc}
@@ -105,12 +109,19 @@ export function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, o
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <h4 className="font-semibold text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>
+              <h4
+                className="font-bold truncate"
+                style={{
+                  color: 'var(--color-text-primary)',
+                  fontSize: '14px',
+                  letterSpacing: '-0.01em',
+                }}
+              >
                 {dish_name}
               </h4>
               <div className="flex items-center gap-2 mt-0.5">
                 {price && (
-                  <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                  <span className="font-medium" style={{ color: 'var(--color-text-secondary)', fontSize: '12px' }}>
                     ${Number(price).toFixed(0)}
                   </span>
                 )}
@@ -147,33 +158,33 @@ export function TopDishCard({ dish, rank, onVote, onLoginRequired, isFavorite, o
           </div>
 
           {/* Rating Info - Score on left, % would order again on right */}
-          <div className="mt-2 flex items-center justify-between">
+          <div className="mt-2.5 flex items-center justify-between">
             {isRanked ? (
               <>
                 {/* Left: Rating Score */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <span
-                    className="text-lg font-bold"
-                    style={{ color: getRatingColor(displayRating) }}
+                    className="font-bold"
+                    style={{ color: getRatingColor(displayRating), fontSize: '18px' }}
                   >
                     {displayRating}
                   </span>
-                  <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                    · {votes} votes
+                  <span className="font-medium" style={{ color: 'var(--color-text-tertiary)', fontSize: '10px' }}>
+                    &middot; {votes} votes
                   </span>
                 </div>
                 {/* Right: Would Order Again % */}
                 <div className="flex items-center gap-1">
-                  <span className="text-sm font-semibold" style={{ color: 'var(--color-success)' }}>
+                  <span className="font-bold" style={{ color: 'var(--color-success)', fontSize: '14px' }}>
                     {Math.round(percent_worth_it)}%
                   </span>
-                  <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
+                  <span className="font-medium" style={{ color: 'var(--color-text-tertiary)', fontSize: '10px' }}>
                     would order again
                   </span>
                 </div>
               </>
             ) : (
-              <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+              <span className="font-medium" style={{ color: 'var(--color-text-tertiary)', fontSize: '12px' }}>
                 {votes > 0 ? `Early · ${votes} vote${votes === 1 ? '' : 's'} so far` : 'Be first to vote'}
               </span>
             )}

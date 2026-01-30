@@ -28,14 +28,14 @@ export function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequir
       // Ranked dishes first
       if (aRanked && !bRanked) return -1
       if (!aRanked && bRanked) return 1
-      // Then by percent_worth_it (order again %)
-      const aPct = a.percent_worth_it || 0
-      const bPct = b.percent_worth_it || 0
-      if (bPct !== aPct) return bPct - aPct
-      // Tie-breaker: avg_rating
+      // Then by granular rating score (avg_rating)
       const aRating = a.avg_rating || 0
       const bRating = b.avg_rating || 0
       if (bRating !== aRating) return bRating - aRating
+      // Tie-breaker: percent_worth_it
+      const aPct = a.percent_worth_it || 0
+      const bPct = b.percent_worth_it || 0
+      if (bPct !== aPct) return bPct - aPct
       // Final tie-breaker: vote count
       return (b.total_votes || 0) - (a.total_votes || 0)
     })
@@ -79,10 +79,17 @@ export function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequir
   }
 
   return (
-    <div className="px-4 py-4">
+    <div className="px-4 py-5">
       {/* Section Header */}
-      <div className="mb-4">
-        <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
+      <div className="mb-5">
+        <h3
+          className="font-bold"
+          style={{
+            color: 'var(--color-text-primary)',
+            fontSize: '18px',
+            letterSpacing: '-0.01em',
+          }}
+        >
           {sortedDishes.filtered
             ? `Results for "${searchQuery}"`
             : rankedCount > 0
@@ -90,7 +97,7 @@ export function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequir
               : 'Help decide what to order here'
           }
         </h3>
-        <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
+        <p className="mt-1 font-medium" style={{ color: 'var(--color-text-tertiary)', fontSize: '12px' }}>
           {sortedDishes.filtered
             ? `${sortedDishes.totalMatches} ${sortedDishes.totalMatches === 1 ? 'dish' : 'dishes'} found`
             : rankedCount > 0
@@ -102,7 +109,7 @@ export function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequir
 
       {/* Top Dishes */}
       {sortedDishes.top.length > 0 ? (
-        <div className="space-y-3">
+        <div className="space-y-3.5">
           {sortedDishes.top.map((dish, index) => (
             <TopDishCard
               key={dish.dish_id}
@@ -117,17 +124,21 @@ export function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequir
         </div>
       ) : (
         <div
-          className="py-8 text-center rounded-xl"
-          style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+          className="py-10 text-center rounded-xl"
+          style={{
+            background: `radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200, 90, 84, 0.04) 0%, transparent 70%), var(--color-bg)`,
+            border: '1px solid var(--color-divider)',
+            boxShadow: '0 2px 8px -2px rgba(0, 0, 0, 0.2)',
+          }}
         >
-          <p className="text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+          <p className="font-semibold" style={{ color: 'var(--color-text-secondary)', fontSize: '14px' }}>
             {sortedDishes.filtered
               ? `No dishes matching "${searchQuery}"`
               : 'No dishes at this restaurant yet'
             }
           </p>
           {sortedDishes.filtered && (
-            <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
+            <p className="mt-1.5 font-medium" style={{ color: 'var(--color-text-tertiary)', fontSize: '12px' }}>
               Try a different search term
             </p>
           )}
@@ -139,11 +150,12 @@ export function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequir
         <div className="mt-6">
           <button
             onClick={() => setShowAllDishes(!showAllDishes)}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold transition-all active:scale-[0.99] hover:opacity-80"
             style={{
               background: 'var(--color-bg)',
-              color: 'var(--color-text-secondary)',
-              border: '1px solid var(--color-divider)'
+              color: 'var(--color-primary)',
+              border: '1px solid var(--color-divider)',
+              fontSize: '13px',
             }}
           >
             {showAllDishes ? 'Show less' : `See ${sortedDishes.rest.length} more dishes`}
@@ -159,7 +171,7 @@ export function RestaurantDishes({ dishes, loading, error, onVote, onLoginRequir
           </button>
 
           {showAllDishes && (
-            <div className="mt-4 space-y-3">
+            <div className="mt-4 space-y-3.5">
               {sortedDishes.rest.map((dish, index) => (
                 <TopDishCard
                   key={dish.dish_id}
