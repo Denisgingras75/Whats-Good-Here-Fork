@@ -569,7 +569,7 @@ export function UserProfile() {
             </div>
           ) : (
             <div className="py-8 text-center">
-              <div className="text-4xl mb-2">🍽️</div>
+              <img src="/empty-plate.png" alt="" className="w-14 h-14 mx-auto mb-2 rounded-full object-cover" />
               <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
                 No ratings yet
               </p>

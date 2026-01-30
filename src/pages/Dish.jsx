@@ -305,12 +305,11 @@ export function Dish() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-surface)' }}>
         <div className="text-center p-4">
-          <div
-            className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
-            style={{ background: 'var(--color-bg)' }}
-          >
-            <span className="text-2xl">🍽️</span>
-          </div>
+          <img
+            src="/empty-plate.png"
+            alt=""
+            className="w-16 h-16 mx-auto mb-4 rounded-full object-cover"
+          />
           <p className="font-medium mb-2" style={{ color: 'var(--color-text-primary)' }}>
             Dish not found
           </p>

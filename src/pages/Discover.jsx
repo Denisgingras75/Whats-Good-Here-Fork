@@ -50,7 +50,7 @@ export function Discover() {
               border: '1px solid var(--color-divider)'
             }}
           >
-            <div className="text-4xl mb-3">🍽️</div>
+            <img src="/empty-plate.png" alt="" className="w-14 h-14 mx-auto mb-3 rounded-full object-cover" />
             <h3 className="font-semibold text-lg" style={{ color: 'var(--color-text-primary)' }}>
               No specials yet
             </h3>

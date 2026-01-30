@@ -7,12 +7,11 @@ export function NotFound() {
       style={{ background: 'var(--color-surface)' }}
     >
       <div className="text-center max-w-sm">
-        <div
-          className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center text-4xl"
-          style={{ background: 'var(--color-surface-elevated)' }}
-        >
-          🍽️
-        </div>
+        <img
+          src="/empty-plate.png"
+          alt=""
+          className="w-20 h-20 mx-auto mb-6 rounded-full object-cover"
+        />
         <h1
           className="text-2xl font-bold mb-2"
           style={{ color: 'var(--color-text-primary)' }}

@@ -84,7 +84,7 @@ export function FoodRatingSlider({ value, onChange, min = 0, max = 10, step = 0.
         {/* Perfect 10 - Clean plate celebration */}
         {value >= 10 && (
           <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
-            <div className="text-6xl animate-bounce">🍽️</div>
+            <img src="/empty-plate.png" alt="Clean plate" className="w-16 h-16 animate-bounce rounded-full object-cover" />
             <div className="absolute top-2 left-1/2 -translate-x-1/2 text-2xl animate-pulse">✨</div>
             <div className="absolute top-6 left-1/4 text-xl animate-pulse" style={{ animationDelay: '0.2s' }}>✨</div>
             <div className="absolute top-6 right-1/4 text-xl animate-pulse" style={{ animationDelay: '0.4s' }}>✨</div>
