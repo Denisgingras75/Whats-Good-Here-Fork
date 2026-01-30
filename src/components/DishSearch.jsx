@@ -27,7 +27,7 @@ const BROWSE_CATEGORIES = [
   { id: 'steak', label: 'Steak' },
   { id: 'sandwich', label: 'Sandwiches' },
   { id: 'salad', label: 'Salads' },
-  { id: 'tendys', label: 'Tendys' },
+  { id: 'tendys', label: 'Tenders' },
 ]
 
 export function DishSearch({ loading = false, placeholder = "Find What's Good near you", town = null }) {

@@ -35,6 +35,9 @@ export const MAIN_CATEGORIES = [
   { id: 'steak', label: 'Steak', emoji: '🥩' },
   { id: 'sandwich', label: 'Sandwich', emoji: '🥪' },
   { id: 'salad', label: 'Salad', emoji: '🥗' },
+  { id: 'seafood', label: 'Seafood', emoji: '🦐' },
+  { id: 'tendys', label: 'Tenders', emoji: '🍗' },
+  { id: 'dessert', label: 'Dessert', emoji: '🍰' },
 ]
 
 // All categories in the system (including sub-categories)
@@ -160,7 +163,7 @@ export const CATEGORY_INFO = {
   'breakfast': { emoji: '🍳', label: 'Breakfast' },
   'salad': { emoji: '🥗', label: 'Salads' },
   'fries': { emoji: '🍟', label: 'Fries' },
-  'tendys': { emoji: '🍗', label: 'Tendys' },
+  'tendys': { emoji: '🍗', label: 'Tenders' },
   'fried chicken': { emoji: '🍗', label: 'Fried Chicken' },
   'apps': { emoji: '🧆', label: 'Apps' },
   'entree': { emoji: '🥩', label: 'Entrees' },
@@ -224,4 +227,5 @@ export const MAJOR_CATEGORIES = new Set([
   'salad',
   'fried chicken',
   'entree',
+  'dessert',
 ])
