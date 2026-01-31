@@ -662,7 +662,7 @@ export function Profile() {
                   letterSpacing: '-0.02em',
                 }}
               >
-                Sign in to vote
+                Sign in <span style={{ color: 'var(--color-accent-gold)' }}>to vote</span>
               </h2>
               <p
                 className="mt-2 font-medium"

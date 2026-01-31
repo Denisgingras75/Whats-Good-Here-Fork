@@ -256,7 +256,7 @@ export function Login() {
               className="mt-4 text-sm font-medium"
               style={{ color: 'var(--color-text-tertiary)' }}
             >
-              Already have an account? Sign in
+              Already have an account? <span style={{ color: 'var(--color-accent-gold)' }}>Sign in</span>
             </button>
           </div>
         ) : (
