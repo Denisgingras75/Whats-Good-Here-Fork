@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, Link } from 'react-router-dom'
 import { capture } from '../lib/analytics'
 import { useAuth } from '../context/AuthContext'
 import { logger } from '../utils/logger'
@@ -7,6 +7,7 @@ import { restaurantsApi } from '../api/restaurantsApi'
 import { useLocationContext } from '../context/LocationContext'
 import { useDishes } from '../hooks/useDishes'
 import { useFavorites } from '../hooks/useFavorites'
+import { useRestaurantOwnership } from '../hooks/useRestaurantOwnership'
 import { LoginModal } from '../components/Auth/LoginModal'
 import { RestaurantDishes } from '../components/restaurants'
 import { MIN_VOTES_FOR_RANKING } from '../constants/app'
@@ -31,6 +32,7 @@ export function Restaurants() {
     selectedRestaurant?.id
   )
   const { isFavorite, toggleFavorite } = useFavorites(user?.id)
+  const { isClaimed, isOwnedByCurrentUser, canManage, hasPendingClaim } = useRestaurantOwnership(selectedRestaurant?.id)
 
   // Fetch restaurants with dish counts and details
   useEffect(() => {
@@ -437,6 +439,53 @@ export function Restaurants() {
                   Call
                 </a>
               </div>
+            )}
+
+            {/* Restaurant owner actions */}
+            {canManage ? (
+              <Link
+                to={`/restaurant/dashboard/${selectedRestaurant.id}`}
+                className="flex items-center justify-center gap-2 mt-4 py-2.5 px-4 rounded-xl font-semibold text-sm transition-all hover:opacity-90"
+                style={{
+                  background: 'var(--color-accent-gold-muted)',
+                  color: 'var(--color-accent-gold)',
+                  border: '1px solid var(--color-accent-gold)',
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" />
+                </svg>
+                Manage Restaurant
+              </Link>
+            ) : hasPendingClaim ? (
+              <div
+                className="flex items-center gap-2 mt-4 py-2.5 px-4 rounded-xl text-sm"
+                style={{
+                  background: 'var(--color-surface-elevated)',
+                  color: 'var(--color-text-tertiary)',
+                  border: '1px solid var(--color-divider)',
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Your claim is pending review
+              </div>
+            ) : !isClaimed && (
+              <Link
+                to={`/restaurant/claim/${selectedRestaurant.id}`}
+                className="flex items-center justify-center gap-2 mt-4 py-2.5 px-4 rounded-xl font-medium text-sm transition-all hover:opacity-90"
+                style={{
+                  background: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  border: '1px dashed var(--color-divider)',
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
+                </svg>
+                Own this restaurant? Claim it
+              </Link>
             )}
           </div>
 

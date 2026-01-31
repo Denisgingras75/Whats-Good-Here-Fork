@@ -47,6 +47,11 @@ const ResetPassword = lazyWithRetry(() => import('./pages/ResetPassword'), 'Rese
 const RatingStyle = lazyWithRetry(() => import('./pages/RatingStyle'), 'RatingStyle')
 const NotFound = lazyWithRetry(() => import('./pages/NotFound'), 'NotFound')
 
+// Restaurant owner pages
+const ClaimRestaurant = lazyWithRetry(() => import('./pages/restaurant'), 'ClaimRestaurant')
+const RestaurantDashboard = lazyWithRetry(() => import('./pages/restaurant'), 'RestaurantDashboard')
+const SpecialForm = lazyWithRetry(() => import('./pages/restaurant'), 'SpecialForm')
+
 // Prefetch functions for smoother navigation - call on hover/focus
 export const prefetchRoutes = {
   home: () => import('./pages/Home'),
@@ -117,6 +122,13 @@ function App() {
               <Route path="/terms" element={<Terms />} />
               <Route path="/badges" element={<ProtectedRoute><Layout><Badges /></Layout></ProtectedRoute>} />
               <Route path="/rating-style" element={<Layout><RatingStyle /></Layout>} />
+
+              {/* Restaurant owner routes */}
+              <Route path="/restaurant/claim/:restaurantId" element={<Layout><ClaimRestaurant /></Layout>} />
+              <Route path="/restaurant/dashboard/:restaurantId" element={<ProtectedRoute><Layout><RestaurantDashboard /></Layout></ProtectedRoute>} />
+              <Route path="/restaurant/specials/:restaurantId/new" element={<ProtectedRoute><Layout><SpecialForm /></Layout></ProtectedRoute>} />
+              <Route path="/restaurant/specials/:restaurantId/:specialId" element={<ProtectedRoute><Layout><SpecialForm /></Layout></ProtectedRoute>} />
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

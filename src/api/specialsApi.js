@@ -30,6 +30,24 @@ export const specialsApi = {
   },
 
   /**
+   * Get a single special by ID
+   */
+  async getById(specialId) {
+    const { data, error } = await supabase
+      .from('specials')
+      .select('*')
+      .eq('id', specialId)
+      .single()
+
+    if (error) {
+      logger.error('Error fetching special:', error)
+      throw error
+    }
+
+    return data
+  },
+
+  /**
    * Get specials for a specific restaurant
    */
   async getByRestaurant(restaurantId) {
