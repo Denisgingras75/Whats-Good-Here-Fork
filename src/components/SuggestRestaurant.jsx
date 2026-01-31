@@ -179,9 +179,13 @@ export const SuggestRestaurant = memo(function SuggestRestaurant({
   if (success) {
     return (
       <div
-        className="rounded-2xl p-6 text-center"
-        style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background: 'rgba(0, 0, 0, 0.6)' }}
       >
+        <div
+          className="w-full max-w-md rounded-2xl p-6 text-center"
+          style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+        >
         <div
           className="w-14 h-14 mx-auto mb-4 rounded-full flex items-center justify-center"
           style={{ background: 'rgba(34, 197, 94, 0.15)' }}
@@ -203,15 +207,21 @@ export const SuggestRestaurant = memo(function SuggestRestaurant({
         >
           Done
         </button>
+        </div>
       </div>
     )
   }
 
   return (
     <div
-      className="rounded-2xl overflow-hidden"
-      style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0, 0, 0, 0.6)' }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
     >
+      <div
+        className="w-full max-w-md rounded-2xl overflow-hidden"
+        style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+      >
       {/* Header */}
       <div
         className="px-4 py-3 flex items-center justify-between"
@@ -450,6 +460,7 @@ export const SuggestRestaurant = memo(function SuggestRestaurant({
             )}
           </form>
         )}
+        </div>
       </div>
     </div>
   )
