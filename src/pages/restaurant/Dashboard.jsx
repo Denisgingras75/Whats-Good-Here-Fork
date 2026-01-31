@@ -4,6 +4,8 @@ import { useAuth } from '../../context/AuthContext'
 import { restaurantsApi } from '../../api/restaurantsApi'
 import { restaurantUsersApi } from '../../api/restaurantUsersApi'
 import { specialsApi } from '../../api/specialsApi'
+import { useRestaurantStats } from '../../hooks/useRestaurantStats'
+import { RestaurantStats, DishPerformanceList } from '../../components/restaurant'
 import { logger } from '../../utils/logger'
 
 export function RestaurantDashboard() {
@@ -15,6 +17,11 @@ export function RestaurantDashboard() {
   const [canManage, setCanManage] = useState(false)
   const [specials, setSpecials] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // Fetch restaurant stats and dish performance data
+  const { stats, dishes: dishPerformance, loading: statsLoading } = useRestaurantStats(
+    canManage ? restaurantId : null
+  )
 
   useEffect(() => {
     async function loadDashboard() {
@@ -140,23 +147,18 @@ export function RestaurantDashboard() {
       </header>
 
       <div className="px-4 py-6 space-y-6">
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 gap-3">
-          <div
-            className="rounded-xl p-4"
-            style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
-          >
-            <p className="text-xs font-medium mb-1" style={{ color: 'var(--color-text-tertiary)' }}>Active Specials</p>
-            <p className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>{specials.length}</p>
-          </div>
-          <div
-            className="rounded-xl p-4"
-            style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
-          >
-            <p className="text-xs font-medium mb-1" style={{ color: 'var(--color-text-tertiary)' }}>Coming Soon</p>
-            <p className="text-2xl font-bold" style={{ color: 'var(--color-text-tertiary)' }}>--</p>
-          </div>
-        </div>
+        {/* Restaurant Stats */}
+        <section>
+          <h2 className="font-bold mb-3" style={{ color: 'var(--color-text-primary)' }}>Performance Overview</h2>
+          <RestaurantStats
+            totalDishes={stats.totalDishes}
+            totalVotes={stats.totalVotes}
+            avgRating={stats.avgRating}
+            topDishName={stats.topDishName}
+            activeSpecials={specials.length}
+            loading={statsLoading}
+          />
+        </section>
 
         {/* Specials section */}
         <section>
@@ -241,12 +243,20 @@ export function RestaurantDashboard() {
           )}
         </section>
 
+        {/* Dish Performance */}
+        <section>
+          <h2 className="font-bold mb-3" style={{ color: 'var(--color-text-primary)' }}>Dish Performance</h2>
+          <DishPerformanceList
+            dishes={dishPerformance}
+            loading={statsLoading}
+          />
+        </section>
+
         {/* Coming soon features */}
         <section>
           <h2 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Coming Soon</h2>
           <div className="space-y-3">
             {[
-              { icon: '📊', title: 'Dish Performance', desc: 'See how your dishes rank against competitors' },
               { icon: '💬', title: 'Review Responses', desc: 'Respond to customer feedback' },
               { icon: '🎵', title: 'Events & Music', desc: 'Post live music and events' },
               { icon: '📈', title: 'Analytics', desc: 'Track views, favorites, and engagement' },
