@@ -135,3 +135,97 @@ export function getConfidenceIndicator(totalVotes) {
 
   return indicators[level]
 }
+
+/**
+ * Get consensus label based on "would order again" percentage
+ * This is the core quality signal shown to users
+ * @param {number} percentWorthIt - Percentage who would order again (0-100)
+ * @param {number} totalVotes - Total number of votes
+ * @returns {Object} { type, label, emoji, color, bgColor, description }
+ */
+export function getConsensusLabel(percentWorthIt, totalVotes) {
+  // Not enough votes for consensus
+  if (totalVotes < 5) {
+    return {
+      type: 'early',
+      label: 'Early',
+      emoji: '🆕',
+      color: 'var(--color-text-tertiary)',
+      bgColor: 'var(--color-surface)',
+      description: 'Not enough votes yet',
+      showBadge: false,
+    }
+  }
+
+  const pct = Math.round(percentWorthIt)
+
+  // Certified Good Here - 80%+ consensus
+  if (pct >= 80) {
+    return {
+      type: 'certified',
+      label: 'Certified',
+      emoji: '✓',
+      color: '#16a34a', // green-600
+      bgColor: 'rgba(22, 163, 74, 0.12)',
+      description: `${pct}% would order again`,
+      showBadge: true,
+    }
+  }
+
+  // Good Here - 65-79% consensus
+  if (pct >= 65) {
+    return {
+      type: 'good',
+      label: 'Good Here',
+      emoji: '👍',
+      color: 'var(--color-primary)',
+      bgColor: 'var(--color-primary-muted)',
+      description: `${pct}% would order again`,
+      showBadge: true,
+    }
+  }
+
+  // Mixed Reviews - 50-64% consensus
+  if (pct >= 50) {
+    return {
+      type: 'mixed',
+      label: 'Mixed',
+      emoji: '🤷',
+      color: '#f59e0b', // amber-500
+      bgColor: 'rgba(245, 158, 11, 0.12)',
+      description: `${pct}% would order again`,
+      showBadge: true,
+    }
+  }
+
+  // Risky - below 50% consensus
+  return {
+    type: 'risky',
+    label: 'Risky',
+    emoji: '⚠️',
+    color: '#ef4444', // red-500
+    bgColor: 'rgba(239, 68, 68, 0.12)',
+    description: `Only ${pct}% would order again`,
+    showBadge: true,
+  }
+}
+
+/**
+ * Check if dish should show a quality warning
+ * @param {number} percentWorthIt - Percentage who would order again
+ * @param {number} totalVotes - Total votes
+ * @returns {boolean}
+ */
+export function shouldShowRiskyWarning(percentWorthIt, totalVotes) {
+  return totalVotes >= 5 && percentWorthIt < 50
+}
+
+/**
+ * Check if dish is "Certified" quality
+ * @param {number} percentWorthIt - Percentage who would order again
+ * @param {number} totalVotes - Total votes
+ * @returns {boolean}
+ */
+export function isCertifiedDish(percentWorthIt, totalVotes) {
+  return totalVotes >= 5 && percentWorthIt >= 80
+}

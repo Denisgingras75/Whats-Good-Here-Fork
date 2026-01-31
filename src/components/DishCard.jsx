@@ -1,12 +1,13 @@
 import { memo, useState, useEffect, useRef } from 'react'
 import { ReviewFlow } from './ReviewFlow'
-import { getWorthItBadge, formatScore10, calculateWorthItScore10, getRatingColor } from '../utils/ranking'
+import { getWorthItBadge, formatScore10, calculateWorthItScore10, getRatingColor, getConsensusLabel } from '../utils/ranking'
 import { getCategoryImage } from '../constants/categoryImages'
 import { ThumbsUpIcon } from './ThumbsUpIcon'
 import { HearingIcon } from './HearingIcon'
 import { getResponsiveImageProps } from '../utils/images'
 import { EarIconTooltip } from './EarIconTooltip'
 import { getStorageItem, setStorageItem, STORAGE_KEYS } from '../lib/storage'
+import { ConsensusBadge, RiskyWarning, CertifiedBadge } from './ConsensusBadge'
 
 export const DishCard = memo(function DishCard({ dish, onVote, onLoginRequired, isFavorite, onToggleFavorite, showOrderAgainPercent = false }) {
   const {
@@ -27,6 +28,9 @@ export const DishCard = memo(function DishCard({ dish, onVote, onLoginRequired, 
   const totalVotes = total_votes || 0
   const worthItScore10 = calculateWorthItScore10(percent_worth_it || 0)
   const badge = getWorthItBadge(worthItScore10, totalVotes)
+  const consensus = getConsensusLabel(percent_worth_it || 0, totalVotes)
+  const isRisky = totalVotes >= 5 && (percent_worth_it || 0) < 50
+  const isCertified = totalVotes >= 5 && (percent_worth_it || 0) >= 80
 
   // Ear icon tooltip — show once per device
   const [showEarTooltip, setShowEarTooltip] = useState(false)
@@ -67,12 +71,25 @@ export const DishCard = memo(function DishCard({ dish, onVote, onLoginRequired, 
         {/* Subtle gradient for badge contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
 
-        {/* Rating badge - bottom left (only show if 10+ votes) */}
-        {totalVotes >= 10 && (
-          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-sm">
-            <span className="text-sm font-semibold text-white flex items-center gap-1">
-              <ThumbsUpIcon size={24} /> {Math.round(percent_worth_it)}%
-            </span>
+        {/* Consensus badge - bottom left (only show if 5+ votes) */}
+        {totalVotes >= 5 && (
+          <div className="absolute bottom-3 left-3 flex items-center gap-2">
+            {/* Certified badge for 80%+ */}
+            {isCertified ? (
+              <CertifiedBadge totalVotes={totalVotes} />
+            ) : (
+              <div
+                className="px-2.5 py-1 rounded-lg backdrop-blur-sm flex items-center gap-1.5"
+                style={{
+                  background: isRisky ? 'rgba(239, 68, 68, 0.9)' : 'rgba(0, 0, 0, 0.6)',
+                }}
+              >
+                {isRisky && <span className="text-xs">⚠️</span>}
+                <span className="text-sm font-semibold text-white flex items-center gap-1">
+                  <ThumbsUpIcon size={20} /> {Math.round(percent_worth_it)}%
+                </span>
+              </div>
+            )}
           </div>
         )}
 
@@ -209,6 +226,13 @@ export const DishCard = memo(function DishCard({ dish, onVote, onLoginRequired, 
                 </>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Risky Warning - for dishes with <50% consensus */}
+        {isRisky && (
+          <div className="mt-4">
+            <RiskyWarning percentWorthIt={percent_worth_it || 0} totalVotes={totalVotes} />
           </div>
         )}
 
