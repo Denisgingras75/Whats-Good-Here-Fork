@@ -7,6 +7,7 @@ import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { getRatingColor } from '../utils/ranking'
 import { logger } from '../utils/logger'
 import { RestaurantAvatar } from './RestaurantAvatar'
+import { SuggestRestaurant } from './SuggestRestaurant'
 const MIN_SEARCH_LENGTH = 2
 const MAX_DISH_RESULTS = 5
 const MAX_CATEGORY_RESULTS = 2
@@ -36,6 +37,7 @@ export function DishSearch({ loading = false, placeholder = "Find What's Good ne
   const [isFocused, setIsFocused] = useState(false)
   const [searchResults, setSearchResults] = useState([])
   const [searching, setSearching] = useState(false)
+  const [showSuggestModal, setShowSuggestModal] = useState(false)
   const inputRef = useRef(null)
   const dropdownRef = useRef(null)
   const mountedRef = useRef(true)
@@ -230,6 +232,18 @@ export function DishSearch({ loading = false, placeholder = "Find What's Good ne
         )}
       </div>
 
+      {/* Suggest Restaurant Modal */}
+      {showSuggestModal && (
+        <SuggestRestaurant
+          onClose={() => setShowSuggestModal(false)}
+          onSuccess={() => {
+            setShowSuggestModal(false)
+            setQuery('')
+          }}
+          initialQuery={query}
+        />
+      )}
+
       {/* Autocomplete Dropdown */}
       {showDropdown && (
         <div
@@ -256,9 +270,23 @@ export function DishSearch({ loading = false, placeholder = "Find What's Good ne
               <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
                 No dishes found for "{query}"
               </p>
-              <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
+              <p className="text-xs mt-1 mb-3" style={{ color: 'var(--color-text-tertiary)' }}>
                 Try a different search term
               </p>
+              <button
+                onClick={() => {
+                  setIsFocused(false)
+                  setShowSuggestModal(true)
+                }}
+                className="text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
+                style={{
+                  background: 'var(--color-surface-elevated)',
+                  color: 'var(--color-accent-gold)',
+                  border: '1px solid var(--color-divider)'
+                }}
+              >
+                Can't find it? Suggest a restaurant
+              </button>
             </div>
           ) : (
             <div className="max-h-80 overflow-y-auto">

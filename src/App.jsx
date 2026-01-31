@@ -37,6 +37,7 @@ const Dish = lazyWithRetry(() => import('./pages/Dish'), 'Dish')
 const Restaurants = lazyWithRetry(() => import('./pages/Restaurants'), 'Restaurants')
 const Profile = lazyWithRetry(() => import('./pages/Profile'), 'Profile')
 const Admin = lazyWithRetry(() => import('./pages/Admin'), 'Admin')
+const AdminSuggestions = lazyWithRetry(() => import('./pages/AdminSuggestions'), 'AdminSuggestions')
 const Login = lazyWithRetry(() => import('./pages/Login'), 'Login')
 const Privacy = lazyWithRetry(() => import('./pages/Privacy'), 'Privacy')
 const Terms = lazyWithRetry(() => import('./pages/Terms'), 'Terms')
@@ -118,6 +119,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+              <Route path="/admin/suggestions" element={<ProtectedRoute><AdminSuggestions /></ProtectedRoute>} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/badges" element={<ProtectedRoute><Layout><Badges /></Layout></ProtectedRoute>} />
