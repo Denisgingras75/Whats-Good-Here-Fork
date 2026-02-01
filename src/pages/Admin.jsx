@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { logger } from '../utils/logger'
 import { restaurantsApi } from '../api/restaurantsApi'
@@ -274,6 +274,13 @@ export function Admin() {
               Admin - {editingDishId ? 'Edit Dish' : 'Add Dishes'}
             </h1>
           </div>
+          <Link
+            to="/admin/suggestions"
+            className="text-sm font-medium px-3 py-1.5 rounded-lg"
+            style={{ background: 'var(--color-surface-elevated)', color: 'var(--color-text-secondary)' }}
+          >
+            Suggestions
+          </Link>
           {editingDishId && (
             <button
               onClick={handleCancelEdit}

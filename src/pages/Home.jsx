@@ -8,13 +8,14 @@ import { MIN_VOTES_FOR_RANKING } from '../constants/app'
 import { BROWSE_CATEGORIES } from '../constants/categories'
 import { SearchHero, Top10Compact } from '../components/home'
 import { CategoryImageCard } from '../components/CategoryImageCard'
+import { QualityEmptyState } from '../components/QualityEmptyState'
 
 export function Home() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { profile } = useProfile(user?.id)
 
-  const { location, radius, town, setTown } = useLocationContext()
+  const { location, radius, setRadius, town, setTown } = useLocationContext()
 
   // Fetch dishes with town filter
   const { dishes, loading, error } = useDishes(location, radius, null, null, town)
@@ -98,7 +99,14 @@ export function Home() {
             />
           </div>
         ) : (
-          <EmptyState onBrowse={() => navigate('/browse')} />
+          <QualityEmptyState
+            dishes={dishes}
+            town={town}
+            radius={radius}
+            onClearTown={() => setTown(null)}
+            onExpandRadius={setRadius}
+            onBrowseAll={() => navigate('/browse')}
+          />
         )}
       </section>
 
@@ -192,28 +200,3 @@ function Top10Skeleton() {
   )
 }
 
-// Empty state when no dishes found
-function EmptyState({ onBrowse }) {
-  return (
-    <div className="py-12 text-center">
-      <img
-        src="/search-not-found.png"
-        alt=""
-        className="w-16 h-16 mx-auto mb-4 rounded-full object-cover"
-      />
-      <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
-        No dishes found
-      </p>
-      <p className="text-sm mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
-        Try selecting a different town
-      </p>
-      <button
-        onClick={onBrowse}
-        className="mt-4 px-6 py-2 rounded-full text-sm font-medium transition-opacity hover:opacity-90"
-        style={{ background: 'var(--color-primary)', color: 'white' }}
-      >
-        Browse All Dishes
-      </button>
-    </div>
-  )
-}

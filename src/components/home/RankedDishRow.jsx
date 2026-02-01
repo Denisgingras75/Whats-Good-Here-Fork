@@ -1,8 +1,9 @@
 import { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MIN_VOTES_FOR_RANKING } from '../../constants/app'
-import { getRatingColor } from '../../utils/ranking'
+import { getRatingColor, getConsensusLabel } from '../../utils/ranking'
 import { RestaurantAvatar } from '../RestaurantAvatar'
+import { ConsensusBadge } from '../ConsensusBadge'
 
 // Compact dish row for homepage rankings
 export const RankedDishRow = memo(function RankedDishRow({ dish, rank }) {
@@ -14,6 +15,7 @@ export const RankedDishRow = memo(function RankedDishRow({ dish, rank }) {
     restaurant_town,
     avg_rating,
     total_votes,
+    percent_worth_it,
     distance_miles,
   } = dish
 
@@ -23,9 +25,12 @@ export const RankedDishRow = memo(function RankedDishRow({ dish, rank }) {
     navigate(`/dish/${dish_id}`)
   }
 
+  // Get consensus info for accessibility and display
+  const consensus = getConsensusLabel(percent_worth_it || 0, total_votes || 0)
+
   // Build accessible label for screen readers
   const accessibleLabel = isRanked
-    ? `Rank ${rank}: ${dish_name} at ${restaurant_name}, rated ${avg_rating} out of 10 with ${total_votes} votes${distance_miles ? `, ${Number(distance_miles).toFixed(1)} miles away` : ''}`
+    ? `Rank ${rank}: ${dish_name} at ${restaurant_name}, ${consensus.label}, ${Math.round(percent_worth_it || 0)}% would order again, rated ${avg_rating} out of 10 with ${total_votes} votes${distance_miles ? `, ${Number(distance_miles).toFixed(1)} miles away` : ''}`
     : `Rank ${rank}: ${dish_name} at ${restaurant_name}, ${total_votes ? `${total_votes} vote${total_votes === 1 ? '' : 's'}` : 'no votes yet'}${distance_miles ? `, ${Number(distance_miles).toFixed(1)} miles away` : ''}`
 
   return (
@@ -78,16 +83,25 @@ export const RankedDishRow = memo(function RankedDishRow({ dish, rank }) {
         </p>
       </div>
 
-      {/* Rating */}
+      {/* Rating & Consensus */}
       <div className="flex-shrink-0 text-right">
         {isRanked ? (
-          <div className="flex flex-col items-end">
-            <span className="text-base font-bold leading-tight" style={{ color: getRatingColor(avg_rating) }}>
-              {avg_rating || '—'}
-            </span>
-            <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
-              {total_votes} votes
-            </span>
+          <div className="flex flex-col items-end gap-0.5">
+            {/* Consensus Badge - the key quality signal */}
+            <ConsensusBadge
+              percentWorthIt={percent_worth_it || 0}
+              totalVotes={total_votes || 0}
+              variant="badge"
+            />
+            {/* Secondary: avg rating + votes */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-semibold" style={{ color: getRatingColor(avg_rating) }}>
+                {avg_rating || '—'}
+              </span>
+              <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
+                · {total_votes} votes
+              </span>
+            </div>
           </div>
         ) : (
           <div
