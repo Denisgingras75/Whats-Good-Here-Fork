@@ -1,18 +1,8 @@
 import { useState, useEffect, useCallback, memo } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useLocationContext } from '../context/LocationContext'
 import { restaurantSuggestionsApi } from '../api/restaurantSuggestionsApi'
 import { logger } from '../utils/logger'
-
-// MV towns for the dropdown
-const MV_TOWNS = [
-  'Aquinnah',
-  'Chilmark',
-  'Edgartown',
-  'Menemsha',
-  'Oak Bluffs',
-  'Vineyard Haven',
-  'West Tisbury'
-]
 
 // Debounce helper
 function useDebounce(value, delay) {
@@ -36,6 +26,7 @@ export const SuggestRestaurant = memo(function SuggestRestaurant({
   initialQuery = ''
 }) {
   const { user } = useAuth()
+  const { location } = useLocationContext()
 
   // Search state
   const [query, setQuery] = useState(initialQuery)
@@ -65,15 +56,23 @@ export const SuggestRestaurant = memo(function SuggestRestaurant({
 
     setSearching(true)
     try {
-      // Search for restaurants/cafes/bars near Martha's Vineyard
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?` +
-        `q=${encodeURIComponent(searchQuery + ' restaurant Martha\'s Vineyard MA')}&` +
+      // Build search URL - use location-biased search when available
+      let searchUrl = `https://nominatim.openstreetmap.org/search?` +
+        `q=${encodeURIComponent(searchQuery + ' restaurant')}&` +
         `format=json&` +
         `addressdetails=1&` +
-        `limit=5&` +
-        `countrycodes=us`
-      )
+        `limit=8`
+
+      // Add location bias if we have user's location (prioritizes results near user)
+      if (location?.lat && location?.lng) {
+        // Use viewbox for location bias (roughly 50 mile radius)
+        const latDelta = 0.7 // ~50 miles
+        const lngDelta = 0.9 // ~50 miles at mid-latitudes
+        searchUrl += `&viewbox=${location.lng - lngDelta},${location.lat + latDelta},${location.lng + lngDelta},${location.lat - latDelta}`
+        searchUrl += `&bounded=0` // Prefer but don't require results in viewbox
+      }
+
+      const response = await fetch(searchUrl)
 
       if (!response.ok) throw new Error('Search failed')
 
@@ -94,7 +93,7 @@ export const SuggestRestaurant = memo(function SuggestRestaurant({
       setSearchResults([])
     }
     setSearching(false)
-  }, [])
+  }, [location?.lat, location?.lng])
 
   // Trigger search on debounced query change
   useEffect(() => {
@@ -107,12 +106,10 @@ export const SuggestRestaurant = memo(function SuggestRestaurant({
     setName(place.name || place.display_name.split(',')[0])
     setAddress(place.display_name)
 
-    // Try to extract town from address
-    const addressParts = place.display_name.split(',')
-    const mvTown = MV_TOWNS.find(t =>
-      addressParts.some(part => part.trim().toLowerCase().includes(t.toLowerCase()))
-    )
-    if (mvTown) setTown(mvTown)
+    // Try to extract city/town from address details
+    const addr = place.address || {}
+    const townName = addr.city || addr.town || addr.village || addr.suburb || addr.hamlet || ''
+    if (townName) setTown(townName)
 
     setSearchResults([])
     setQuery('')
@@ -370,14 +367,16 @@ export const SuggestRestaurant = memo(function SuggestRestaurant({
               />
             </div>
 
-            {/* Town */}
+            {/* Town/City */}
             <div>
               <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--color-text-tertiary)' }}>
-                Town
+                Town/City
               </label>
-              <select
+              <input
+                type="text"
                 value={town}
                 onChange={(e) => setTown(e.target.value)}
+                placeholder="e.g., Boston, Cambridge, Vineyard Haven"
                 className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2"
                 style={{
                   background: 'var(--color-surface-elevated)',
@@ -385,12 +384,7 @@ export const SuggestRestaurant = memo(function SuggestRestaurant({
                   color: 'var(--color-text-primary)',
                   '--tw-ring-color': 'var(--color-primary)'
                 }}
-              >
-                <option value="">Select town...</option>
-                {MV_TOWNS.map(t => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* Notes */}

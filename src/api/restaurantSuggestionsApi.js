@@ -3,6 +3,26 @@ import { logger } from '../utils/logger'
 
 export const restaurantSuggestionsApi = {
   /**
+   * Check rate limit for restaurant suggestions
+   */
+  async checkRateLimit() {
+    const { data, error } = await supabase
+      .rpc('check_restaurant_suggestion_rate_limit')
+
+    if (error) {
+      logger.error('Error checking restaurant suggestion rate limit:', error)
+      return { allowed: true, countToday: 0, limitPerDay: 5 }
+    }
+
+    const result = data?.[0] || data
+    return {
+      allowed: result?.allowed ?? true,
+      countToday: result?.count_today ?? 0,
+      limitPerDay: result?.limit_per_day ?? 5
+    }
+  },
+
+  /**
    * Submit a restaurant suggestion
    */
   async submit({ name, address, town, osmPlaceId, lat, lng, notes }) {
@@ -10,6 +30,12 @@ export const restaurantSuggestionsApi = {
 
     if (!user) {
       throw new Error('You must be logged in to suggest a restaurant')
+    }
+
+    // Check rate limit
+    const { allowed, countToday, limitPerDay } = await this.checkRateLimit()
+    if (!allowed) {
+      throw new Error(`You've reached the daily limit of ${limitPerDay} restaurant suggestions. You've submitted ${countToday} today.`)
     }
 
     const { data, error } = await supabase
