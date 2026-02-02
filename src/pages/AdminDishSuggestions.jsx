@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { adminApi } from '../api/adminApi'
-import { restaurantSuggestionsApi } from '../api/restaurantSuggestionsApi'
+import { dishSuggestionsApi } from '../api/dishSuggestionsApi'
+import { getCategoryEmoji } from '../constants/categories'
 import { logger } from '../utils/logger'
 
-export function AdminSuggestions() {
+export function AdminDishSuggestions() {
   const navigate = useNavigate()
   const { user, loading: authLoading } = useAuth()
 
@@ -41,10 +42,10 @@ export function AdminSuggestions() {
   // Fetch pending suggestions
   const fetchSuggestions = useCallback(async () => {
     try {
-      const data = await restaurantSuggestionsApi.getPending()
+      const data = await dishSuggestionsApi.getPending()
       setSuggestions(data)
     } catch (error) {
-      logger.error('Error fetching suggestions:', error)
+      logger.error('Error fetching dish suggestions:', error)
       setMessage({ type: 'error', text: 'Failed to load suggestions' })
     } finally {
       setLoading(false)
@@ -73,17 +74,17 @@ export function AdminSuggestions() {
     setShowNotesModal(false)
 
     try {
-      const newRestaurantId = await restaurantSuggestionsApi.approve(
+      const newDishId = await dishSuggestionsApi.approve(
         notesSuggestionId,
         adminNotes || null
       )
       setMessage({
         type: 'success',
-        text: `Restaurant approved and created! ID: ${newRestaurantId}`
+        text: `Dish approved and created! ID: ${newDishId}`
       })
       fetchSuggestions()
     } catch (error) {
-      logger.error('Error approving suggestion:', error)
+      logger.error('Error approving dish suggestion:', error)
       setMessage({ type: 'error', text: `Failed to approve: ${error?.message || error}` })
     } finally {
       setProcessingId(null)
@@ -98,11 +99,11 @@ export function AdminSuggestions() {
     setShowNotesModal(false)
 
     try {
-      await restaurantSuggestionsApi.reject(notesSuggestionId, adminNotes || null)
+      await dishSuggestionsApi.reject(notesSuggestionId, adminNotes || null)
       setMessage({ type: 'success', text: 'Suggestion rejected' })
       fetchSuggestions()
     } catch (error) {
-      logger.error('Error rejecting suggestion:', error)
+      logger.error('Error rejecting dish suggestion:', error)
       setMessage({ type: 'error', text: `Failed to reject: ${error?.message || error}` })
     } finally {
       setProcessingId(null)
@@ -113,14 +114,14 @@ export function AdminSuggestions() {
   async function quickApprove(suggestionId) {
     setProcessingId(suggestionId)
     try {
-      const newRestaurantId = await restaurantSuggestionsApi.approve(suggestionId)
+      const newDishId = await dishSuggestionsApi.approve(suggestionId)
       setMessage({
         type: 'success',
-        text: `Restaurant approved and created! ID: ${newRestaurantId}`
+        text: `Dish approved and created! ID: ${newDishId}`
       })
       fetchSuggestions()
     } catch (error) {
-      logger.error('Error approving suggestion:', error)
+      logger.error('Error approving dish suggestion:', error)
       setMessage({ type: 'error', text: `Failed to approve: ${error?.message || error}` })
     } finally {
       setProcessingId(null)
@@ -184,23 +185,25 @@ export function AdminSuggestions() {
               </svg>
             </button>
             <h1 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-              Restaurant Suggestions
+              Dish Suggestions
             </h1>
           </div>
-          <Link
-            to="/admin/dish-suggestions"
-            className="text-sm font-medium px-3 py-1.5 rounded-lg"
-            style={{ background: 'var(--color-surface-elevated)', color: 'var(--color-text-secondary)' }}
-          >
-            Dish Suggestions
-          </Link>
-          <Link
-            to="/admin"
-            className="text-sm font-medium px-3 py-1.5 rounded-lg"
-            style={{ background: 'var(--color-surface-elevated)', color: 'var(--color-text-secondary)' }}
-          >
-            Dishes
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/admin/suggestions"
+              className="text-sm font-medium px-3 py-1.5 rounded-lg"
+              style={{ background: 'var(--color-surface-elevated)', color: 'var(--color-text-secondary)' }}
+            >
+              Restaurants
+            </Link>
+            <Link
+              to="/admin"
+              className="text-sm font-medium px-3 py-1.5 rounded-lg"
+              style={{ background: 'var(--color-surface-elevated)', color: 'var(--color-text-secondary)' }}
+            >
+              Dishes
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -221,7 +224,7 @@ export function AdminSuggestions() {
         {/* Pending count */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-            {suggestions.length} pending suggestion{suggestions.length !== 1 ? 's' : ''}
+            {suggestions.length} pending dish suggestion{suggestions.length !== 1 ? 's' : ''}
           </p>
           <button
             onClick={fetchSuggestions}
@@ -248,13 +251,13 @@ export function AdminSuggestions() {
             </div>
             <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>All caught up!</p>
             <p className="text-sm mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
-              No pending restaurant suggestions
+              No pending dish suggestions
             </p>
           </div>
         ) : (
           <div className="space-y-4">
             {suggestions.map((suggestion) => (
-              <SuggestionCard
+              <DishSuggestionCard
                 key={suggestion.id}
                 suggestion={suggestion}
                 processing={processingId === suggestion.id}
@@ -275,7 +278,7 @@ export function AdminSuggestions() {
             style={{ background: 'var(--color-surface)' }}
           >
             <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-              {notesAction === 'approve' ? 'Approve Restaurant' : 'Reject Suggestion'}
+              {notesAction === 'approve' ? 'Approve Dish' : 'Reject Suggestion'}
             </h2>
 
             <div className="mb-4">
@@ -317,21 +320,22 @@ export function AdminSuggestions() {
   )
 }
 
-// Individual suggestion card
-function SuggestionCard({ suggestion, processing, onQuickApprove, onApproveWithNotes, onReject }) {
+// Individual dish suggestion card
+function DishSuggestionCard({ suggestion, processing, onQuickApprove, onApproveWithNotes, onReject }) {
   const {
     name,
-    address,
-    town,
-    osm_place_id,
-    lat,
-    lng,
-    notes,
+    category,
+    price,
+    description,
     created_at,
-    profiles
+    profiles,
+    restaurants
   } = suggestion
 
   const submitterName = profiles?.display_name || 'Anonymous'
+  const restaurantName = restaurants?.name || 'Unknown Restaurant'
+  const restaurantTown = restaurants?.town
+  const categoryEmoji = getCategoryEmoji(category)
   const submittedDate = new Date(created_at).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -348,63 +352,48 @@ function SuggestionCard({ suggestion, processing, onQuickApprove, onApproveWithN
       <div className="p-4 border-b" style={{ borderColor: 'var(--color-divider)' }}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>
-              {name}
-            </h3>
-            {address && (
-              <p className="text-sm mt-0.5 truncate" style={{ color: 'var(--color-text-secondary)' }}>
-                {address}
-              </p>
-            )}
-            {town && (
+            <div className="flex items-center gap-2">
+              <span className="text-lg">{categoryEmoji}</span>
+              <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>
+                {name}
+              </h3>
+            </div>
+            <p className="text-sm mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+              at {restaurantName}
+              {restaurantTown && (
+                <span style={{ color: 'var(--color-text-tertiary)' }}> ({restaurantTown})</span>
+              )}
+            </p>
+            <div className="flex items-center gap-2 mt-1.5">
               <span
-                className="inline-block mt-1.5 text-xs font-medium px-2 py-0.5 rounded-full"
+                className="text-xs font-medium px-2 py-0.5 rounded-full"
                 style={{ background: 'var(--color-surface-elevated)', color: 'var(--color-text-tertiary)' }}
               >
-                {town}
+                {category}
               </span>
-            )}
+              {price && (
+                <span
+                  className="text-xs font-medium px-2 py-0.5 rounded-full"
+                  style={{ background: 'var(--color-primary-muted)', color: 'var(--color-primary)' }}
+                >
+                  ${price.toFixed(2)}
+                </span>
+              )}
+            </div>
           </div>
-          {osm_place_id && (
-            <span
-              className="text-[10px] font-medium px-2 py-1 rounded-full flex-shrink-0"
-              style={{ background: 'color-mix(in srgb, var(--color-success) 15%, var(--color-bg))', color: 'var(--color-success)' }}
-            >
-              OSM Verified
-            </span>
-          )}
         </div>
       </div>
 
       {/* Details */}
       <div className="px-4 py-3 space-y-2" style={{ background: 'var(--color-surface-elevated)' }}>
-        {notes && (
+        {description && (
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'var(--color-text-tertiary)' }}>
-              Notes
+              Description
             </p>
             <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              {notes}
+              {description}
             </p>
-          </div>
-        )}
-        {lat && lng && (
-          <div className="flex items-center gap-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'var(--color-text-tertiary)' }}>
-              Coords
-            </p>
-            <p className="text-xs font-mono" style={{ color: 'var(--color-text-secondary)' }}>
-              {lat.toFixed(5)}, {lng.toFixed(5)}
-            </p>
-            <a
-              href={`https://www.google.com/maps?q=${lat},${lng}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-medium"
-              style={{ color: 'var(--color-primary)' }}
-            >
-              View Map
-            </a>
           </div>
         )}
         <div className="flex items-center justify-between pt-1">

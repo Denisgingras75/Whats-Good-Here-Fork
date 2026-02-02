@@ -1,8 +1,14 @@
 import { useState, useMemo } from 'react'
 import { useSpecials } from '../hooks/useSpecials'
 import { useLocationContext } from '../context/LocationContext'
+import { useAuth } from '../context/AuthContext'
 import { SpecialCard } from '../components/SpecialCard'
 import { TownPicker } from '../components/TownPicker'
+import { SuggestRestaurant } from '../components/SuggestRestaurant'
+import { SuggestDish } from '../components/SuggestDish'
+import { LocationPermissionCard } from '../components/LocationPermissionCard'
+import { RadiusFilter } from '../components/RadiusFilter'
+import { BeTheFirstCard } from '../components/BeTheFirstCard'
 
 // Sort options for specials
 const SORT_OPTIONS = [
@@ -13,9 +19,12 @@ const SORT_OPTIONS = [
 
 export function Discover() {
   const { specials, loading, error, refetch } = useSpecials()
-  const { town, setTown } = useLocationContext()
+  const { town, setTown, isUsingDefault, permissionState } = useLocationContext()
+  const { user } = useAuth()
   const [sortBy, setSortBy] = useState('newest')
   const [showFilters, setShowFilters] = useState(false)
+  const [showSuggestRestaurant, setShowSuggestRestaurant] = useState(false)
+  const [showSuggestDish, setShowSuggestDish] = useState(false)
 
   // Filter and sort specials
   const filteredSpecials = useMemo(() => {
@@ -60,33 +69,66 @@ export function Discover() {
               Discover
             </h2>
             <p className="text-sm mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
-              Specials & deals from island restaurants
+              Specials & deals near you
             </p>
           </div>
 
-          {/* Filter toggle */}
-          {specials?.length > 0 && (
+          <div className="flex items-center gap-2">
+            {/* Add Dish button */}
             <button
-              onClick={() => setShowFilters(!showFilters)}
+              onClick={() => setShowSuggestDish(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
               style={{
-                background: showFilters ? 'var(--color-primary-muted)' : 'var(--color-surface-elevated)',
-                color: showFilters ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-                border: `1px solid ${showFilters ? 'var(--color-primary)' : 'var(--color-divider)'}`,
+                background: 'var(--color-surface-elevated)',
+                color: 'var(--color-text-secondary)',
+                border: '1px solid var(--color-divider)',
               }}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              Filters
-              {town && (
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ background: 'var(--color-primary)' }}
-                />
-              )}
+              Add Dish
             </button>
-          )}
+
+            {/* Add Restaurant button */}
+            <button
+              onClick={() => setShowSuggestRestaurant(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+              style={{
+                background: 'var(--color-primary)',
+                color: 'white',
+              }}
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Add Restaurant
+            </button>
+
+            {/* Filter toggle */}
+            {specials?.length > 0 && (
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{
+                  background: showFilters ? 'var(--color-primary-muted)' : 'var(--color-surface-elevated)',
+                  color: showFilters ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                  border: `1px solid ${showFilters ? 'var(--color-primary)' : 'var(--color-divider)'}`,
+                }}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                Filters
+                {town && (
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ background: 'var(--color-primary)' }}
+                  />
+                )}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Filter panel */}
@@ -98,6 +140,9 @@ export function Discover() {
               border: '1px solid var(--color-divider)',
             }}
           >
+            {/* Radius filter */}
+            <RadiusFilter className="mb-4" />
+
             {/* Town filter */}
             <div className="mb-4">
               <label className="block text-xs font-medium mb-2" style={{ color: 'var(--color-text-tertiary)' }}>
@@ -144,6 +189,13 @@ export function Discover() {
           </div>
         )}
       </header>
+
+      {/* Location Permission Card - show when not using actual location */}
+      {(isUsingDefault || permissionState === 'denied') && (
+        <div className="px-4 pb-4">
+          <LocationPermissionCard variant="compact" />
+        </div>
+      )}
 
       {/* Active filter pills */}
       {(town || sortBy !== 'newest') && !showFilters && (
@@ -248,78 +300,89 @@ export function Discover() {
             </button>
           </div>
         ) : (
-          // No specials at all
-          <div
-            className="text-center py-16 rounded-xl"
+          // No specials at all - show "Be the First" card
+          <BeTheFirstCard variant="discover" />
+        )}
+      </div>
+
+      {/* Suggest Restaurant Modal */}
+      {showSuggestRestaurant && (
+        user ? (
+          <SuggestRestaurant
+            onClose={() => setShowSuggestRestaurant(false)}
+            onSuccess={() => setShowSuggestRestaurant(false)}
+          />
+        ) : (
+          <LoginPromptModal
+            onClose={() => setShowSuggestRestaurant(false)}
+            message="Help grow our community by adding your favorite restaurants."
+          />
+        )
+      )}
+
+      {/* Suggest Dish Modal */}
+      {showSuggestDish && (
+        user ? (
+          <SuggestDish
+            onClose={() => setShowSuggestDish(false)}
+            onSuccess={() => setShowSuggestDish(false)}
+          />
+        ) : (
+          <LoginPromptModal
+            onClose={() => setShowSuggestDish(false)}
+            message="Help grow our community by adding dishes you love."
+          />
+        )
+      )}
+    </div>
+  )
+}
+
+// Login prompt modal component
+function LoginPromptModal({ onClose, message }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0, 0, 0, 0.6)' }}
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-sm rounded-2xl p-6 text-center"
+        style={{ background: 'var(--color-bg)', border: '1px solid var(--color-divider)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="w-14 h-14 mx-auto mb-4 rounded-full flex items-center justify-center"
+          style={{ background: 'var(--color-surface-elevated)' }}
+        >
+          <span className="text-2xl">🔐</span>
+        </div>
+        <h3 className="font-bold text-lg mb-2" style={{ color: 'var(--color-text-primary)' }}>
+          Sign in to contribute
+        </h3>
+        <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>
+          {message}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-xl font-medium text-sm"
             style={{
-              background: 'var(--color-bg)',
+              background: 'var(--color-surface-elevated)',
+              color: 'var(--color-text-secondary)',
               border: '1px solid var(--color-divider)'
             }}
           >
-            <div
-              className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
-              style={{ background: 'var(--color-surface-elevated)' }}
-            >
-              <span className="text-3xl">🍽️</span>
-            </div>
-            <h3 className="font-semibold text-xl" style={{ color: 'var(--color-text-primary)' }}>
-              No specials yet
-            </h3>
-            <p className="text-sm mt-2 mb-6 px-6" style={{ color: 'var(--color-text-secondary)' }}>
-              Restaurants will soon be able to post daily specials, happy hours, and limited-time deals here.
-            </p>
-
-            {/* Coming soon features */}
-            <div className="mx-4 text-left space-y-3">
-              <div
-                className="flex items-start gap-3 p-3 rounded-xl"
-                style={{ background: 'var(--color-surface)' }}
-              >
-                <span className="text-lg mt-0.5">🔔</span>
-                <div>
-                  <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
-                    Real-time alerts
-                  </p>
-                  <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
-                    Get notified when your favorite spots post deals
-                  </p>
-                </div>
-              </div>
-              <div
-                className="flex items-start gap-3 p-3 rounded-xl"
-                style={{ background: 'var(--color-surface)' }}
-              >
-                <span className="text-lg mt-0.5">🐟</span>
-                <div>
-                  <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
-                    Fresh catch alerts
-                  </p>
-                  <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
-                    Know when swordfish just landed at the dock
-                  </p>
-                </div>
-              </div>
-              <div
-                className="flex items-start gap-3 p-3 rounded-xl"
-                style={{ background: 'var(--color-surface)' }}
-              >
-                <span className="text-lg mt-0.5">🎵</span>
-                <div>
-                  <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
-                    Live music & events
-                  </p>
-                  <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
-                    Find out who's playing where tonight
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <p className="text-xs mt-6" style={{ color: 'var(--color-text-tertiary)' }}>
-              Are you a restaurant owner? <span style={{ color: 'var(--color-accent-gold)' }}>Coming soon</span>
-            </p>
-          </div>
-        )}
+            Cancel
+          </button>
+          <a
+            href="/login"
+            className="flex-1 py-2.5 rounded-xl font-semibold text-sm text-white text-center"
+            style={{ background: 'var(--color-primary)' }}
+          >
+            Sign In
+          </a>
+        </div>
       </div>
     </div>
   )
